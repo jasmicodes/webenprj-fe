@@ -14,7 +14,7 @@ const router = useRouter()
 const store = useUserStore()
 
 // form state
-const salutation = ref<'male' | 'female' | 'other' | ''>('')
+const salutation = ref<'Mr.' | 'Mrs.' | 'Ms.' | 'Mx.' | 'Dr.' | 'Prof.' | 'other' | ''>('')
 const otherText = ref('')
 const username = ref('')
 const email = ref('')
@@ -34,7 +34,7 @@ const strongPw = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/
 const schema = yup.object({
   salutation: yup
     .string()
-    .oneOf(['male', 'female', 'other'])
+    .oneOf(['Mr.', 'Mrs.', 'Ms.', 'Mx.', 'Dr.', 'Prof.', 'other'])
     .required('Please select a salutation'),
   otherText: yup
     .string()
@@ -75,15 +75,23 @@ async function submit() {
     // Demo-Register → nutzt deinen Store
     await store.register({ username: username.value, email: email.value, password: password.value })
     router.push({ name: 'home' })
-  } catch (err: any) {
-    if (err?.inner?.length) {
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'inner' in err && Array.isArray(err.inner)) {
       // mehrere yup-Fehler
       const map: Record<string, string> = {}
-      for (const e of err.inner) if (e.path && !map[e.path]) map[e.path] = e.message
+      for (const e of err.inner) {
+        if (e && typeof e === 'object' && 'path' in e && 'message' in e) {
+          const path = String(e.path)
+          const message = String(e.message)
+          if (path && !map[path]) map[path] = message
+        }
+      }
       errors.value = map
       toast.value = { show: true, msg: 'Please fix the highlighted fields', variant: 'error' }
     } else {
-      toast.value = { show: true, msg: err?.message || 'Registration failed', variant: 'error' }
+      const message =
+        err instanceof Error ? err.message : typeof err === 'string' ? err : 'Registration failed'
+      toast.value = { show: true, msg: message, variant: 'error' }
     }
   } finally {
     loading.value = false
@@ -103,8 +111,12 @@ const showOther = computed(() => salutation.value === 'other')
       <BaseFormfield label="Salutation" :error="errors.salutation">
         <BaseSelect v-model="salutation" :invalid="!!errors.salutation">
           <option value="" disabled selected>Select…</option>
-          <option value="male">male</option>
-          <option value="female">female</option>
+          <option value="Mr.">Mr.</option>
+          <option value="Mrs.">Mrs.</option>
+          <option value="Ms.">Ms.</option>
+          <option value="Mx.">Mx.</option>
+          <option value="Dr.">Dr.</option>
+          <option value="Prof.">Prof.</option>
           <option value="other">other</option>
         </BaseSelect>
       </BaseFormfield>
@@ -119,7 +131,7 @@ const showOther = computed(() => salutation.value === 'other')
         <BaseInput
           v-model="otherText"
           :invalid="!!errors.otherText"
-          placeholder="e.g., non-binary"
+          placeholder="e.g., Rev., Sir, Capt."
         />
       </BaseFormfield>
 
