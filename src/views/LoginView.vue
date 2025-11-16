@@ -23,11 +23,24 @@ async function submit() {
     if (!identifier.value || !password.value) throw new Error('Please fill in all fields')
     await store.login({ identifier: identifier.value, password: password.value })
     router.push({ name: 'home' })
-  } catch (err: any) {
+  } catch (err: unknown) {
+    let message = 'Login failed. Please try again.'
+
+    if (err && typeof err === 'object') {
+      if ('response' in err && err.response && typeof err.response === 'object' && 'data' in err.response) {
+        const data = err.response.data
+        if (data && typeof data === 'object' && 'message' in data) {
+          message = String(data.message)
+        }
+      } else if (err instanceof Error) {
+        message = err.message
+      }
+    }
+
     errorModal.value = {
       show: true,
       title: 'Login error',
-      message: err?.response?.data?.message || err?.message || 'Login failed. Please try again.',
+      message,
     }
   }
 }
