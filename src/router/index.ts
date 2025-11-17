@@ -3,7 +3,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
 const routes: RouteRecordRaw[] = [
-  // Auth-Seiten (dürfen ohne Login sichtbar sein)
+  // Auth-Sites (visible without login)
   {
     path: '/login',
     name: 'login',
@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
     meta: { authPage: true },
   },
 
-  // Hauptseiten (nur nach Login)
+  // Main Sites (only after login)
   { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
   {
     path: '/resources',
@@ -41,19 +41,18 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-// Guard: Auth-Pages immer erlauben, alle anderen nur mit Token
+// Guard: Auth-Pages always allowed, all others only with Tokens
 router.beforeEach((to) => {
   const store = useUserStore()
 
-  // Eingeloggt und will auf Login/Register? -> nach Home
+  // Logged in an want to Login/Register? -> Home
   if (store.isAuthenticated && to.meta.authPage) {
     return { name: 'home' }
   }
 
-  // Auth-Seiten frei zugänglich (für nicht eingeloggte)
+  // Auth-Sites free (for anonymous)
   if (to.meta.authPage) return true
 
-  // Alle anderen Seiten erfordern Login
   if (!store.isAuthenticated) {
     return { name: 'login' }
   }

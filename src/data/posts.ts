@@ -15,6 +15,7 @@ import avatar2 from '@/assets/user2.avif'
 import avatar3 from '@/assets/user3.avif'
 import sampleImg from '@/assets/PostPicture1.png'
 
+// DEMO Data
 export const POSTS: Post[] = [
   {
     id: 1,
