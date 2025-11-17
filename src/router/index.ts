@@ -45,7 +45,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   const store = useUserStore()
 
-  // Logged in an want to Login/Register? -> Home
+  // Logged in and want to Login/Register? -> Home
   if (store.isAuthenticated && to.meta.authPage) {
     return { name: 'home' }
   }
