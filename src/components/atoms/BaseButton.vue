@@ -27,11 +27,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const base = 'btn'
+
 const variantClass = {
   primary: 'btn-primary',
   outline: 'btn-outline',
   ghost: 'btn-ghost',
   danger: 'btn-danger',
 }[props.variant]
+
 const sizeClass = { sm: 'btn-sm', md: '', lg: 'btn-lg' }[props.size]
 </script>

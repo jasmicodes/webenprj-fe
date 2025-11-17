@@ -1,13 +1,16 @@
 <template>
   <BaseCard size="lg" class="space-y-4">
-    <PostHeader
-      :username="post.user.name"
-      :avatar-src="avatarSrc"
-      :tag="post.tag"
-      :time="post.time"
-    />
+    <!-- HEADER-SLOT -->
+    <template #header>
+      <PostHeader
+        :username="post.user.name"
+        :avatar-src="avatarSrc"
+        :tag="post.tag"
+        :time="post.time"
+      />
+    </template>
 
-    <!-- Media -->
+    <!-- BODY (default slot) -->
     <figure
       v-if="post.image"
       class="mt-2 relative w-full aspect-[4/5] bg-neutral-50 overflow-hidden"
@@ -20,20 +23,22 @@
       />
     </figure>
 
-    <!-- Text & Footer -->
     <p v-if="post.text" class="text-neutral-900 text-base leading-relaxed">
       {{ post.text }}
     </p>
 
-    <PostFooter
-      :likes="post.likes"
-      :comments="post.comments"
-      :streak="post.streak"
-      @like="$emit('like', post.id)"
-      @comment="$emit('comment', post.id)"
-      @save="$emit('save', post.id)"
-      @share="$emit('share', post.id)"
-    />
+    <!-- FOOTER-SLOT (actions) -->
+    <template #actions>
+      <PostFooter
+        :likes="post.likes"
+        :comments="post.comments"
+        :streak="post.streak"
+        @like="$emit('like', post.id)"
+        @comment="$emit('comment', post.id)"
+        @save="$emit('save', post.id)"
+        @share="$emit('share', post.id)"
+      />
+    </template>
   </BaseCard>
 </template>
 
