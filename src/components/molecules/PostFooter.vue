@@ -3,13 +3,13 @@
   <div class="card-actions justify-between text-neutral-900">
     <div class="flex items-center gap-5">
       <button class="flex items-center gap-1" @click="emit('like')">
-        <BaseIcon name="HeartIcon" /><span>{{ likes }}</span>
+        <BaseIcon name="HeartIcon" /><span>{{ props.likes }}</span>
       </button>
       <button class="flex items-center gap-1" @click="emit('comment')">
-        <BaseIcon name="ChatBubbleOvalLeftIcon" /><span>{{ comments }}</span>
+        <BaseIcon name="ChatBubbleOvalLeftIcon" /><span>{{ props.comments }}</span>
       </button>
       <div class="flex items-center gap-1">
-        <BaseIcon name="BoltIcon" /><span>{{ streak }}</span>
+        <BaseIcon name="BoltIcon" /><span>{{ props.streak }}</span>
       </div>
     </div>
     <div class="flex items-center gap-4">
