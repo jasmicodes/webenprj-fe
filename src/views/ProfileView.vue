@@ -12,7 +12,7 @@ const { user } = storeToRefs(userStore)
     <h1 class="text-2xl font-heading mb-4">Profile</h1>
 
     <p><strong>Email:</strong> {{ user?.email ?? '—' }}</p>
-    <p><strong>Username:</strong> {{ user?.name ?? '—' }}</p>
+    <p><strong>Username:</strong> {{ user?.username ?? '—' }}</p>
 
     <button class="btn btn-outline mt-4" @click="userStore.logout()">Logout</button>
   </section>

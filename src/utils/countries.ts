@@ -207,11 +207,11 @@ const ALL_COUNTRIES = [
 ] as const
 
 // DACH zuerst
-const DACH = ['Germany', 'Austria', 'Switzerland'] as const
+const DACH = ['Germany', 'Austria', 'Switzerland']
 
 export const COUNTRIES_DACH_FIRST = [
   ...DACH,
-  ...ALL_COUNTRIES.filter((c) => !DACH.includes(c as any))
+  ...ALL_COUNTRIES.filter((c) => !DACH.includes(c))
     .slice() // copy
     .sort((a, b) => a.localeCompare(b)),
 ]
