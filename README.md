@@ -85,7 +85,7 @@ src/
 └─ App.vue            # Single Page Application
 ```
 
-## 📝 Registration Overview (Frontend)
+## 📝 Registration Overview
 
 The registration view (RegisterView.vue) handles the user interface and the communication with the backend.
 
