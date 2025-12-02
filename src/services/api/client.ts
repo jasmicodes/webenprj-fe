@@ -1,0 +1,36 @@
+import axios, { AxiosError } from 'axios'
+
+export const api = axios.create({
+  baseURL: 'http://localhost:8081',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Interceptor: JWT automatisch anhängen
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+export function getErrorMessage(error: unknown): string {
+  const err = error as AxiosError<any>
+
+  if (err.response && err.response.data) {
+    const data = err.response.data as {
+      message?: string
+      error?: string
+      status?: number
+    }
+
+    if (data.message) return data.message
+    if (data.error) return data.error
+  }
+
+  if (err.message) return err.message
+  return 'Unexpected error'
+}
