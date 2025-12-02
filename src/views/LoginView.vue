@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import * as yup from 'yup'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import ModalAlert from '@/components/molecules/ModalAlert.vue'
+import ToastMessage from '@/components/molecules/ToastMessage.vue'
 
 const router = useRouter()
 const store = useUserStore()
@@ -16,76 +17,142 @@ const identifier = ref('') //username or email
 const password = ref('')
 
 // Error modal state
-const errorModal = ref({ show: false, title: 'Login error', message: '' })
+const errors = ref<{ identifier?: string; password?: string }>({})
 
-async function submit() {
+// Toast-State (gleiches Pattern wie Register)
+const toast = ref<{
+  show: boolean
+  message: string
+  variant: 'error' | 'success'
+}>({
+  show: false,
+  message: '',
+  variant: 'error',
+})
+
+// Yup-Schema für Login (Frontend-Validation)
+const loginSchema = yup.object({
+  identifier: yup.string().required('Username or email is required'),
+  password: yup.string().required('Password is required'),
+})
+
+// Hilfsfunktion: Yup-Fehler mappen
+function mapYupErrors(err: yup.ValidationError) {
+  const fieldErrors: Record<string, string> = {}
+  err.inner.forEach((e) => {
+    if (e.path && !fieldErrors[e.path]) {
+      fieldErrors[e.path] = e.message
+    }
+  })
+  return fieldErrors
+}
+
+// Submit-Handler (DEMO-VERSION ohne echtes Backend)
+async function onSubmit() {
+  errors.value = {}
+  toast.value.show = false
+
   try {
-    if (!identifier.value || !password.value) throw new Error('Please fill in all fields')
-    await store.login({ identifier: identifier.value, password: password.value })
-    router.push({ name: 'home' })
-  } catch (err: unknown) {
-    let message = 'Login failed. Please try again.'
+    // 1) Frontend-Validation
+    await loginSchema.validate(
+      {
+        identifier: identifier.value.trim(),
+        password: password.value,
+      },
+      { abortEarly: false },
+    )
 
-    if (err && typeof err === 'object') {
-      if ('response' in err && err.response && typeof err.response === 'object' && 'data' in err.response) {
-        const data = err.response.data
-        if (data && typeof data === 'object' && 'message' in data) {
-          message = String(data.message)
-        }
-      } else if (err instanceof Error) {
-        message = err.message
-      }
+    // 2) DEMO-Login über den Store (kein echter API-Call)
+    //    ➜ du implementierst userStore.loginDemo selbst (siehe unten)
+    await userStore.loginDemo({
+      identifier: identifier.value.trim(),
+      password: password.value,
+    })
+
+    // 3) Erfolg → Toast + Redirect
+    toast.value = {
+      show: true,
+      message: 'Login successful. Welcome back!',
+      variant: 'success',
     }
 
-    errorModal.value = {
+    router.push({ name: 'home' })
+  } catch (err: any) {
+    // a) Yup-Validierungsfehler
+    if (err.name === 'ValidationError') {
+      errors.value = mapYupErrors(err)
+      toast.value = {
+        show: true,
+        message: 'Please fix the highlighted fields.',
+        variant: 'error',
+      }
+      return
+    }
+
+    // b) „Login fehlgeschlagen“ (Demo-Fehler vom Store)
+    let message = 'Login failed. Please try again.'
+    if (err instanceof Error && err.message) {
+      message = err.message
+    }
+
+    toast.value = {
       show: true,
-      title: 'Login error',
       message,
+      variant: 'error',
     }
   }
 }
 </script>
 
 <template>
-  <div class="mx-auto max-w-xl grid grid-cols-[200px_1fr] items-center gap-8">
-    <img src="/IconMotivise.svg" alt="logo" class="w-40 h-40 rounded-2xl" />
+  <!-- Äußerer Bereich: zentriert & responsiv -->
+  <main class="section flex justify-center">
+    <div class="mx-auto max-w-xl grid grid-cols-[200px_1fr] items-center gap-8">
+      <img src="/IconMotivise.svg" alt="logo" class="w-40 h-40 rounded-2xl" />
 
-    <form class="card card-pad space-y-3" @submit.prevent="submit" novalidate>
-      <h2>Login</h2>
+      <form class="card card-pad space-y-3" @submit.prevent="onSubmit">
+        <h2>Login</h2>
 
-      <BaseFormfield label="Username or Email">
-        <BaseInput
-          v-model="identifier"
-          placeholder="username or email"
-          name="identifier"
-          autocomplete="username"
-          required
-        />
-      </BaseFormfield>
+        <BaseFormfield label="Username or email" :error="errors.identifier">
+          <BaseInput
+            v-model="identifier"
+            placeholder="Enter your username or email"
+            :invalid="!!errors.identifier"
+          />
+        </BaseFormfield>
 
-      <BaseFormfield label="Password">
-        <BaseInput
-          v-model="password"
-          type="password"
-          placeholder="Password"
-          name="password"
-          autocomplete="current-password"
-          required
-        />
-      </BaseFormfield>
+        <!-- Passwort -->
+        <BaseFormfield label="Password" :error="errors.password">
+          <BaseInput
+            v-model="password"
+            type="password"
+            placeholder="Enter your password"
+            :invalid="!!errors.password"
+          />
+        </BaseFormfield>
 
-      <BaseButton class="w-full" type="submit">Login</BaseButton>
+        <!-- Submit-Button -->
+        <BaseButton type="submit" class="btn w-full btn-primary"> Login </BaseButton>
 
-      <small class="block text-center">
-        No account? <RouterLink :to="{ name: 'register' }" class="underline">Register</RouterLink>
-      </small>
-    </form>
-  </div>
+        <!-- Link zur Registrierung -->
+        <p class="text-center text-sm text-neutral-700">
+          Don’t have an account yet?
+          <RouterLink
+            :to="{ name: 'register' }"
+            class="underline text-primary-400 hover:text-primary-900"
+          >
+            Sign up
+          </RouterLink>
+        </p>
+      </form>
+    </div>
+  </main>
 
-  <ModalAlert
-    v-model="errorModal.show"
-    :title="errorModal.title"
-    :message="errorModal.message"
-    variant="error"
+  <!-- Globale ToastMessage (wie bei Register) -->
+  <ToastMessage
+    v-if="toast.show"
+    :message="toast.message"
+    :variant="toast.variant"
+    @close="toast.show = false"
   />
 </template>
