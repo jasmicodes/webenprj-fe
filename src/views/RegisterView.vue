@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
-import { authApi } from '@/services/api'
+import { authApi } from '@/services/api/auth'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
