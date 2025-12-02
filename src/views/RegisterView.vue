@@ -218,9 +218,9 @@ async function submit() {
         <!-- Country -->
         <BaseFormfield label="Country" :error="errors.country">
           <BaseSelect v-model="country" :invalid="!!errors.country">
-            <option value="" disabled selected>Select country…</option>
-            <option v-for="c in COUNTRIES_DACH_FIRST" :key="c" :value="c">
-              {{ c }}
+            <option value="" disabled>Select country…</option>
+            <option v-for="c in COUNTRIES_DACH_FIRST" :key="c.code" :value="c.code">
+              {{ c.label }}
             </option>
           </BaseSelect>
         </BaseFormfield>

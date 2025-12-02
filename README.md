@@ -84,3 +84,53 @@ src/
 ├─ main.ts            # App bootstrap
 └─ App.vue            # Single Page Application
 ```
+
+## 📝 Registration Overview (Frontend)
+
+The registration view (RegisterView.vue) handles the user interface and the communication with the backend.
+
+### 1. Form Validation and Payload
+
+The registration form uses the Yup library for validating user inputs. After successful validation, the payload is sent to the backend via:
+
+TypeScript
+
+authApi.register({
+email,
+username,
+password,
+countryCode,
+profileImageUrl: undefined,
+})
+
+### 2. Centralized API Communication
+
+All API calls, including registration, go through the centralized Axios instance (src/services/api.ts). This instance ensures consistent API behavior and handles the following:
+
+Base URL: Uses http://localhost:8081.
+
+Headers: Ensures JSON headers are set.
+
+JWT Attachment: Automatically attaches the JWT (if present) for authenticated requests.
+
+Error Handling: Provides a unified error extraction mechanism (unified error extraction) for displaying Toast messages.
+
+Upon successful registration, the user is redirected to the /login route.
+
+### 3. Country Selection (ISO Codes) 🌍
+
+The country selection is implemented via a dropdown list that utilizes data from COUNTRIES_DACH_FIRST (src/utils/countries.ts).
+
+Data Structure: The country data is structured in the following format:
+
+TypeScript
+
+{ code: "AT", label: "Austria" }
+
+Binding: The <select> element binds the ISO code as its value:
+
+<option v-for="c in COUNTRIES_DACH_FIRST" :key="c.code" :value="c.code">
+  {{ c.label }}
+</option>
+
+This guarantees that the backend receives a valid ISO 3166-1 alpha-2 country code in the format {"countryCode": "AT"}. This code meets the backend validation requirement (^[A-Z]{2}$).

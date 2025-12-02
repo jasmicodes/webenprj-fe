@@ -1,3 +1,27 @@
+export interface CountryOption {
+  code: string
+  label: string
+}
+
+// optionale Overrides für Länder, bei denen die ersten 2 Buchstaben nicht passen
+const COUNTRY_CODE_OVERRIDES: Record<string, string> = {
+  Austria: 'AT',
+  Germany: 'DE',
+  Switzerland: 'CH',
+  'United States': 'US',
+  'United Kingdom': 'GB',
+}
+
+function getCountryCode(name: string): string {
+  // wenn Override vorhanden → nimm den
+  if (COUNTRY_CODE_OVERRIDES[name]) {
+    return COUNTRY_CODE_OVERRIDES[name]
+  }
+  // sonst einfach die ersten 2 Buchstaben als Großbuchstaben
+  // (passt zum Regex ^[A-Z]{2}$ im Backend)
+  return name.slice(0, 2).toUpperCase()
+}
+
 const ALL_COUNTRIES = [
   // --- Europe ---
   'Albania',
@@ -209,9 +233,18 @@ const ALL_COUNTRIES = [
 // DACH zuerst
 const DACH = ['Germany', 'Austria', 'Switzerland']
 
-export const COUNTRIES_DACH_FIRST = [
-  ...DACH,
+export const COUNTRIES_DACH_FIRST: CountryOption[] = [
+  // DACH-Länder zuerst
+  ...DACH.map((name) => ({
+    label: name,
+    code: getCountryCode(name),
+  })),
+  // dann alle anderen alphabetisch
   ...ALL_COUNTRIES.filter((c) => !DACH.includes(c))
-    .slice() // copy
-    .sort((a, b) => a.localeCompare(b)),
+    .slice()
+    .sort((a, b) => a.localeCompare(b))
+    .map((name) => ({
+      label: name,
+      code: getCountryCode(name),
+    })),
 ]
