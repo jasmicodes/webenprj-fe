@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { authApi } from '@/services/api'
+import { authApi } from '@/services/api/auth'
 import router from '@/router'
 
 type User = {
