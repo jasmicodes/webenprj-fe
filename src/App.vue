@@ -1,8 +1,17 @@
 <template>
+  <!-- Skip to main content link for accessibility -->
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded"
+  >
+    Skip to main content
+  </a>
+
   <!-- Navbar ausblenden auf auth pages -->
   <Navbar v-if="isAuthenticated && !route.meta.authPage" />
 
   <main
+    id="main-content"
     class="section"
     :class="{ 'md:pl-64 pb-16 md:pb-0': isAuthenticated && !route.meta.authPage }"
   >
