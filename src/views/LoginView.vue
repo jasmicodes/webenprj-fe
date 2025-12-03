@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
+import { mapYupErrors } from '@/utils/validation'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
@@ -27,17 +28,6 @@ const loginSchema = yup.object({
   identifier: yup.string().required('Username or email is required'),
   password: yup.string().required('Password is required'),
 })
-
-// Hilfsfunktion: Yup-Fehler mappen
-function mapYupErrors(err: yup.ValidationError) {
-  const fieldErrors: Record<string, string> = {}
-  err.inner.forEach((e) => {
-    if (e.path && !fieldErrors[e.path]) {
-      fieldErrors[e.path] = e.message
-    }
-  })
-  return fieldErrors
-}
 
 // Submit-Handler with real backend API
 async function onSubmit() {

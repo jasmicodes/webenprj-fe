@@ -10,8 +10,14 @@ import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries.ts' // siehe Datei unten
-import { PASSWORD_REGEX, PASSWORD_REQUIREMENTS } from '@/utils/validation'
-import { SALUTATION_OPTIONS } from '@/data/constants'
+import {
+  PASSWORD_REQUIREMENTS,
+  createEmailSchema,
+  createPasswordConfirmSchema,
+  createPasswordSchema,
+  createUsernameSchema,
+  mapYupErrors,
+} from '@/utils/validation'
 
 const router = useRouter()
 const toastStore = useToastStore()
@@ -41,31 +47,14 @@ const schema = yup.object({
     .when('salutation', ([sal]) =>
       sal === 'other' ? yup.string().required('Please specify') : yup.string().notRequired(),
     ),
-  email: yup.string().email('Invalid email').required('Email required'),
-  username: yup.string().required('Username required'),
-  password: yup
-    .string()
-    .matches(PASSWORD_REGEX, PASSWORD_REQUIREMENTS)
-    .required('Password required'),
-  repeatPw: yup
-    .string()
-    .oneOf([yup.ref('password')], 'Passwords must match')
-    .required('Please repeat the password'),
+  email: createEmailSchema(),
+  username: createUsernameSchema(),
+  password: createPasswordSchema(),
+  repeatPw: createPasswordConfirmSchema('password'),
   country: yup.string().required('Please select a country'),
 })
 
 const showOther = computed(() => salutation.value === 'other')
-
-// Helper: Yup-Fehler mappen
-function mapYupErrors(err: yup.ValidationError) {
-  const map: Record<string, string> = {}
-  err.inner.forEach((e) => {
-    if (e.path && !map[e.path]) {
-      map[e.path] = e.message
-    }
-  })
-  return map
-}
 
 async function submit() {
   try {
@@ -208,7 +197,7 @@ async function submit() {
           </BaseSelect>
         </BaseFormfield>
 
-        <BaseButton class="w-full" :disabled="loading" @click="submit">
+        <BaseButton class="w-full" :disabled="loading" type="submit">
           {{ loading ? 'Creating…' : 'Register' }}
         </BaseButton>
 

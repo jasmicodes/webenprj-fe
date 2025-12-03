@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { getErrorMessage } from '@/services/api/client'
+import { useToastStore } from '@/stores/toastStore'
 
 export interface UseApiErrorOptions {
   showToast?: boolean
@@ -9,15 +10,14 @@ export interface UseApiErrorOptions {
 export function useApiError(options: UseApiErrorOptions = {}) {
   const error = ref<string | null>(null)
   const hasError = computed(() => error.value !== null)
+  const toast = options.showToast ? useToastStore() : null
 
   const handleError = (err: unknown) => {
     const message = getErrorMessage(err)
     error.value = message
 
-    if (options.showToast) {
-      // Show toast notification
-      // const toast = useToastStore()
-      // toast.error(message)
+    if (toast) {
+      toast.showError(message)
     }
 
     if (options.onError) {

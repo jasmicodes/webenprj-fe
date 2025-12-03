@@ -16,6 +16,17 @@ export const VALIDATION_MESSAGES = {
   USERNAME_INVALID: 'Username can only contain letters, numbers, and underscores',
 } as const
 
+// Utility: map Yup validation errors into a simple field -> message record
+export const mapYupErrors = (err: yup.ValidationError) => {
+  const map: Record<string, string> = {}
+  err.inner.forEach((e) => {
+    if (e.path && !map[e.path]) {
+      map[e.path] = e.message
+    }
+  })
+  return map
+}
+
 // Reusable schema builders
 export const createPasswordSchema = () =>
   yup

@@ -64,25 +64,10 @@ onMounted(async () => {
 
     <!-- Posts -->
     <template v-else>
-      <PostCard v-for="p in posts" :key="p.id" :post="p" />
-
-      <BaseDivider class="divider-narrow" />
-
-      <PostCard v-for="p in posts" :key="p.id" :post="p" />
-
-      <BaseDivider class="divider-narrow" />
-
-      <PostCard v-for="p in posts" :key="p.id" :post="p" />
-
-      <BaseDivider class="divider-narrow" />
-
-      <PostCard v-for="p in posts" :key="p.id" :post="p" />
-
-      <BaseDivider class="divider-narrow" />
-
-      <PostCard v-for="p in posts" :key="p.id" :post="p" />
-
-      <BaseDivider class="divider-narrow" />
+      <template v-for="(p, index) in posts" :key="p.id">
+        <PostCard :post="p" />
+        <BaseDivider v-if="index < posts.length - 1" class="divider-narrow" />
+      </template>
     </template>
   </main>
 </template>
