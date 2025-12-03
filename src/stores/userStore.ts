@@ -23,7 +23,6 @@ export const useUserStore = defineStore('user', {
       this.user = response.user
 
       // Token is already saved in localStorage by authApi.login()
-      router.push({ name: 'home' })
     },
 
     /** Logout */
