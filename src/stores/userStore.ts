@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { authApi } from '@/services/api/auth'
+import { usersApi } from '@/services/api/users'
 import type { User } from '@/services/api/types'
 import router from '@/router'
 
@@ -23,6 +24,21 @@ export const useUserStore = defineStore('user', {
       this.user = response.user
 
       // Token is already saved in localStorage by authApi.login()
+    },
+
+    /** Fetch current user data (for session restoration on page refresh) */
+    async fetchCurrentUser() {
+      if (!this.token) {
+        return
+      }
+
+      try {
+        this.user = await usersApi.getMyProfile()
+      } catch (error) {
+        // Token is invalid/expired, clear session
+        console.error('Failed to fetch current user:', error)
+        this.logout()
+      }
     },
 
     /** Logout */
