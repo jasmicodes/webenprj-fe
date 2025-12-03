@@ -5,7 +5,7 @@ export interface User {
   email: string
   username: string
   countryCode: string
-  profileImageUrl?: string
+  profileImageUrl?: string | null
   role: UserRole
   createdAt: string
   updatedAt: string

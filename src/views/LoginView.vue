@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { getErrorMessage } from '@/services/api/client'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
@@ -47,7 +48,7 @@ function mapYupErrors(err: yup.ValidationError) {
   return fieldErrors
 }
 
-// Submit-Handler (DEMO-VERSION ohne echtes Backend)
+// Submit-Handler with real backend API
 async function onSubmit() {
   errors.value = {}
   toast.value.show = false
@@ -62,9 +63,8 @@ async function onSubmit() {
       { abortEarly: false },
     )
 
-    // 2) DEMO-Login über den Store (kein echter API-Call)
-    //    ➜ du implementierst userStore.loginDemo selbst (siehe unten)
-    await userStore.loginDemo({
+    // 2) Real API login via backend
+    await store.login({
       identifier: identifier.value.trim(),
       password: password.value,
     })
@@ -89,15 +89,10 @@ async function onSubmit() {
       return
     }
 
-    // b) „Login fehlgeschlagen“ (Demo-Fehler vom Store)
-    let message = 'Login failed. Please try again.'
-    if (err instanceof Error && err.message) {
-      message = err.message
-    }
-
+    // b) Login failed (API error)
     toast.value = {
       show: true,
-      message,
+      message: getErrorMessage(err),
       variant: 'error',
     }
   }
