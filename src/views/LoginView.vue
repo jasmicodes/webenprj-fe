@@ -3,15 +3,16 @@ import { ref } from 'vue'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import ToastMessage from '@/components/molecules/ToastMessage.vue'
 
 const router = useRouter()
 const store = useUserStore()
+const toast = useToastStore()
 
 // Form state
 const identifier = ref('') //username or email
@@ -19,17 +20,6 @@ const password = ref('')
 
 // Error modal state
 const errors = ref<{ identifier?: string; password?: string }>({})
-
-// Toast-State (gleiches Pattern wie Register)
-const toast = ref<{
-  show: boolean
-  message: string
-  variant: 'error' | 'success'
-}>({
-  show: false,
-  message: '',
-  variant: 'error',
-})
 
 // Yup-Schema für Login (Frontend-Validation)
 const loginSchema = yup.object({
@@ -51,7 +41,7 @@ function mapYupErrors(err: yup.ValidationError) {
 // Submit-Handler with real backend API
 async function onSubmit() {
   errors.value = {}
-  toast.value.show = false
+  toast.clear()
 
   try {
     // 1) Frontend-Validation
@@ -70,30 +60,23 @@ async function onSubmit() {
     })
 
     // 3) Erfolg → Toast + Redirect
-    toast.value = {
-      show: true,
-      message: 'Login successful. Welcome back!',
-      variant: 'success',
-    }
+    toast.showSuccess('Login successful. Welcome back!')
 
     router.push({ name: 'home' })
   } catch (err: any) {
     // a) Yup-Validierungsfehler
     if (err.name === 'ValidationError') {
       errors.value = mapYupErrors(err)
-      toast.value = {
-        show: true,
-        message: 'Please fix the highlighted fields.',
-        variant: 'error',
-      }
+      toast.showError('Please fix the highlighted fields.')
       return
     }
 
     // b) Login failed (API error)
-    toast.value = {
-      show: true,
-      message: getErrorMessage(err),
-      variant: 'error',
+    const status = err?.response?.status
+    if (status === 401 || status === 403) {
+      toast.showError('Invalid username/email or password.')
+    } else {
+      toast.showError(getErrorMessage(err))
     }
   }
 }
@@ -142,12 +125,4 @@ async function onSubmit() {
       </form>
     </div>
   </main>
-
-  <!-- Globale ToastMessage (wie bei Register) -->
-  <ToastMessage
-    v-if="toast.show"
-    :message="toast.message"
-    :variant="toast.variant"
-    @close="toast.show = false"
-  />
 </template>
