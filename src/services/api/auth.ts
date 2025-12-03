@@ -1,10 +1,10 @@
 import { api } from './client'
 import type { LoginResponse, RegisterRequest, User } from './types'
+import { clearToken } from './token'
 
 export const authApi = {
   async login(login: string, password: string): Promise<LoginResponse> {
     const res = await api.post<LoginResponse>('/auth/login', { login, password })
-    localStorage.setItem('token', res.data.token)
     return res.data
   },
 
@@ -14,6 +14,6 @@ export const authApi = {
   },
 
   logout() {
-    localStorage.removeItem('token')
+    clearToken()
   },
 }

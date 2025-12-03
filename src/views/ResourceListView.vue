@@ -4,7 +4,8 @@ import PostCard from '@/components/organisms/PostCard.vue'
 import SearchBar from '@/components/molecules/SearchBar.vue'
 import TagSelect from '@/components/molecules/TagSelect.vue'
 import BaseDivider from '@/components/atoms/BaseDivider.vue'
-import { POSTS, type Post } from '@/data/posts'
+import { POSTS } from '@/data/posts'
+import type { PostCardData } from '@/utils/postMapper'
 
 const q = ref('')
 const tag = ref('')
@@ -18,7 +19,7 @@ function onSearch(value: string) {
   q.value = value
 }
 
-const filtered = computed<Post[]>(() => {
+const filtered = computed<PostCardData[]>(() => {
   const term = q.value.trim().toLowerCase()
 
   return POSTS.filter((p) => {

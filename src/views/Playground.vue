@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import PostCard from '@/components/organisms/PostCard.vue'
-import avatar1 from '@/assets/user1.avif'
-import sampleImg from '@/assets/PostPicture1.png'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseTextarea from '@/components/atoms/BaseTextarea.vue'
@@ -10,16 +8,16 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import BaseProgressRing from '@/components/atoms/BaseProgressRing.vue'
 import BaseToast from '@/components/atoms/BaseToast.vue'
-import BaseDivider from '@/components/atoms/BaseDivider.vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseChip from '@/components/atoms/BaseChip.vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
-import FormInput from '@/components/atoms/FormInput.vue'
 import BaseLabel from '@/components/atoms/BaseLabel.vue'
 import TagSelect from '@/components/molecules/TagSelect.vue'
 
 import { ref } from 'vue'
+import { POSTS } from '@/data/posts'
+defineOptions({ name: 'PlaygroundView' })
 
 const selectedTag = ref('')
 const demoTagOptions = [
@@ -33,19 +31,7 @@ const demoTagOptions = [
 const showModal = ref(false)
 const pickedFile = ref<string | null>(null)
 
-const posts = [
-  {
-    id: 1,
-    user: { name: 'mariasantos', avatar: avatar1 },
-    tag: 'webengineering',
-    time: '2d',
-    text: 'Today I finally understood async/await…',
-    image: sampleImg,
-    likes: 12,
-    comments: 3,
-    streak: 25,
-  },
-]
+const posts = POSTS
 </script>
 
 <template>

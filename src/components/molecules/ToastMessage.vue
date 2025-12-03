@@ -31,7 +31,7 @@
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 type Variant = 'success' | 'warning' | 'error'
-const props = withDefaults(
+withDefaults(
   defineProps<{
     variant?: Variant
     title?: string

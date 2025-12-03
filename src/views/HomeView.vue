@@ -2,28 +2,11 @@
 import { ref, onMounted } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import BaseDivider from '@/components/atoms/BaseDivider.vue'
+import type { PostCardData } from '@/utils/postMapper'
+import { POSTS } from '@/data/posts'
 
-import avatar1 from '@/assets/user1.avif'
-import sampleImg from '@/assets/PostPicture1.png'
-
-// TODO: Replace with real API call when backend Post type includes user info, likes, comments
-// Currently using demo data because API Post type doesn't match PostCard expected structure
-// API Post has: id, subject, content, imageUrl, createdAt, updatedAt
-// PostCard needs: id, user.name, user.avatar, tag, time, text, image, likes, comments, streak
-
-const posts = ref([
-  {
-    id: 1,
-    user: { name: 'mariasantos', avatar: avatar1 },
-    tag: 'webengineering',
-    time: '2d',
-    text: 'Today I finally understood async/await…',
-    image: sampleImg,
-    likes: 12,
-    comments: 3,
-    streak: 25,
-  },
-])
+// TODO: Replace with real API call and map via mapApiPostToCard once backend provides user info
+const posts = ref<PostCardData[]>(POSTS)
 
 const loading = ref(true)
 const error = ref<string | null>(null)

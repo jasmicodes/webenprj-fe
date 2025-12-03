@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import * as yup from 'yup'
+import { AxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
-import { mapYupErrors } from '@/utils/validation'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
@@ -20,30 +21,30 @@ const identifier = ref('') //username or email
 const password = ref('')
 const loading = ref(false)
 
-// Error modal state
-const errors = ref<{ identifier?: string; password?: string }>({})
-
 // Yup-Schema für Login (Frontend-Validation)
 const loginSchema = yup.object({
   identifier: yup.string().required('Username or email is required'),
   password: yup.string().required('Password is required'),
 })
 
+const { errors, validate, clearErrors } = useFormValidation(loginSchema)
+
 // Submit-Handler with real backend API
 async function onSubmit() {
   loading.value = true
-  errors.value = {}
+  clearErrors()
   toast.clear()
 
   try {
     // 1) Frontend-Validation
-    await loginSchema.validate(
-      {
-        identifier: identifier.value.trim(),
-        password: password.value,
-      },
-      { abortEarly: false },
-    )
+    const isValid = await validate({
+      identifier: identifier.value.trim(),
+      password: password.value,
+    })
+    if (!isValid) {
+      toast.showError('Please fix the highlighted fields.')
+      return
+    }
 
     // 2) Real API login via backend
     await store.login({
@@ -56,16 +57,8 @@ async function onSubmit() {
 
     router.push({ name: 'home' })
   } catch (err: unknown) {
-    // a) Yup-Validierungsfehler
-    if (err instanceof Error && err.name === 'ValidationError') {
-      errors.value = mapYupErrors(err as any)
-      toast.showError('Please fix the highlighted fields.')
-      return
-    }
-
-    // b) Login failed (API error)
-    const axiosErr = err as any
-    const status = axiosErr?.response?.status
+    // Login failed (API error)
+    const status = (err as AxiosError)?.response?.status
     if (status === 401 || status === 403) {
       toast.showError('Invalid username/email or password.')
     } else {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
+import { AxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { authApi } from '@/services/api/'
 import { useToastStore } from '@/stores/toastStore'
-
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
@@ -16,8 +16,8 @@ import {
   createPasswordConfirmSchema,
   createPasswordSchema,
   createUsernameSchema,
-  mapYupErrors,
 } from '@/utils/validation'
+import { useFormValidation } from '@/composables/useFormValidation'
 
 const router = useRouter()
 const toastStore = useToastStore()
@@ -32,9 +32,6 @@ const repeatPw = ref('')
 const country = ref('') // später Countrycode
 
 const loading = ref(false)
-
-// Fehlermeldungen aus yup in ein Record mappen
-const errors = ref<Record<string, string>>({})
 
 const schema = yup.object({
   salutation: yup
@@ -55,11 +52,12 @@ const schema = yup.object({
 })
 
 const showOther = computed(() => salutation.value === 'other')
+const { errors, validate, clearErrors } = useFormValidation(schema)
 
 async function submit() {
   try {
     loading.value = true
-    errors.value = {}
+    clearErrors()
     toastStore.clear()
 
     // 1) Daten für Yup-Validation
@@ -73,7 +71,11 @@ async function submit() {
       country: country.value,
     }
 
-    await schema.validate(validationPayload, { abortEarly: false })
+    const isValid = await validate(validationPayload)
+    if (!isValid) {
+      toastStore.showError('Please fix the highlighted fields')
+      return
+    }
 
     // 2) Payload fürs Backend (/users)
     //    Backend erwartet:
@@ -93,15 +95,8 @@ async function submit() {
 
     router.push({ name: 'login' })
   } catch (err: unknown) {
-    // a) Yup-Validierungsfehler
-    if (err instanceof Error && err.name === 'ValidationError') {
-      errors.value = mapYupErrors(err as any)
-      toastStore.showError('Please fix the highlighted fields')
-      return
-    }
-
-    // b) Backend-/Axios-Fehler
-    const axiosErr = err as any
+    // Backend-/Axios-Fehler
+    const axiosErr = err as AxiosError<{ message?: string }>
     let message = 'Registration failed'
     if (axiosErr?.response?.data?.message) {
       // aus Backend: { message: "Email is already in use." }

@@ -11,7 +11,7 @@
 import BaseLabel from '@/components/atoms/BaseLabel.vue'
 import BaseError from '@/components/atoms/BaseError.vue'
 
-const props = defineProps<{ label?: string; accept?: string; error?: string }>()
+defineProps<{ label?: string; accept?: string; error?: string }>()
 const emit = defineEmits<{ (e: 'selected', file: File): void }>()
 
 function onChange(e: Event) {

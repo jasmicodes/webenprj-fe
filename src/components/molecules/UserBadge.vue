@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
-const props = withDefaults(
+withDefaults(
   defineProps<{ src?: string; name: string; subtitle?: string; size?: 'sm' | 'md' | 'lg' }>(),
   { size: 'md' },
 )

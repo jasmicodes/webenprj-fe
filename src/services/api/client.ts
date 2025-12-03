@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import router from '@/router'
+import { API_CONFIG } from '@/data/constants'
+import { getToken, clearToken } from './token'
 
 // Type for API error responses
 type ApiErrorResponse = {
@@ -13,11 +15,12 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: API_CONFIG.TIMEOUT,
 })
 
 // Request interceptor: JWT automatisch anhängen
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const token = getToken()
   if (token) {
     config.headers = config.headers || {}
     config.headers.Authorization = `Bearer ${token}`
@@ -31,7 +34,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
       // Clear authentication
-      localStorage.removeItem('token')
+      clearToken()
 
       // Redirect to login page
       router.push({ name: 'login' })

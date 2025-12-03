@@ -89,7 +89,6 @@ const variants = {
 const { bg, text, icon, button } = variants[props.variant]
 const bgColor = bg
 const textColor = text
-const iconName = icon
 const buttonClass = button
 
 function close() {
