@@ -10,6 +10,8 @@ import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries.ts' // siehe Datei unten
+import { PASSWORD_REGEX, PASSWORD_REQUIREMENTS } from '@/utils/validation'
+import { SALUTATION_OPTIONS } from '@/data/constants'
 
 const router = useRouter()
 const toastStore = useToastStore()
@@ -28,9 +30,6 @@ const loading = ref(false)
 // Fehlermeldungen aus yup in ein Record mappen
 const errors = ref<Record<string, string>>({})
 
-// starkes Passwort (>=12, Groß/Klein, Zahl, Symbol)
-const strongPw = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/
-
 const schema = yup.object({
   salutation: yup
     .string()
@@ -46,7 +45,7 @@ const schema = yup.object({
   username: yup.string().required('Username required'),
   password: yup
     .string()
-    .matches(strongPw, 'Min. 12 chars incl. upper, lower, number & symbol')
+    .matches(PASSWORD_REGEX, PASSWORD_REQUIREMENTS)
     .required('Password required'),
   repeatPw: yup
     .string()
@@ -178,7 +177,7 @@ async function submit() {
         <BaseFormfield
           label="Password"
           :error="errors.password"
-          help="Min. 12 chars incl. upper, lower, number & symbol"
+          :help="PASSWORD_REQUIREMENTS"
         >
           <!-- Falls BaseInput bereits type unterstützt; sonst deinen FormInput nutzen -->
           <BaseInput

@@ -1,7 +1,12 @@
 <!--Benutzerbild mit Größenoption (greift auf .avatar, .avatar-md etc. zu)-->
 <template>
   <div :class="['avatar', sizeClass]">
-    <img v-if="src" :src="src" alt="Avatar" class="avatar-img" />
+    <img
+      v-if="src"
+      :src="src"
+      :alt="username ? `Profile picture of ${username}` : 'User profile picture'"
+      class="avatar-img"
+    />
   </div>
 </template>
 
@@ -9,6 +14,7 @@
 interface Props {
   src?: string
   size?: 'sm' | 'md' | 'lg'
+  username?: string
 }
 
 const props = withDefaults(defineProps<Props>(), { size: 'md' })

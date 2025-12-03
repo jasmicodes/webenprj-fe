@@ -7,7 +7,11 @@
         :placeholder="placeholder"
         @update:modelValue="(v) => emit('update:modelValue', v)"
       />
-      <button class="absolute right-2 top-1/2 -translate-y-1/2" @click="emit('send')">
+      <button
+        class="absolute right-2 top-1/2 -translate-y-1/2"
+        @click="emit('send')"
+        aria-label="Send comment"
+      >
         <BaseIcon name="PaperAirplaneIcon" />
       </button>
     </div>
