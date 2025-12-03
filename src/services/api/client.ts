@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import router from '@/router'
 
 // Type for API error responses
 type ApiErrorResponse = {
@@ -14,7 +15,7 @@ export const api = axios.create({
   },
 })
 
-// Interceptor: JWT automatisch anhängen
+// Request interceptor: JWT automatisch anhängen
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -23,6 +24,22 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
+// Response interceptor: Handle 401/403 (expired/invalid token)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Clear authentication
+      localStorage.removeItem('token')
+
+      // Redirect to login page
+      router.push({ name: 'login' })
+    }
+
+    return Promise.reject(error)
+  },
+)
 
 export function getErrorMessage(error: unknown): string {
   const err = error as AxiosError<ApiErrorResponse>
