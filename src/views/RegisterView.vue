@@ -2,17 +2,17 @@
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
 import { authApi } from '@/services/api/'
+import { useToastStore } from '@/stores/toastStore'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import ToastMessage from '@/components/molecules/ToastMessage.vue'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries.ts' // siehe Datei unten
 
 const router = useRouter()
+const toastStore = useToastStore()
 
 // form state
 const salutation = ref<'Mr.' | 'Mrs.' | 'Ms.' | 'Mx.' | 'Dr.' | 'Prof.' | 'other' | ''>('')
@@ -24,15 +24,6 @@ const repeatPw = ref('')
 const country = ref('') // später Countrycode
 
 const loading = ref(false)
-const toast = ref<{
-  show: boolean
-  msg: string
-  variant: 'error' | 'success'
-}>({
-  show: false,
-  msg: '',
-  variant: 'error',
-})
 
 // Fehlermeldungen aus yup in ein Record mappen
 const errors = ref<Record<string, string>>({})
@@ -81,7 +72,7 @@ async function submit() {
   try {
     loading.value = true
     errors.value = {}
-    toast.value.show = false
+    toastStore.clear()
 
     // 1) Daten für Yup-Validation
     const validationPayload = {
@@ -110,22 +101,14 @@ async function submit() {
     await authApi.register(apiPayload)
 
     // 3) Erfolg: Toast + Redirect zum Login
-    toast.value = {
-      show: true,
-      msg: 'Account created successfully. You can now log in.',
-      variant: 'success',
-    }
+    toastStore.showSuccess('Account created successfully. You can now log in.')
 
     router.push({ name: 'login' })
   } catch (err: any) {
     // a) Yup-Validierungsfehler
     if (err && err.name === 'ValidationError') {
       errors.value = mapYupErrors(err)
-      toast.value = {
-        show: true,
-        msg: 'Please fix the highlighted fields',
-        variant: 'error',
-      }
+      toastStore.showError('Please fix the highlighted fields')
       return
     }
 
@@ -138,7 +121,7 @@ async function submit() {
       message = err.message
     }
 
-    toast.value = { show: true, msg: message, variant: 'error' }
+    toastStore.showError(message)
   } finally {
     loading.value = false
   }
@@ -237,10 +220,4 @@ async function submit() {
     </div>
   </main>
 
-  <ToastMessage
-    v-if="toast.show"
-    :message="toast.msg"
-    :variant="toast.variant"
-    @close="toast.show = false"
-  />
 </template>
