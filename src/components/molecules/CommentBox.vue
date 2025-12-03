@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-const props = withDefaults(defineProps<{ modelValue?: string; placeholder?: string }>(), {
+withDefaults(defineProps<{ modelValue?: string; placeholder?: string }>(), {
   placeholder: 'Comment…',
 })
 const emit = defineEmits<{ 'update:modelValue': [string]; send: [] }>()

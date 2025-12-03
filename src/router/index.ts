@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/userStore'
 declare module 'vue-router' {
   interface RouteMeta {
     authPage?: boolean
+    devOnly?: boolean
   }
 }
 
@@ -34,7 +35,6 @@ const routes: RouteRecordRaw[] = [
   { path: '/imprint', name: 'imprint', component: () => import('@/views/ImprintView.vue') },
   { path: '/help', name: 'help', component: () => import('@/views/HelpView.vue') },
   { path: '/profile', name: 'profile', component: () => import('@/views/ProfileView.vue') },
-  { path: '/playground', name: 'playground', component: () => import('@/views/Playground.vue') },
   {
     path: '/styleguide',
     name: 'styleguide',
@@ -48,6 +48,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/NotFoundView.vue'),
   },
 ]
+
+if (import.meta.env.DEV) {
+  routes.push({
+    path: '/dev/playground',
+    name: 'dev-playground',
+    component: () => import('@/views/Playground.vue'),
+    meta: { devOnly: true },
+  })
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +75,11 @@ router.beforeEach((to) => {
 
   // Auth-Sites free (for anonymous)
   if (to.meta.authPage) return true
+
+  // Block dev-only routes in production just in case
+  if (to.meta.devOnly && !import.meta.env.DEV) {
+    return { name: 'not-found' }
+  }
 
   if (!store.isAuthenticated) {
     return { name: 'login' }

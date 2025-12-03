@@ -35,7 +35,7 @@ import FilePicker from '@/components/atoms/FilePicker.vue'
 import BaseLabel from '@/components/atoms/BaseLabel.vue'
 import BaseError from '@/components/atoms/BaseError.vue'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     label?: string
     accept?: string

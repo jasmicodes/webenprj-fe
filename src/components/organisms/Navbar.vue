@@ -3,11 +3,11 @@
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+
+defineOptions({ name: 'AppNavbar' })
 
 const userStore = useUserStore()
 const router = useRouter()
-const moreOpen = ref(false)
 
 function handleLogout() {
   userStore.logout()

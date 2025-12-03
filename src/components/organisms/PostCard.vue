@@ -48,41 +48,17 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 import PostHeader from '@/components/molecules/PostHeader.vue'
 import PostFooter from '@/components/molecules/PostFooter.vue'
 import fallbackAvatar from '@/assets/user1.avif'
+import type { PostCardData } from '@/utils/postMapper'
 
-type User = { name: string; avatar?: string }
-type Post = {
-  id: number | string
-  user: User
-  tag?: string
-  time?: string
-  text?: string
-  image?: string
-  imageAlt?: string
-  likes: number
-  comments: number
-  streak: number
-}
-
-const props = withDefaults(
-  defineProps<{
-    post: Post
-    imageFit?: 'cover' | 'contain'
-  }>(),
-  {
-    imageFit: 'cover',
-  },
-)
+const props = defineProps<{
+  post: PostCardData
+}>()
 const avatarSrc = computed(() => props.post.user.avatar || fallbackAvatar)
-const imgClass = computed(() => [
-  'w-full rounded-2xl',
-  props.imageFit === 'contain' ? 'object-contain bg-neutral-100' : 'object-cover',
-  'max-h-[640px]', // begrenzt Höhe; anpassbar
-])
 
 defineEmits<{
-  (e: 'like', id: Post['id']): void
-  (e: 'comment', id: Post['id']): void
-  (e: 'save', id: Post['id']): void
-  (e: 'share', id: Post['id']): void
+  (e: 'like', id: PostCardData['id']): void
+  (e: 'comment', id: PostCardData['id']): void
+  (e: 'save', id: PostCardData['id']): void
+  (e: 'share', id: PostCardData['id']): void
 }>()
 </script>

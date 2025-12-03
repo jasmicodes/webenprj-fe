@@ -3,10 +3,11 @@ import { authApi } from '@/services/api/auth'
 import { usersApi } from '@/services/api/users'
 import type { User } from '@/services/api/types'
 import router from '@/router'
+import { clearToken, getToken, setToken } from '@/services/api/token'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem('token') as string | null,
+    token: getToken(),
     user: null as User | null,
   }),
 
@@ -22,8 +23,7 @@ export const useUserStore = defineStore('user', {
       // Set state from API response
       this.token = response.token
       this.user = response.user
-
-      // Token is already saved in localStorage by authApi.login()
+      setToken(response.token)
     },
 
     /** Fetch current user data (for session restoration on page refresh) */
@@ -45,6 +45,7 @@ export const useUserStore = defineStore('user', {
     logout() {
       this.token = null
       this.user = null
+      clearToken()
       authApi.logout()
       router.push({ name: 'login' })
     },

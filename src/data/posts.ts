@@ -1,14 +1,4 @@
-export type Post = {
-  id: number
-  user: { name: string; avatar: string }
-  tag: string
-  time: string
-  text: string
-  image?: string
-  likes: number
-  comments: number
-  streak: number
-}
+import type { PostCardData } from '@/utils/postMapper'
 
 import avatar1 from '@/assets/user1.avif'
 import avatar2 from '@/assets/user2.avif'
@@ -16,7 +6,7 @@ import avatar3 from '@/assets/user3.avif'
 import sampleImg from '@/assets/PostPicture1.png'
 
 // DEMO Data
-export const POSTS: Post[] = [
+export const POSTS: PostCardData[] = [
   {
     id: 1,
     user: { name: 'mariasantos', avatar: avatar1 },
