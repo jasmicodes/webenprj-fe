@@ -17,6 +17,7 @@ const toast = useToastStore()
 // Form state
 const identifier = ref('') //username or email
 const password = ref('')
+const loading = ref(false)
 
 // Error modal state
 const errors = ref<{ identifier?: string; password?: string }>({})
@@ -40,6 +41,7 @@ function mapYupErrors(err: yup.ValidationError) {
 
 // Submit-Handler with real backend API
 async function onSubmit() {
+  loading.value = true
   errors.value = {}
   toast.clear()
 
@@ -79,6 +81,8 @@ async function onSubmit() {
     } else {
       toast.showError(getErrorMessage(err))
     }
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -111,7 +115,9 @@ async function onSubmit() {
         </BaseFormfield>
 
         <!-- Submit-Button -->
-        <BaseButton type="submit" class="btn w-full btn-primary"> Login </BaseButton>
+        <BaseButton type="submit" class="btn w-full btn-primary" :disabled="loading">
+          {{ loading ? 'Logging in...' : 'Login' }}
+        </BaseButton>
 
         <!-- Link zur Registrierung -->
         <p class="text-center text-sm text-neutral-700">
