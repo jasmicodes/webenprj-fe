@@ -104,19 +104,20 @@ async function submit() {
     toastStore.showSuccess('Account created successfully. You can now log in.')
 
     router.push({ name: 'login' })
-  } catch (err: any) {
+  } catch (err: unknown) {
     // a) Yup-Validierungsfehler
-    if (err && err.name === 'ValidationError') {
-      errors.value = mapYupErrors(err)
+    if (err instanceof Error && err.name === 'ValidationError') {
+      errors.value = mapYupErrors(err as any)
       toastStore.showError('Please fix the highlighted fields')
       return
     }
 
     // b) Backend-/Axios-Fehler
+    const axiosErr = err as any
     let message = 'Registration failed'
-    if (err?.response?.data?.message) {
+    if (axiosErr?.response?.data?.message) {
       // aus Backend: { message: "Email is already in use." }
-      message = err.response.data.message
+      message = axiosErr.response.data.message
     } else if (err instanceof Error && err.message) {
       message = err.message
     }
