@@ -63,16 +63,17 @@ async function onSubmit() {
     toast.showSuccess('Login successful. Welcome back!')
 
     router.push({ name: 'home' })
-  } catch (err: any) {
+  } catch (err: unknown) {
     // a) Yup-Validierungsfehler
-    if (err.name === 'ValidationError') {
-      errors.value = mapYupErrors(err)
+    if (err instanceof Error && err.name === 'ValidationError') {
+      errors.value = mapYupErrors(err as any)
       toast.showError('Please fix the highlighted fields.')
       return
     }
 
     // b) Login failed (API error)
-    const status = err?.response?.status
+    const axiosErr = err as any
+    const status = axiosErr?.response?.status
     if (status === 401 || status === 403) {
       toast.showError('Invalid username/email or password.')
     } else {

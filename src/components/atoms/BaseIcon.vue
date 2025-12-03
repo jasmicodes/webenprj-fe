@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, type Component } from 'vue'
 import * as Icons from '@heroicons/vue/24/solid'
 
 type Props = {
@@ -18,5 +18,5 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'w-5 h-5',
 })
 
-const iconComponent = computed(() => (Icons as Record<string, any>)[props.name] || null)
+const iconComponent = computed(() => (Icons as Record<string, Component>)[props.name] || null)
 </script>

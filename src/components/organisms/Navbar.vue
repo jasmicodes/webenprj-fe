@@ -98,9 +98,9 @@ function handleLogout() {
         </RouterLink>
       </li>
       <li>
-        <RouterLink :to="{ name: 'login' }" class="tab-link">
+        <RouterLink :to="{ name: 'profile' }" class="tab-link">
           <BaseIcon name="UserIcon" class="w-6 h-6" />
-          <small>User</small>
+          <small>Profile</small>
         </RouterLink>
       </li>
     </ul>
