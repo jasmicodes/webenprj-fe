@@ -2,6 +2,13 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
+// Extend Vue Router types for custom meta fields
+declare module 'vue-router' {
+  interface RouteMeta {
+    authPage?: boolean
+  }
+}
+
 const routes: RouteRecordRaw[] = [
   // Auth-Sites (visible without login)
   {
@@ -32,6 +39,13 @@ const routes: RouteRecordRaw[] = [
     path: '/styleguide',
     name: 'styleguide',
     component: () => import('@/views/StyleGuideView.vue'),
+  },
+
+  // 404 Catch-All Route (must be last)
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('@/views/NotFoundView.vue'),
   },
 ]
 
