@@ -27,9 +27,9 @@ export function mapApiPostToCard(
   return {
     id: post.id,
     user: overrides.user || { name: post.username || 'Unknown user' },
-    tag: overrides.tag || post.subject,
+    tag: overrides.tag || post.subject || '#untagged',
     time: overrides.time,
-    text: post.content,
+    text: post.content ?? '',
     image: post.imageUrl ?? undefined,
     likes: overrides.likes ?? post.likeCount ?? 0,
     liked: overrides.liked ?? post.likedByCurrentUser ?? false,

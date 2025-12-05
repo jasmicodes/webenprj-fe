@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios'
 import router from '@/router'
 import { API_CONFIG } from '@/data/constants'
-import { getToken, clearToken } from './token'
+import { getToken, clearToken, isTokenExpired } from './token'
+import { useToastStore } from '@/stores/toastStore'
 
 // Type for API error responses
 type ApiErrorResponse = {
@@ -18,10 +19,23 @@ export const api = axios.create({
   timeout: API_CONFIG.TIMEOUT,
 })
 
-// Request interceptor: JWT automatisch anhängen
+function handleAuthFailure(message: string) {
+  clearToken()
+  useToastStore().showWarning(message, 'Authentication')
+  const currentRoute = router.currentRoute.value
+  if (currentRoute.name !== 'login') {
+    router.push({ name: 'login' })
+  }
+}
+
+// Request interceptor: attach JWT and fail fast on expiry
 api.interceptors.request.use((config) => {
   const token = getToken()
   if (token) {
+    if (isTokenExpired(token)) {
+      handleAuthFailure('Session expired. Please log in again.')
+      return config
+    }
     config.headers = config.headers || {}
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -33,11 +47,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      // Clear authentication
-      clearToken()
-
-      // Redirect to login page
-      router.push({ name: 'login' })
+      handleAuthFailure('Session expired. Please log in again.')
     }
 
     return Promise.reject(error)
