@@ -1,5 +1,11 @@
 import { api } from './client'
-import type { User, UpdateProfileRequest, ChangePasswordRequest, UserRole } from './types'
+import type {
+  User,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  UserRole,
+  Page,
+} from './types'
 
 export const usersApi = {
   async getMyProfile(): Promise<User> {
@@ -18,8 +24,19 @@ export const usersApi = {
 }
 
 export const adminUsersApi = {
-  async getAllUsers(): Promise<User[]> {
-    const res = await api.get<User[]>('/users')
+  /**
+   * Get all users or search users by email, username, or country code.
+   * RESTful design: use query parameter to filter collection.
+   * @param search Optional search query to filter users
+   */
+  async getAllUsers(search?: string, page = 0, size = 20): Promise<Page<User>> {
+    const res = await api.get<Page<User>>('/users', {
+      params: {
+        page,
+        size,
+        ...(search ? { search } : {}),
+      },
+    })
     return res.data
   },
 

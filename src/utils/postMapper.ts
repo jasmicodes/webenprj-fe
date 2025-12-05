@@ -25,8 +25,8 @@ export function mapApiPostToCard(
 ): PostCardData {
   return {
     id: post.id,
-    user: overrides.user || { name: 'Unknown user' },
-    tag: overrides.tag,
+    user: overrides.user || { name: post.username || 'Unknown user' },
+    tag: overrides.tag || post.subject,
     time: overrides.time,
     text: post.content,
     image: post.imageUrl ?? undefined,
