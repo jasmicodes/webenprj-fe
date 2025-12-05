@@ -9,11 +9,12 @@ export const postsApi = {
    * @param page   Zero-based page index
    * @param size   Page size
    */
-  async getAllPosts(search?: string, page = 0, size = 20): Promise<Page<Post>> {
+  async getAllPosts(search?: string, page = 0, size = 20, filter: 'all' | 'following' = 'all'): Promise<Page<Post>> {
     const res = await api.get<Page<Post>>('/posts', {
       params: {
         page,
         size,
+        filter,
         ...(search ? { search } : {}),
       },
     })
@@ -45,5 +46,13 @@ export const postsApi = {
 
   async deletePost(id: string): Promise<void> {
     await api.delete(`/posts/${id}`)
+  },
+
+  async likePost(id: string): Promise<void> {
+    await api.post(`/posts/${id}/like`)
+  },
+
+  async unlikePost(id: string): Promise<void> {
+    await api.delete(`/posts/${id}/like`)
   },
 }

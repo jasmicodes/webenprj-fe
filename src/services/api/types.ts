@@ -45,6 +45,8 @@ export interface Post {
   updatedAt: string
   userId: string
   username: string
+  likeCount: number
+  likedByCurrentUser: boolean
 }
 
 export interface PostCreateRequest {
