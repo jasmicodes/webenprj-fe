@@ -3,7 +3,7 @@ import { authApi } from '@/services/api/auth'
 import { usersApi } from '@/services/api/users'
 import type { User } from '@/services/api/types'
 import router from '@/router'
-import { clearToken, getToken, setToken } from '@/services/api/token'
+import { clearToken, getToken, isTokenExpired, setToken } from '@/services/api/token'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -29,6 +29,11 @@ export const useUserStore = defineStore('user', {
     /** Fetch current user data (for session restoration on page refresh) */
     async fetchCurrentUser() {
       if (!this.token) {
+        return
+      }
+
+      if (isTokenExpired(this.token)) {
+        this.logout()
         return
       }
 
