@@ -2,8 +2,12 @@
 <template>
   <div class="card-actions justify-between text-neutral-900">
     <div class="flex items-center gap-5">
-      <button class="flex items-center gap-1" @click="emit('like')">
-        <BaseIcon name="HeartIcon" /><span>{{ props.likes }}</span>
+      <button
+        class="flex items-center gap-1"
+        :class="props.liked ? 'text-rose-600' : 'text-neutral-900'"
+        @click="emit('like')"
+      >
+        <BaseIcon :name="props.liked ? 'HeartSolidIcon' : 'HeartIcon'" /><span>{{ props.likes }}</span>
       </button>
       <button class="flex items-center gap-1" @click="emit('comment')">
         <BaseIcon name="ChatBubbleOvalLeftIcon" /><span>{{ props.comments }}</span>
@@ -17,14 +21,18 @@
       <button @click="emit('share')"><BaseIcon name="ShareIcon" /></button>
     </div>
   </div>
-</template>
+ </template>
 
 <script setup lang="ts">
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-const props = withDefaults(defineProps<{ likes?: number; comments?: number; streak?: number }>(), {
-  likes: 0,
-  comments: 0,
-  streak: 0,
-})
+const props = withDefaults(
+  defineProps<{ likes?: number; liked?: boolean; comments?: number; streak?: number }>(),
+  {
+    likes: 0,
+    liked: false,
+    comments: 0,
+    streak: 0,
+  },
+)
 const emit = defineEmits<{ like: []; comment: []; share: []; save: [] }>()
 </script>

@@ -16,6 +16,7 @@ const page = ref(0)
 const totalPages = ref(1)
 const pageSize = 10
 const toastStore = useToastStore()
+const filter = ref<'all' | 'following'>('all')
 
 async function loadPosts(reset = false) {
   if (reset) {
@@ -31,7 +32,7 @@ async function loadPosts(reset = false) {
   }
 
   try {
-    const result = await postsApi.getAllPosts(undefined, page.value, pageSize)
+    const result = await postsApi.getAllPosts(undefined, page.value, pageSize, filter.value)
     const mapped = result.content.map((post) =>
       mapApiPostToCard(post, { user: { name: post.username } }),
     )
@@ -56,6 +57,27 @@ function loadMore() {
 function retry() {
   error.value = null
   void loadPosts(true)
+}
+
+async function toggleLike(postId: PostCardData['id']) {
+  const idx = posts.value.findIndex((p) => p.id === postId)
+  if (idx === -1) return
+  const original = posts.value[idx]
+  const optimisticLiked = !original.liked
+  const optimisticLikes = original.likes + (optimisticLiked ? 1 : -1)
+  posts.value[idx] = { ...original, liked: optimisticLiked, likes: Math.max(0, optimisticLikes) }
+
+  try {
+    if (optimisticLiked) {
+      await postsApi.likePost(String(postId))
+    } else {
+      await postsApi.unlikePost(String(postId))
+    }
+  } catch (err: unknown) {
+    posts.value[idx] = original
+    const message = err instanceof Error ? err.message : 'Failed to update like'
+    toastStore.showError(message, 'Like')
+  }
 }
 
 onMounted(() => {
@@ -88,7 +110,7 @@ onMounted(() => {
     <!-- Posts -->
     <template v-else>
       <template v-for="(p, index) in posts" :key="p.id">
-        <PostCard :post="p" />
+        <PostCard :post="p" @like="toggleLike" />
         <BaseDivider v-if="index < posts.length - 1" class="divider-narrow" />
       </template>
       <div v-if="page + 1 < totalPages" class="mt-6">
