@@ -2,25 +2,64 @@
 import { ref, onMounted } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import BaseDivider from '@/components/atoms/BaseDivider.vue'
+import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { PostCardData } from '@/utils/postMapper'
-import { POSTS } from '@/data/posts'
+import { mapApiPostToCard } from '@/utils/postMapper'
+import { postsApi } from '@/services/api'
+import { useToastStore } from '@/stores/toastStore'
 
-// TODO: Replace with real API call and map via mapApiPostToCard once backend provides user info
-const posts = ref<PostCardData[]>(POSTS)
-
+const posts = ref<PostCardData[]>([])
 const loading = ref(true)
+const loadingMore = ref(false)
 const error = ref<string | null>(null)
+const page = ref(0)
+const totalPages = ref(1)
+const pageSize = 10
+const toastStore = useToastStore()
 
-onMounted(async () => {
+async function loadPosts(reset = false) {
+  if (reset) {
+    page.value = 0
+    posts.value = []
+  }
+
+  const isFirstPage = page.value === 0 && posts.value.length === 0
+  if (isFirstPage) {
+    loading.value = true
+  } else {
+    loadingMore.value = true
+  }
+
   try {
-    // Simulate loading for demo data
-    // TODO: Replace with: posts.value = await postsApi.getAllPosts()
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    const result = await postsApi.getAllPosts(undefined, page.value, pageSize)
+    const mapped = result.content.map((post) =>
+      mapApiPostToCard(post, { user: { name: post.username } }),
+    )
+
+    posts.value = reset ? mapped : [...posts.value, ...mapped]
+    totalPages.value = result.totalPages
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Failed to load posts'
+    toastStore.showError(error.value, 'Feed')
   } finally {
     loading.value = false
+    loadingMore.value = false
   }
+}
+
+function loadMore() {
+  if (page.value + 1 >= totalPages.value) return
+  page.value += 1
+  void loadPosts()
+}
+
+function retry() {
+  error.value = null
+  void loadPosts(true)
+}
+
+onMounted(() => {
+  void loadPosts(true)
 })
 </script>
 
@@ -38,6 +77,7 @@ onMounted(async () => {
     <!-- Error state -->
     <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 max-w-2xl">
       <p class="text-red-600">Failed to load posts: {{ error }}</p>
+      <BaseButton class="mt-3" @click="retry">Retry</BaseButton>
     </div>
 
     <!-- Empty state -->
@@ -51,6 +91,12 @@ onMounted(async () => {
         <PostCard :post="p" />
         <BaseDivider v-if="index < posts.length - 1" class="divider-narrow" />
       </template>
+      <div v-if="page + 1 < totalPages" class="mt-6">
+        <BaseButton :disabled="loadingMore" @click="loadMore">
+          <span v-if="loadingMore">Loading...</span>
+          <span v-else>Load more</span>
+        </BaseButton>
+      </div>
     </template>
   </main>
 </template>
