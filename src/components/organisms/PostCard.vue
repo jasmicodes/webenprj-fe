@@ -31,6 +31,7 @@
     <template #actions>
       <PostFooter
         :likes="post.likes"
+        :liked="post.liked"
         :comments="post.comments"
         :streak="post.streak"
         @like="$emit('like', post.id)"

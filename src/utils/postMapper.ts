@@ -11,6 +11,7 @@ export type PostCardData = {
   text?: string
   image?: string
   likes: number
+  liked: boolean
   comments: number
   streak: number
 }
@@ -25,12 +26,13 @@ export function mapApiPostToCard(
 ): PostCardData {
   return {
     id: post.id,
-    user: overrides.user || { name: 'Unknown user' },
-    tag: overrides.tag,
+    user: overrides.user || { name: post.username || 'Unknown user' },
+    tag: overrides.tag || post.subject || '#untagged',
     time: overrides.time,
-    text: post.content,
+    text: post.content ?? '',
     image: post.imageUrl ?? undefined,
-    likes: overrides.likes ?? 0,
+    likes: overrides.likes ?? post.likeCount ?? 0,
+    liked: overrides.liked ?? post.likedByCurrentUser ?? false,
     comments: overrides.comments ?? 0,
     streak: overrides.streak ?? 0,
   }
