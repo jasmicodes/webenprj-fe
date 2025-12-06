@@ -43,4 +43,35 @@ export interface Post {
   imageUrl?: string
   createdAt: string
   updatedAt: string
+  userId: string
+  username: string
+  likeCount: number
+  likedByCurrentUser: boolean
+}
+
+export interface PostCreateRequest {
+  subject: string
+  content: string
+  imageUrl?: string
+}
+
+export interface PostUpdateRequest {
+  subject?: string
+  content?: string
+  imageUrl?: string
+}
+
+export interface Media {
+  id: string
+  contentType: string
+  name: string
+  // Note: externalId is intentionally excluded - internal storage detail only
+}
+
+export interface Page<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
 }

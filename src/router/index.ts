@@ -64,28 +64,28 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-// Guard: Auth-Pages always allowed, all others only with Tokens
 router.beforeEach((to) => {
   const store = useUserStore()
 
-  // Logged in and want to Login/Register? -> Home
-  if (store.isAuthenticated && to.meta.authPage) {
-    return { name: 'home' }
+  const redirectFromAuthPages = () => {
+    if (store.isAuthenticated && to.meta.authPage) {
+      return { name: 'home' }
+    }
   }
 
-  // Auth-Sites free (for anonymous)
-  if (to.meta.authPage) return true
-
-  // Block dev-only routes in production just in case
-  if (to.meta.devOnly && !import.meta.env.DEV) {
-    return { name: 'not-found' }
+  const blockDevOnlyInProd = () => {
+    if (to.meta.devOnly && !import.meta.env.DEV) {
+      return { name: 'not-found' }
+    }
   }
 
-  if (!store.isAuthenticated) {
-    return { name: 'login' }
+  const requireAuth = () => {
+    if (!store.isAuthenticated && !to.meta.authPage) {
+      return { name: 'login' }
+    }
   }
 
-  return true
+  return redirectFromAuthPages() ?? blockDevOnlyInProd() ?? requireAuth() ?? true
 })
 
 export default router
