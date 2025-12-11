@@ -71,12 +71,26 @@ async function onSubmit() {
 </script>
 
 <template>
-  <!-- Äußerer Bereich: zentriert & responsiv -->
-  <main class="section flex justify-center">
-    <div class="mx-auto max-w-xl grid grid-cols-[200px_1fr] items-center gap-8">
-      <img src="/IconMotivise.svg" alt="logo" class="w-40 h-40 rounded-2xl" />
+  <!-- Äußerer Bereich -->
+  <main class="section flex items-center justify-center min-h-[80vh]">
+    <!-- Wrapper -->
+    <div
+      class="w-full max-w-3xl grid gap-8 grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)] md:items-center"
+    >
+      <!-- Logo -->
+      <div class="flex justify-center md:justify-center order-1 md:order-none">
+        <img
+          src="@/assets/Weben - Logo Motivise.svg"
+          alt="logo"
+          class="w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-56 lg:h-56 rounded-2xl"
+        />
+      </div>
 
-      <form class="card card-pad space-y-3" @submit.prevent="onSubmit">
+      <!-- Login Card -->
+      <form
+        class="card card-pad space-y-4 w-full max-w-sm mx-auto order-2 md:order-none"
+        @submit.prevent="onSubmit"
+      >
         <h2>Login</h2>
 
         <BaseFormfield label="Username or email" :error="errors.identifier">
