@@ -5,10 +5,12 @@ import { AxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { authApi } from '@/services/api/'
 import { useToastStore } from '@/stores/toastStore'
+
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
+
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries.ts' // siehe Datei unten
 import {
   PASSWORD_REQUIREMENTS,
@@ -17,9 +19,11 @@ import {
   createPasswordSchema,
   createUsernameSchema,
 } from '@/utils/validation'
+
 import { useFormValidation } from '@/composables/useFormValidation'
 
 const router = useRouter()
+
 const toastStore = useToastStore()
 
 // form state
@@ -113,10 +117,22 @@ async function submit() {
 </script>
 
 <template>
-  <main class="section flex justify-center">
-    <div class="mx-auto max-w-xl grid grid-cols-[200px_1fr] items-center gap-8">
-      <img src="/IconMotivise.svg" alt="logo" class="w-40 h-40 rounded-2xl" />
-      <form class="card card-pad space-y-3" @submit.prevent="submit">
+  <main class="section flex items-center justify-center min-h-[80vh]">
+    <!-- Wrapper -->
+    <div
+      class="w-full max-w-3xl grid gap-8 grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)] md:items-center"
+    >
+      <!-- Logo -->
+      <div class="hidden md:flex justify-center">
+        <img
+          src="@/assets/Weben - Logo Motivise.svg"
+          alt="logo"
+          class="w-44 h-44 lg:w-56 lg:h-56 rounded-2xl"
+        />
+      </div>
+
+      <!-- Register-Card -->
+      <form class="card card-pad space-y-4 w-full max-w-md mx-auto" @submit.prevent="submit">
         <h2>Create account</h2>
 
         <!-- Salutation -->
@@ -158,11 +174,7 @@ async function submit() {
         </BaseFormfield>
 
         <!-- Password -->
-        <BaseFormfield
-          label="Password"
-          :error="errors.password"
-          :help="PASSWORD_REQUIREMENTS"
-        >
+        <BaseFormfield label="Password" :error="errors.password" :help="PASSWORD_REQUIREMENTS">
           <!-- Falls BaseInput bereits type unterstützt; sonst deinen FormInput nutzen -->
           <BaseInput
             v-model="password"
@@ -203,5 +215,4 @@ async function submit() {
       </form>
     </div>
   </main>
-
 </template>
