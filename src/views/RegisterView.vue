@@ -179,8 +179,8 @@ async function submit() {
           <BaseInput
             v-model="password"
             :invalid="!!errors.password"
-            placeholder="••••••••••••"
             type="password"
+            placeholder="Password"
           />
         </BaseFormfield>
 
@@ -189,8 +189,8 @@ async function submit() {
           <BaseInput
             v-model="repeatPw"
             :invalid="!!errors.repeatPw"
-            placeholder="••••••••••••"
             type="password"
+            placeholder="Confirm Password"
           />
         </BaseFormfield>
 

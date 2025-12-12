@@ -3,8 +3,7 @@ import * as yup from 'yup'
 // Password validation
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/
 
-export const PASSWORD_REQUIREMENTS =
-  'Min. 12 chars incl. upper, lower, number & symbol'
+export const PASSWORD_REQUIREMENTS = 'Min. 12 chars incl. upper, lower, number & symbol'
 
 // Validation messages
 export const VALIDATION_MESSAGES = {
@@ -39,14 +38,12 @@ export const createPasswordSchema = () =>
     .matches(PASSWORD_REGEX, VALIDATION_MESSAGES.WEAK_PASSWORD)
 
 export const createEmailSchema = () =>
-  yup
-    .string()
-    .required(VALIDATION_MESSAGES.REQUIRED)
-    .email(VALIDATION_MESSAGES.INVALID_EMAIL)
+  yup.string().required(VALIDATION_MESSAGES.REQUIRED).email(VALIDATION_MESSAGES.INVALID_EMAIL)
 
 export const createUsernameSchema = () =>
   yup
     .string()
+    .transform((value) => value?.trim())
     .required(VALIDATION_MESSAGES.REQUIRED)
     .min(3, VALIDATION_MESSAGES.USERNAME_TOO_SHORT)
     .matches(/^[a-zA-Z0-9_]+$/, VALIDATION_MESSAGES.USERNAME_INVALID)
