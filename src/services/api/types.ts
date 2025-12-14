@@ -11,6 +11,14 @@ export interface User {
   updatedAt: string
 }
 
+/**
+ * Extended user model for admin views
+ * (Admin endpoints return additional fields like "active")
+ */
+export interface AdminUser extends User {
+  active: boolean
+}
+
 export interface LoginResponse {
   token: string
   user: User
