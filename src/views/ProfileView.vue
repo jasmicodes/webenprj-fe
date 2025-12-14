@@ -1,25 +1,30 @@
 <!-- src/views/ProfileView.vue -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import * as yup from 'yup'
 
 import { useUserStore } from '@/stores/userStore'
 import { getErrorMessage } from '@/services/api/client'
 import { followApi } from '@/services/api'
-import { usersApi } from '@/services/api/users'
-import { useToastStore } from '@/stores/toastStore'
-import { useFormValidation } from '@/composables/useFormValidation'
+import { mediaApi } from '@/services/api'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
+
+import { useChangePassword } from '@/composables/useChangePassword'
+import { useProfileForm } from '@/composables/useProfileForm'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseDivider from '@/components/atoms/BaseDivider.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
+import UploadDropZone from '@/components/molecules/UploadDropZone.vue'
 
+// -------------------- Stores & State --------------------
 const userStore = useUserStore()
+
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+// Follow state
 const followers = ref<number | null>(null)
 const following = ref<number | null>(null)
 const isFollowing = ref(false)
@@ -28,57 +33,41 @@ const followingList = ref<string[]>([])
 const loadingFollowLists = ref(false)
 const loadingFollowToggle = ref(false)
 
+// User
 const user = computed(() => userStore.user)
-const isOwnProfile = computed(() => !!userStore.user) // single user app
-const showEditProfile = ref(false)
-const toast = useToastStore()
+const isOwnProfile = computed(() => !!userStore.user) // single-user app
 
-const editForm = ref({
-  email: '',
-  username: '',
-  countryCode: '',
-  profileImageUrl: '',
+// -------------------- Profile Form (EDIT) --------------------
+const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, saveProfile } =
+  useProfileForm()
+
+// -------------------- Change Password --------------------
+const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePassword } =
+  useChangePassword()
+
+// -------------------- Avatar --------------------
+const uploadingAvatar = ref(false)
+const avatarPreview = ref<string | null>(null)
+
+const avatarUrl = computed(() => {
+  const url = user.value?.profileImageUrl
+  if (!url || url.includes('example.com')) {
+    return '/avatar-placeholder.svg'
+  }
+  return url
 })
 
-const profileSchema = yup.object({
-  email: yup
-    .string()
-    .transform((v) => v?.trim())
-    .email('Email must be a valid email address')
-    .required('Email is required'),
-
-  username: yup
-    .string()
-    .transform((v) => v?.trim())
-    .min(5, 'Username must be between 5 and 50 characters')
-    .max(50, 'Username must be between 5 and 50 characters')
-    .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
-    .required('Username is required'),
-
-  countryCode: yup.string().required('Country code is required'),
-
-  // Backend erlaubt null/leer => optional
-  profileImageUrl: yup
-    .string()
-    .transform((v) => v?.trim())
-    .notRequired(),
-})
-
-const {
-  errors: editErrors,
-  validate: validateEdit,
-  clearErrors: clearEditErrors,
-} = useFormValidation(profileSchema)
-
-const savingProfile = ref(false)
-
+// -------------------- Lifecycle --------------------
 onMounted(async () => {
   try {
     if (!userStore.user) {
       await userStore.fetchCurrentUser()
     }
-    initEditForm()
-    await loadFollowData()
+
+    if (userStore.user) {
+      initEditForm(userStore.user)
+      await loadFollowData()
+    }
   } catch (err: unknown) {
     error.value = getErrorMessage(err)
   } finally {
@@ -86,19 +75,21 @@ onMounted(async () => {
   }
 })
 
+// -------------------- Follow Logic --------------------
 async function loadFollowData() {
   if (!userStore.user) return
+
   loadingFollowLists.value = true
   try {
     const [followersPage, followingPage] = await Promise.all([
       followApi.getFollowers(userStore.user.id, 0, 5),
       followApi.getFollowing(userStore.user.id, 0, 5),
     ])
+
     followers.value = followersPage.totalElements
     following.value = followingPage.totalElements
     followersList.value = followersPage.content.map((u) => u.username)
     followingList.value = followingPage.content.map((u) => u.username)
-    // In a single-profile view, assume not following self
     isFollowing.value = false
   } catch (err: unknown) {
     error.value = getErrorMessage(err)
@@ -109,16 +100,17 @@ async function loadFollowData() {
 
 async function toggleFollow() {
   if (!userStore.user) return
+
   loadingFollowToggle.value = true
   try {
     if (isFollowing.value) {
       await followApi.unfollow(userStore.user.id)
       isFollowing.value = false
-      if (followers.value !== null) followers.value = Math.max(0, followers.value - 1)
+      if (followers.value !== null) followers.value--
     } else {
       await followApi.follow(userStore.user.id)
       isFollowing.value = true
-      if (followers.value !== null) followers.value += 1
+      if (followers.value !== null) followers.value++
     }
   } catch (err: unknown) {
     error.value = getErrorMessage(err)
@@ -127,42 +119,19 @@ async function toggleFollow() {
   }
 }
 
-function initEditForm() {
-  if (!userStore.user) return
-  editForm.value = {
-    email: userStore.user.email ?? '',
-    username: userStore.user.username ?? '',
-    countryCode: userStore.user.countryCode ?? '',
-    profileImageUrl: userStore.user.profileImageUrl ?? '',
-  }
-}
-
-async function saveProfile() {
-  clearEditErrors()
-  toast.clear()
-
-  const ok = await validateEdit(editForm.value)
-  if (!ok) {
-    toast.showError('Please fix the highlighted fields')
-    return
-  }
-
-  savingProfile.value = true
+// -------------------- Avatar Upload --------------------
+async function onAvatarSelected(file: File) {
+  uploadingAvatar.value = true
   try {
-    const updated = await usersApi.updateMyProfile({
-      email: editForm.value.email,
-      username: editForm.value.username,
-      countryCode: editForm.value.countryCode,
-      profileImageUrl: editForm.value.profileImageUrl || undefined,
-    })
+    const media = await mediaApi.upload(file)
+    const url = `/medias/${media.id}`
 
-    userStore.user = updated
-    initEditForm()
-    toast.showSuccess('Profile updated successfully')
+    avatarPreview.value = url
+    editForm.value.profileImageUrl = url
   } catch (err) {
-    toast.showError(getErrorMessage(err))
+    error.value = getErrorMessage(err)
   } finally {
-    savingProfile.value = false
+    uploadingAvatar.value = false
   }
 }
 </script>
@@ -181,12 +150,23 @@ async function saveProfile() {
 
     <!-- Content -->
     <div v-else-if="user">
-      <h1 class="text-2xl font-heading mb-4">Profile</h1>
+      <h1 class="text-2xl font-heading mb-4"><strong>Profile</strong></h1>
+
+      <div class="flex items-center gap-4 mb-6">
+        <img
+          :src="avatarUrl"
+          alt="Profile avatar"
+          class="w-40 h-40 rounded-full object-cover bg-neutral-50"
+        />
+
+        <div>
+          <h1 class="text-2xl font-heading">{{ user.username }}</h1>
+          <p class="text-sm text-gray-500">{{ user.email }}</p>
+        </div>
+      </div>
 
       <!-- READ -->
       <div class="space-y-1">
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Country:</strong> {{ user.countryCode }}</p>
         <p><strong>Role:</strong> {{ user.role }}</p>
       </div>
@@ -204,24 +184,27 @@ async function saveProfile() {
       </div>
 
       <!-- ACTIONS -->
-      <div class="mt-4 flex gap-3">
-        <BaseButton
-          v-if="!isOwnProfile"
-          variant="primary"
-          :disabled="loadingFollowToggle"
-          @click="toggleFollow"
-        >
-          <span v-if="loadingFollowToggle">Working...</span>
-          <span v-else>{{ isFollowing ? 'Unfollow' : 'Follow' }}</span>
-        </BaseButton>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <!-- OWN PROFILE -->
+        <template v-if="isOwnProfile">
+          <BaseButton variant="outline" @click="showEditProfile = !showEditProfile">
+            {{ showEditProfile ? 'Cancel editing' : 'Edit profile' }}
+          </BaseButton>
 
-        <BaseButton v-else variant="ghost" disabled> Follow </BaseButton>
+          <BaseButton variant="outline" @click="showChangePassword = !showChangePassword">
+            {{ showChangePassword ? 'Cancel password change' : 'Change password' }}
+          </BaseButton>
 
-        <BaseButton variant="outline" @click="showEditProfile = !showEditProfile">
-          {{ showEditProfile ? 'Cancel editing' : 'Edit profile' }}
-        </BaseButton>
+          <BaseButton variant="primary" @click="userStore.logout()"> Logout </BaseButton>
+        </template>
 
-        <BaseButton variant="primary" @click="userStore.logout()"> Logout </BaseButton>
+        <!-- OTHER PROFILE -->
+        <template v-else>
+          <BaseButton variant="primary" :disabled="loadingFollowToggle" @click="toggleFollow">
+            <span v-if="loadingFollowToggle">Working...</span>
+            <span v-else>{{ isFollowing ? 'Unfollow' : 'Follow' }}</span>
+          </BaseButton>
+        </template>
       </div>
 
       <BaseDivider class="my-6" />
@@ -247,6 +230,43 @@ async function saveProfile() {
             </li>
           </ul>
         </div>
+      </div>
+
+      <!-- CHANGE PASSWORD -->
+      <BaseDivider v-if="showChangePassword" class="my-8" />
+      <div v-if="showChangePassword" class="mt-6 space-y-4 max-w-md">
+        <h2 class="text-xl font-semibold">Change password</h2>
+
+        <BaseFormfield label="Current password" :error="passwordErrors.currentPassword">
+          <BaseInput
+            v-model="passwordForm.currentPassword"
+            type="password"
+            :invalid="!!passwordErrors.currentPassword"
+            placeholder="Current password"
+          />
+        </BaseFormfield>
+
+        <BaseFormfield label="New password" :error="passwordErrors.newPassword">
+          <BaseInput
+            v-model="passwordForm.newPassword"
+            type="password"
+            :invalid="!!passwordErrors.newPassword"
+            placeholder="New password"
+          />
+        </BaseFormfield>
+
+        <BaseFormfield label="Repeat new password" :error="passwordErrors.repeatPassword">
+          <BaseInput
+            v-model="passwordForm.repeatPassword"
+            type="password"
+            :invalid="!!passwordErrors.repeatPassword"
+            placeholder="Repeat new password"
+          />
+        </BaseFormfield>
+
+        <BaseButton variant="primary" :disabled="savingPassword" @click="savePassword">
+          {{ savingPassword ? 'Saving…' : 'Update password' }}
+        </BaseButton>
       </div>
 
       <!-- EDIT PROFILE -->
@@ -276,14 +296,18 @@ async function saveProfile() {
           </BaseSelect>
         </BaseFormfield>
 
+        <BaseDivider class="my-8" />
+
         <!-- TEMP: URL input (wird im nächsten Block durch Avatar Upload ersetzt) -->
-        <BaseFormfield label="Profile image URL (optional)" :error="editErrors.profileImageUrl">
-          <BaseInput
-            v-model="editForm.profileImageUrl"
-            :invalid="!!editErrors.profileImageUrl"
-            placeholder="https://example.com/avatar.png"
-          />
-        </BaseFormfield>
+        <div v-if="showEditProfile" class="flex items-center gap-4 p-4 border rounded-xl mb-6">
+          <img :src="avatarPreview || avatarUrl" class="w-16 h-16 rounded-full object-cover" />
+
+          <UploadDropZone accept="image/*" @selected="onAvatarSelected">
+            <BaseButton variant="outline">
+              {{ uploadingAvatar ? 'Uploading…' : 'Change photo' }}
+            </BaseButton>
+          </UploadDropZone>
+        </div>
 
         <BaseButton class="mt-4" variant="primary" :disabled="savingProfile" @click="saveProfile">
           {{ savingProfile ? 'Saving…' : 'Save changes' }}
