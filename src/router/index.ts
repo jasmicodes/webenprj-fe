@@ -7,6 +7,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     authPage?: boolean
     devOnly?: boolean
+    requiresAdmin?: boolean
   }
 }
 
@@ -23,6 +24,14 @@ const routes: RouteRecordRaw[] = [
     name: 'register',
     component: () => import('@/views/RegisterView.vue'),
     meta: { authPage: true },
+  },
+
+  // AdminDashboard
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('@/views/AdminDashboardView.vue'),
+    meta: { requiresAdmin: true },
   },
 
   // Main Sites (only after login)
@@ -73,6 +82,12 @@ router.beforeEach((to) => {
     }
   }
 
+  const requireAdmin = () => {
+    if (to.meta.requiresAdmin && !store.isAdmin) {
+      return { name: 'home' }
+    }
+  }
+
   const blockDevOnlyInProd = () => {
     if (to.meta.devOnly && !import.meta.env.DEV) {
       return { name: 'not-found' }
@@ -85,7 +100,7 @@ router.beforeEach((to) => {
     }
   }
 
-  return redirectFromAuthPages() ?? blockDevOnlyInProd() ?? requireAuth() ?? true
+  return redirectFromAuthPages() ?? blockDevOnlyInProd() ?? requireAuth() ?? requireAdmin() ?? true
 })
 
 export default router

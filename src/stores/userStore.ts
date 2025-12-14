@@ -12,7 +12,12 @@ export const useUserStore = defineStore('user', {
   }),
 
   getters: {
+    /** Is any user logged in */
     isAuthenticated: (s) => !!s.token,
+
+    /** Logged in user role helpers */
+    isAdmin: (s) => s.user?.role === 'ADMIN',
+    isUser: (s) => s.user?.role === 'USER',
   },
 
   actions: {

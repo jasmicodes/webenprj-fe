@@ -17,6 +17,7 @@ import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import UploadDropZone from '@/components/molecules/UploadDropZone.vue'
+import UserAvatar from '@/components/molecules/UserAvatar.vue'
 
 // -------------------- Stores & State --------------------
 const userStore = useUserStore()
@@ -37,6 +38,8 @@ const loadingFollowToggle = ref(false)
 const user = computed(() => userStore.user)
 const isOwnProfile = computed(() => !!userStore.user) // single-user app
 
+const uploadingAvatar = ref(false)
+
 // -------------------- Profile Form (EDIT) --------------------
 const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, saveProfile } =
   useProfileForm()
@@ -44,18 +47,6 @@ const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, save
 // -------------------- Change Password --------------------
 const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePassword } =
   useChangePassword()
-
-// -------------------- Avatar --------------------
-const uploadingAvatar = ref(false)
-const avatarPreview = ref<string | null>(null)
-
-const avatarUrl = computed(() => {
-  const url = user.value?.profileImageUrl
-  if (!url || url.includes('example.com')) {
-    return '/avatar-placeholder.svg'
-  }
-  return url
-})
 
 // -------------------- Lifecycle --------------------
 onMounted(async () => {
@@ -121,17 +112,13 @@ async function toggleFollow() {
 
 // -------------------- Avatar Upload --------------------
 async function onAvatarSelected(file: File) {
-  uploadingAvatar.value = true
   try {
     const media = await mediaApi.upload(file)
     const url = `/medias/${media.id}`
 
-    avatarPreview.value = url
     editForm.value.profileImageUrl = url
   } catch (err) {
     error.value = getErrorMessage(err)
-  } finally {
-    uploadingAvatar.value = false
   }
 }
 </script>
@@ -153,11 +140,7 @@ async function onAvatarSelected(file: File) {
       <h1 class="text-2xl font-heading mb-4"><strong>Profile</strong></h1>
 
       <div class="flex items-center gap-4 mb-6">
-        <img
-          :src="avatarUrl"
-          alt="Profile avatar"
-          class="w-40 h-40 rounded-full object-cover bg-neutral-50"
-        />
+        <UserAvatar class="avatar avatar-lg" />
 
         <div>
           <h1 class="text-2xl font-heading">{{ user.username }}</h1>
@@ -300,10 +283,10 @@ async function onAvatarSelected(file: File) {
 
         <!-- TEMP: URL input (wird im nächsten Block durch Avatar Upload ersetzt) -->
         <div v-if="showEditProfile" class="flex items-center gap-4 p-4 border rounded-xl mb-6">
-          <img :src="avatarPreview || avatarUrl" class="w-16 h-16 rounded-full object-cover" />
+          <UserAvatar class="avatar avatar-md" />
 
           <UploadDropZone accept="image/*" @selected="onAvatarSelected">
-            <BaseButton variant="outline">
+            <BaseButton variant="outline" :disabled="uploadingAvatar">
               {{ uploadingAvatar ? 'Uploading…' : 'Change photo' }}
             </BaseButton>
           </UploadDropZone>

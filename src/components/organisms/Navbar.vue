@@ -3,11 +3,14 @@
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 
 defineOptions({ name: 'AppNavbar' })
 
 const userStore = useUserStore()
 const router = useRouter()
+
+const isAdmin = computed(() => userStore.user?.role === 'ADMIN')
 
 function handleLogout() {
   userStore.logout()
@@ -38,6 +41,11 @@ function handleLogout() {
           <span><h2>Home</h2></span>
         </RouterLink>
 
+        <RouterLink v-if="isAdmin" :to="{ name: 'admin' }" class="navbar-link">
+          <BaseIcon name="ShieldCheckIcon" />
+          <span><h2>Admin</h2></span>
+        </RouterLink>
+
         <RouterLink :to="{ name: 'resources' }" class="navbar-link">
           <BaseIcon name="FolderIcon" />
           <span><h2>Resources</h2></span>
@@ -54,9 +62,7 @@ function handleLogout() {
         </RouterLink>
 
         <RouterLink :to="{ name: 'profile' }" class="navbar-link">
-          <div class="avatar avatar-sm">
-            <img src="@/assets/user4.avif" alt="User avatar" class="avatar-img" />
-          </div>
+          <UserAvatar class="avatar avatar-xs" />
           <span><h2>Profile</h2></span>
         </RouterLink>
       </div>
@@ -101,6 +107,12 @@ function handleLogout() {
         <RouterLink :to="{ name: 'profile' }" class="tab-link">
           <BaseIcon name="UserIcon" class="w-6 h-6" />
           <small>Profile</small>
+        </RouterLink>
+      </li>
+      <li v-if="isAdmin">
+        <RouterLink :to="{ name: 'admin' }" class="tab-link">
+          <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
+          <small>Admin</small>
         </RouterLink>
       </li>
     </ul>
