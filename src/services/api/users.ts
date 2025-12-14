@@ -1,6 +1,7 @@
 import { api } from './client'
 import type {
   User,
+  AdminUser,
   UpdateProfileRequest,
   ChangePasswordRequest,
   UserRole,
@@ -29,8 +30,8 @@ export const adminUsersApi = {
    * RESTful design: use query parameter to filter collection.
    * @param search Optional search query to filter users
    */
-  async getAllUsers(search?: string, page = 0, size = 20): Promise<Page<User>> {
-    const res = await api.get<Page<User>>('/users', {
+  async getAllUsers(search?: string, page = 0, size = 20): Promise<Page<AdminUser>> {
+    const res = await api.get<Page<AdminUser>>('/users', {
       params: {
         page,
         size,
@@ -42,9 +43,12 @@ export const adminUsersApi = {
 
   async updateUser(
     id: string,
-    data: Partial<UpdateProfileRequest> & { role?: UserRole }
-  ): Promise<User> {
-    const res = await api.put<User>(`/users/${id}`, data)
+    data: Partial<UpdateProfileRequest> & {
+      role?: UserRole
+      active?: boolean
+    },
+  ): Promise<AdminUser> {
+    const res = await api.put<AdminUser>(`/users/${id}`, data)
     return res.data
   },
 
