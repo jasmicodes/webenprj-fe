@@ -52,34 +52,32 @@ function handleLogout() {
           <span><h2>Resources</h2></span>
         </RouterLink>
 
-        <RouterLink :to="{ name: 'imprint' }" class="navbar-link">
-          <BaseIcon name="DocumentTextIcon" />
-          <span><h2>Imprint</h2></span>
-        </RouterLink>
-
-        <RouterLink :to="{ name: 'help' }" class="navbar-link">
-          <BaseIcon name="QuestionMarkCircleIcon" />
-          <span><h2>Help</h2></span>
-        </RouterLink>
-
         <RouterLink :to="{ name: 'profile' }" class="navbar-link">
-          <UserAvatar class="avatar avatar-xs" />
+          <UserAvatar class="w-5 h-5 rounded-full object-cover" />
           <span><h2>Profile</h2></span>
         </RouterLink>
       </div>
     </div>
 
-    <!-- Logout unten -->
+    <!-- Bottom actions -->
+    <div class="flex flex-col gap-3">
+      <!-- Help button (secondary) -->
+      <RouterLink :to="{ name: 'help' }" class="flex items-center gap-3 text-slate-500 hover:text-slate-700 transition-colors px-2 py-1.5">
+        <BaseIcon name="QuestionMarkCircleIcon" class="w-4 h-4" />
+        <span class="text-sm">Help</span>
+      </RouterLink>
 
-    <button @click="handleLogout" class="navbar-link">
-      <BaseIcon name="ArrowLeftEndOnRectangleIcon" />
-      <span><h2>Logout</h2></span>
-    </button>
+      <!-- Logout -->
+      <button @click="handleLogout" class="navbar-link">
+        <BaseIcon name="ArrowLeftEndOnRectangleIcon" />
+        <span><h2>Logout</h2></span>
+      </button>
+    </div>
   </nav>
 
   <!-- Bottom Navigation (Mobile) -->
   <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-neutral-200 shadow-sm">
-    <ul class="grid grid-cols-5 text-sm text-neutral-700">
+    <ul class="grid grid-cols-4 text-sm text-neutral-700">
       <li>
         <RouterLink :to="{ name: 'home' }" class="tab-link">
           <BaseIcon name="HomeIcon" class="w-6 h-6" />
@@ -89,31 +87,19 @@ function handleLogout() {
       <li>
         <RouterLink :to="{ name: 'resources' }" class="tab-link">
           <BaseIcon name="FolderIcon" class="w-6 h-6" />
-          <small>Res.</small>
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink :to="{ name: 'imprint' }" class="tab-link">
-          <BaseIcon name="DocumentTextIcon" class="w-6 h-6" />
-          <small>Imp.</small>
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink :to="{ name: 'help' }" class="tab-link">
-          <BaseIcon name="QuestionMarkCircleIcon" class="w-6 h-6" />
-          <small>Help</small>
-        </RouterLink>
-      </li>
-      <li>
-        <RouterLink :to="{ name: 'profile' }" class="tab-link">
-          <BaseIcon name="UserIcon" class="w-6 h-6" />
-          <small>Profile</small>
+          <small>Resources</small>
         </RouterLink>
       </li>
       <li v-if="isAdmin">
         <RouterLink :to="{ name: 'admin' }" class="tab-link">
           <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
           <small>Admin</small>
+        </RouterLink>
+      </li>
+      <li>
+        <RouterLink :to="{ name: 'profile' }" class="tab-link">
+          <BaseIcon name="UserIcon" class="w-6 h-6" />
+          <small>Profile</small>
         </RouterLink>
       </li>
     </ul>
