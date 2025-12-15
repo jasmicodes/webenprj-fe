@@ -1,21 +1,28 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-// Available curated backgrounds from assets/background folder
+/**
+ * Curated background registry
+ *
+ * Each background has:
+ * - id: kebab-case identifier for persistence (stable, never changes)
+ * - name: Human-friendly display name (title case)
+ * - path: Asset URL
+ */
 export const AVAILABLE_BACKGROUNDS = [
   {
-    id: 'bg-01',
-    name: 'Gradient Sunset',
+    id: 'forest-mist',
+    name: 'Forest Mist',
     path: new URL('@/assets/background/background-01.webp', import.meta.url).href,
   },
   {
-    id: 'bg-02',
-    name: 'Soft Blue',
+    id: 'soft-canopy',
+    name: 'Soft Canopy',
     path: new URL('@/assets/background/background-02.webp', import.meta.url).href,
   },
   {
-    id: 'bg-03',
-    name: 'Warm Tones',
+    id: 'alpine-horizon',
+    name: 'Alpine Horizon',
     path: new URL('@/assets/background/background-03.webp', import.meta.url).href,
   },
 ] as const
@@ -45,6 +52,7 @@ function loadFromStorage(): AppearanceState {
   }
 
   // Default: clean white look (bgEnabled = false)
+  // Use first background as default (forest-mist)
   return {
     bgEnabled: false,
     bgId: AVAILABLE_BACKGROUNDS[0].id,

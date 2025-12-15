@@ -278,11 +278,14 @@ async function handleSaveProfile() {
                   v-for="bg in AVAILABLE_BACKGROUNDS"
                   :key="bg.id"
                   class="relative cursor-pointer group"
+                  :aria-label="`Select ${bg.name} background`"
                 >
                   <input
                     type="radio"
+                    name="background-selection"
                     :value="bg.id"
                     :checked="appearanceStore.bgId === bg.id"
+                    :aria-label="`${bg.name} background`"
                     class="sr-only"
                     @change="appearanceStore.setBgId(bg.id)"
                   />
@@ -293,11 +296,13 @@ async function handleSaveProfile() {
                         ? 'border-primary-500 ring-2 ring-primary-200'
                         : 'border-slate-200 hover:border-slate-300'
                     "
+                    role="img"
+                    :aria-label="`${bg.name} background preview`"
                   >
                     <!-- Preview with blur/overlay applied (matches actual background styling) -->
                     <img
                       :src="bg.path"
-                      :alt="bg.name"
+                      :alt="`${bg.name} background preview`"
                       class="w-full h-full object-cover"
                       style="filter: blur(9px) saturate(1.15) brightness(1.0); transform: scale(1.06)"
                     />
