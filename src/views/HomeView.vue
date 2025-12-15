@@ -155,8 +155,12 @@ onMounted(() => {
           <!-- Gentle progress presence (non-gamified, calm) -->
           <div
             v-if="!loading"
-            class="text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full flex-shrink-0"
-            :class="hasPostedToday ? 'opacity-70' : 'opacity-60'"
+            class="text-xs px-3 py-1.5 rounded-full flex-shrink-0 transition-all duration-300"
+            :class="
+              hasPostedToday
+                ? 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
+                : 'text-slate-500 bg-slate-50/80 opacity-60'
+            "
           >
             {{ dailyStatusMessage }}
           </div>
