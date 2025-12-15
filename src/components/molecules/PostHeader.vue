@@ -12,7 +12,7 @@
     <BaseButton
       size="sm"
       variant="ghost"
-      class="flex-shrink-0 px-3 py-1 text-xs text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+      class="flex-shrink-0 px-3 py-1 text-xs text-slate-400 hover:text-slate-700 hover:bg-slate-50 focus:bg-slate-100 focus:text-slate-900 transition-colors"
     >
       Subscribe
     </BaseButton>
