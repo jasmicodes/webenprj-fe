@@ -2,7 +2,13 @@
 <template>
   <div class="card-header flex items-center gap-3">
     <!-- Avatar + Name + Time -->
-    <UserBadge :src="avatarSrc" :name="username" :subtitle="time" size="sm" class="min-w-0 flex-1" />
+    <UserBadge
+      :src="avatarSrc"
+      :name="username"
+      :subtitle="formattedTime"
+      size="sm"
+      class="min-w-0 flex-1"
+    />
     <!-- Study subject tag (calm, supportive) -->
     <BaseChip
       v-if="tag"
@@ -16,9 +22,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import UserBadge from '@/components/molecules/UserBadge.vue'
 import BaseChip from '@/components/atoms/BaseChip.vue'
 import { formatTagDisplay } from '@/utils/tagUtils'
+import { formatTimeAgo } from '@/utils/timeUtils'
 
-defineProps<{ username: string; avatarSrc?: string; tag?: string; time?: string }>()
+const props = defineProps<{ username: string; avatarSrc?: string; tag?: string; time?: string }>()
+
+const formattedTime = computed(() => formatTimeAgo(props.time))
 </script>

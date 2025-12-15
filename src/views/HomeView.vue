@@ -28,12 +28,12 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 // Gentle progress presence: Check if user posted today
 const hasPostedToday = computed(() => {
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const todayStr = today.toDateString() // e.g., "Mon Dec 15 2025"
 
   return posts.value.some(post => {
-    const postDate = new Date(post.time || '')
-    postDate.setHours(0, 0, 0, 0)
-    return postDate.getTime() === today.getTime()
+    if (!post.time) return false
+    const postDate = new Date(post.time)
+    return postDate.toDateString() === todayStr
   })
 })
 
