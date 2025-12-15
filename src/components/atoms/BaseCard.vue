@@ -1,35 +1,15 @@
-<!--Container für Posts, Profile, etc. (nutzt .card, .card-header, .card-body …)-->
+<!--Container für Posts, Profile, etc. - follows design tokens: bg-white, rounded-2xl, border, shadow-sm, p-6-->
 <template>
-  <article :class="['card', 'card-pad', sizeClass]">
-    <header v-if="$slots.header" class="card-header">
-      <slot name="header" />
-    </header>
-
-    <div class="card-body">
-      <slot />
-    </div>
-
-    <footer v-if="$slots.actions" class="card-actions">
-      <slot name="actions" />
-    </footer>
+  <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <slot />
   </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
-const props = withDefaults(defineProps<{ size?: 'sm' | 'md' | 'lg' | 'full' }>(), { size: 'md' })
-
-const sizeClass = computed(() => {
-  switch (props.size) {
-    case 'sm':
-      return 'card-sm'
-    case 'lg':
-      return 'card-lg'
-    case 'full':
-      return 'w-full' // volle Breite (z. B. in Listen)
-    default:
-      return 'card-md'
-  }
-})
+// Simple card following design rules:
+// - bg-white
+// - rounded-2xl
+// - border border-slate-200
+// - shadow-sm
+// - p-6 padding
 </script>
