@@ -5,6 +5,8 @@
       :modelValue="modelValue"
       :placeholder="placeholder"
       :invalid="invalid || over"
+      :maxlength="maxLength"
+      :rows="rows"
       @update:modelValue="(v) => emit('update:modelValue', v)"
     />
     <div class="flex justify-end">
@@ -21,8 +23,10 @@ const props = withDefaults(
   defineProps<{
     modelValue?: string
     max?: number
+    maxLength?: number
     placeholder?: string
     invalid?: boolean
+    rows?: number
   }>(),
   { max: 30, placeholder: 'Text…' },
 )

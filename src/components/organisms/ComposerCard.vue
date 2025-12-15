@@ -26,7 +26,11 @@ const isContentValid = computed(() => {
 })
 
 const isSubjectValid = computed(() => {
-  if (!subject.value.trim()) return true // Optional field
+  // Subject is required (backend has @NotBlank)
+  // If empty, we'll use 'general' as default, so consider it valid
+  // If provided, must match the backend pattern
+  const trimmed = subject.value.trim()
+  if (!trimmed) return true // Will default to 'general' in handlePost
   return isValidTag(subject.value)
 })
 
@@ -117,13 +121,17 @@ function removeFile() {
       <CharCounterTextarea
         v-model="content"
         placeholder="Share your progress, insights, or questions..."
+        :max="500"
         :max-length="500"
-        rows="4"
+        :rows="4"
       />
 
       <!-- Tag input -->
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1.5">Subject/Tag</label>
+        <label class="block text-xs font-medium text-slate-700 mb-1.5">
+          Subject/Tag
+          <span class="text-slate-500 font-normal">(optional, defaults to 'general')</span>
+        </label>
         <TagInput v-model="subject" placeholder="Add a subject (e.g., webengineering)" />
       </div>
 
@@ -183,15 +191,19 @@ function removeFile() {
               ? 'text-slate-500'
               : content.trim().length < 10
                 ? 'text-amber-600'
-                : 'text-slate-500'
+                : !isSubjectValid
+                  ? 'text-red-600'
+                  : 'text-slate-500'
           "
         >
           {{
             content.trim().length === 0
-              ? 'Posts are visible to all users'
+              ? 'Minimum 10 characters required for content'
               : content.trim().length < 10
-                ? `${10 - content.trim().length} more characters needed`
-                : 'Posts are visible to all users'
+                ? `${10 - content.trim().length} more characters needed for content`
+                : !isSubjectValid
+                  ? 'Subject must be 2-30 characters (letters, numbers, spaces, dashes, underscores)'
+                  : 'Posts are visible to all users'
           }}
         </p>
         <div class="flex items-center gap-2">
