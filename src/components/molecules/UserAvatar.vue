@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
+import avatarPlaceholder from '@/assets/avatar-placeholder.svg'
 
 defineOptions({
   inheritAttrs: false,
@@ -16,7 +16,7 @@ const props = withDefaults(
 
 const userStore = useUserStore()
 const sizeClass = computed(() => `avatar-${props.size}`)
-const imageUrl = ref<string | null>(null)
+const imageUrl = ref<string>(avatarPlaceholder)
 
 onMounted(async () => {
   if (!userStore.user?.profileImageUrl) return
@@ -38,11 +38,9 @@ onMounted(async () => {
 <template>
   <div class="avatar" :class="sizeClass">
     <img
-      v-if="imageUrl"
       :src="imageUrl"
-      alt="User avatar"
+      :alt="userStore.user?.username ? `${userStore.user.username}'s avatar` : 'User avatar'"
       class="avatar-img object-cover rounded-full"
     />
-    <BaseAvatar v-else :name="userStore.user?.username ?? '?'" class="w-full h-full" />
   </div>
 </template>

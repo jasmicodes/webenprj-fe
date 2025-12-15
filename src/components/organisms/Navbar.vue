@@ -43,8 +43,10 @@ function handleLogout() {
           class="w-20 h-20 rounded-lg flex-shrink-0"
         />
         <h1
-          v-if="!isCollapsed"
-          class="font-heading text-xl tracking-wide transition-opacity duration-300"
+          :class="[
+            'font-heading text-xl tracking-wide transition-opacity duration-200',
+            isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+          ]"
         >
           MOTIVISE
         </h1>
@@ -62,7 +64,14 @@ function handleLogout() {
           <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
             <BaseIcon name="HomeIcon" class="w-6 h-6" />
           </div>
-          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Home</h2></span>
+          <span
+            :class="[
+              'font-heading text-base transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            <h2>Home</h2>
+          </span>
         </RouterLink>
 
         <RouterLink
@@ -76,7 +85,14 @@ function handleLogout() {
           <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
             <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
           </div>
-          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Admin</h2></span>
+          <span
+            :class="[
+              'font-heading text-base transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            <h2>Admin</h2>
+          </span>
         </RouterLink>
 
         <RouterLink
@@ -89,7 +105,14 @@ function handleLogout() {
           <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
             <BaseIcon name="FolderIcon" class="w-6 h-6" />
           </div>
-          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Resources</h2></span>
+          <span
+            :class="[
+              'font-heading text-base transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            <h2>Resources</h2>
+          </span>
         </RouterLink>
 
         <RouterLink
@@ -100,9 +123,16 @@ function handleLogout() {
           active-class="bg-primary-300 text-neutral-50"
         >
           <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-            <UserAvatar class="w-6 h-6 rounded-full object-cover" />
+            <UserAvatar size="xs" />
           </div>
-          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Profile</h2></span>
+          <span
+            :class="[
+              'font-heading text-base transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            <h2>Profile</h2>
+          </span>
         </RouterLink>
       </div>
     </div>
@@ -119,7 +149,14 @@ function handleLogout() {
         <div class="h-10 w-10 shrink-0 grid place-items-center rounded-xl">
           <BaseIcon name="QuestionMarkCircleIcon" class="w-5 h-5" />
         </div>
-        <span v-show="!isCollapsed" class="text-sm font-medium">Help</span>
+        <span
+          :class="[
+            'text-sm font-medium transition-opacity duration-200',
+            isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+          ]"
+        >
+          Help
+        </span>
       </RouterLink>
 
       <!-- Logout -->
@@ -132,7 +169,14 @@ function handleLogout() {
         <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
           <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-6 h-6" />
         </div>
-        <span v-show="!isCollapsed" class="font-heading text-base"><h2>Logout</h2></span>
+        <span
+          :class="[
+            'font-heading text-base transition-opacity duration-200',
+            isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+          ]"
+        >
+          <h2>Logout</h2>
+        </span>
       </button>
 
       <!-- Toggle collapse button -->
@@ -148,7 +192,14 @@ function handleLogout() {
             class="w-5 h-5"
           />
         </div>
-        <span v-show="!isCollapsed" class="text-sm font-medium">Collapse</span>
+        <span
+          :class="[
+            'text-sm font-medium transition-opacity duration-200',
+            isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+          ]"
+        >
+          Collapse
+        </span>
       </button>
     </div>
   </nav>
@@ -176,7 +227,7 @@ function handleLogout() {
       </li>
       <li>
         <RouterLink :to="{ name: 'profile' }" class="tab-link">
-          <BaseIcon name="UserIcon" class="w-6 h-6" />
+          <UserAvatar size="xs" />
           <small>Profile</small>
         </RouterLink>
       </li>
