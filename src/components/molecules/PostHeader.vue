@@ -9,7 +9,11 @@
       </BaseChip>
     </div>
     <!-- rechts: Subscribe - never shrinks -->
-    <BaseButton size="sm" variant="outline" class="flex-shrink-0 px-3 py-1 text-xs">
+    <BaseButton
+      size="sm"
+      variant="ghost"
+      class="flex-shrink-0 px-3 py-1 text-xs text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+    >
       Subscribe
     </BaseButton>
   </div>
