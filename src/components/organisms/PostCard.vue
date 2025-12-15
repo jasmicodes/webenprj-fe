@@ -1,6 +1,6 @@
 <template>
   <BaseCard size="lg">
-    <!-- HEADER-SLOT -->
+    <!-- HEADER-SLOT (identical for all posts) -->
     <template #header>
       <PostHeader
         :username="post.user.name"
@@ -38,10 +38,13 @@
         :liked="post.liked"
         :comments="post.comments"
         :streak="post.streak"
-        @like="$emit('like', post.id)"
-        @comment="$emit('comment', post.id)"
-        @save="$emit('save', post.id)"
-        @share="$emit('share', post.id)"
+        :is-own-post="isOwnPost"
+        @like="emit('like', post.id)"
+        @comment="emit('comment', post.id)"
+        @save="emit('save', post.id)"
+        @share="emit('share', post.id)"
+        @edit="emit('edit', post.id)"
+        @delete="emit('delete', post.id)"
       />
     </template>
   </BaseCard>
@@ -57,13 +60,18 @@ import type { PostCardData } from '@/utils/postMapper'
 
 const props = defineProps<{
   post: PostCardData
+  currentUserId?: string
 }>()
-const avatarSrc = computed(() => props.post.user.avatar || fallbackAvatar)
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'like', id: PostCardData['id']): void
   (e: 'comment', id: PostCardData['id']): void
   (e: 'save', id: PostCardData['id']): void
   (e: 'share', id: PostCardData['id']): void
+  (e: 'edit', id: PostCardData['id']): void
+  (e: 'delete', id: PostCardData['id']): void
 }>()
+
+const avatarSrc = computed(() => props.post.user.avatar || fallbackAvatar)
+const isOwnPost = computed(() => props.currentUserId && props.post.userId === props.currentUserId)
 </script>

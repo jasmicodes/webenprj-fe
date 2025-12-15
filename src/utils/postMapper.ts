@@ -6,6 +6,7 @@ import { processTagFromBackend } from './tagUtils'
  */
 export type PostCardData = {
   id: string | number
+  userId: string // Author's user ID for ownership detection
   user: { name: string; avatar?: string }
   tag?: string
   time?: string
@@ -23,10 +24,11 @@ export type PostCardData = {
  */
 export function mapApiPostToCard(
   post: ApiPost,
-  overrides: Partial<Omit<PostCardData, 'id'>> = {},
+  overrides: Partial<Omit<PostCardData, 'id' | 'userId'>> = {},
 ): PostCardData {
   return {
     id: post.id,
+    userId: post.userId,
     user: overrides.user || { name: post.username || 'Unknown user' },
     tag: overrides.tag || (post.subject ? processTagFromBackend(post.subject) : 'untagged'),
     time: overrides.time || post.createdAt,

@@ -2,13 +2,17 @@
 import { ref, onMounted, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import ComposerCard from '@/components/organisms/ComposerCard.vue'
+import PostEditModal from '@/components/molecules/PostEditModal.vue'
+import PostDeleteModal from '@/components/molecules/PostDeleteModal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
 import { useToastStore } from '@/stores/toastStore'
+import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { prepareTagForBackend } from '@/utils/tagUtils'
 
 const posts = ref<PostCardData[]>([])
 const loading = ref(true)
@@ -18,6 +22,7 @@ const page = ref(0)
 const totalPages = ref(1)
 const pageSize = 10
 const toastStore = useToastStore()
+const userStore = useUserStore()
 const filter = ref<'all' | 'following'>('all')
 
 // Ambient mode detection
@@ -25,13 +30,28 @@ const appearanceStore = useAppearanceStore()
 const isMobile = useMediaQuery('(max-width: 768px)')
 const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
-// Gentle progress presence: Check if user posted today
+// Edit/Delete state
+const editingPostId = ref<string | null>(null)
+const editModalData = ref({ content: '', subject: '' })
+const showEditModal = ref(false)
+const isSavingEdit = ref(false)
+
+const deletingPostId = ref<string | null>(null)
+const showDeleteModal = ref(false)
+const isDeleting = ref(false)
+
+// Gentle progress presence: Check if current user posted today
 const hasPostedToday = computed(() => {
+  if (!userStore.user?.id) return false
+
   const today = new Date()
   const todayStr = today.toDateString() // e.g., "Mon Dec 15 2025"
 
   return posts.value.some(post => {
+    // Only count posts by the current user
+    if (post.userId !== userStore.user?.id) return false
     if (!post.time) return false
+
     const postDate = new Date(post.time)
     return postDate.toDateString() === todayStr
   })
@@ -127,10 +147,73 @@ async function handleCreatePost(payload: { subject: string; content: string; fil
     posts.value = [mapped, ...posts.value]
 
     // Show success message
-    toastStore.showSuccess('Post created successfully!', 'Success')
+    toastStore.showSuccess('Reflection shared', 'Success')
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to create post'
     toastStore.showError(message, 'Create Post')
+  }
+}
+
+function openEditModal(postId: PostCardData['id']) {
+  const post = posts.value.find((p) => p.id === postId)
+  if (!post) return
+
+  editingPostId.value = String(postId)
+  editModalData.value = {
+    content: post.text || '',
+    subject: post.tag || 'general',
+  }
+  showEditModal.value = true
+}
+
+async function handleSaveEdit(payload: { content: string; subject: string }) {
+  if (!editingPostId.value) return
+
+  isSavingEdit.value = true
+  try {
+    const updatedPost = await postsApi.updatePost(editingPostId.value, {
+      content: payload.content,
+      subject: prepareTagForBackend(payload.subject),
+    })
+
+    // Update post in local state
+    const idx = posts.value.findIndex((p) => p.id === editingPostId.value)
+    if (idx !== -1) {
+      posts.value[idx] = mapApiPostToCard(updatedPost, { user: { name: updatedPost.username } })
+    }
+
+    showEditModal.value = false
+    toastStore.showSuccess('Reflection updated', 'Success')
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to update post'
+    toastStore.showError(message, 'Update Post')
+  } finally {
+    isSavingEdit.value = false
+  }
+}
+
+function openDeleteModal(postId: PostCardData['id']) {
+  deletingPostId.value = String(postId)
+  showDeleteModal.value = true
+}
+
+async function handleConfirmDelete() {
+  if (!deletingPostId.value) return
+
+  isDeleting.value = true
+  try {
+    await postsApi.deletePost(deletingPostId.value)
+
+    // Remove from local state
+    posts.value = posts.value.filter((p) => p.id !== deletingPostId.value)
+
+    showDeleteModal.value = false
+    toastStore.showSuccess('Reflection deleted', 'Success')
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to delete post'
+    toastStore.showError(message, 'Delete Post')
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -195,7 +278,15 @@ onMounted(() => {
 
       <!-- Posts -->
       <div v-else class="space-y-6">
-        <PostCard v-for="p in posts" :key="p.id" :post="p" @like="toggleLike" />
+        <PostCard
+          v-for="p in posts"
+          :key="p.id"
+          :post="p"
+          :current-user-id="userStore.user?.id"
+          @like="toggleLike"
+          @edit="openEditModal"
+          @delete="openDeleteModal"
+        />
 
         <!-- Load more button -->
         <div v-if="page + 1 < totalPages" class="flex justify-center pt-2">
@@ -207,6 +298,24 @@ onMounted(() => {
       </div>
     </div>
   </main>
+
+  <!-- Edit Modal -->
+  <PostEditModal
+    :show="showEditModal"
+    :content="editModalData.content"
+    :subject="editModalData.subject"
+    :is-saving="isSavingEdit"
+    @close="showEditModal = false"
+    @save="handleSaveEdit"
+  />
+
+  <!-- Delete Confirmation Modal -->
+  <PostDeleteModal
+    :show="showDeleteModal"
+    :is-deleting="isDeleting"
+    @close="showDeleteModal = false"
+    @confirm="handleConfirmDelete"
+  />
 </template>
 
 <style scoped>
