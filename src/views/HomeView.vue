@@ -78,23 +78,7 @@ async function loadPosts(reset = false) {
 
   try {
     const result = await postsApi.getAllPosts(undefined, page.value, pageSize, filter.value)
-
-    // DEBUG: Log first 3 posts to verify author data
-    console.log('📝 DEBUG: First 3 posts from API:', result.content.slice(0, 3).map(p => ({
-      username: p.username,
-      userId: p.userId,
-      userProfileImageUrl: p.userProfileImageUrl,
-    })))
-
-    // FIX: Don't override user object - let mapper handle avatar mapping
     const mapped = result.content.map((post) => mapApiPostToCard(post))
-
-    // DEBUG: Log first 3 mapped posts
-    console.log('📝 DEBUG: First 3 mapped PostCardData:', mapped.slice(0, 3).map(p => ({
-      userId: p.userId,
-      user: p.user,
-    })))
-
     posts.value = reset ? mapped : [...posts.value, ...mapped]
     totalPages.value = result.totalPages
   } catch (err: unknown) {

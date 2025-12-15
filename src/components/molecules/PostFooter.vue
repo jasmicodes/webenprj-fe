@@ -60,7 +60,7 @@
         </button>
 
         <!-- Kebab menu for management (only for own posts) -->
-        <div v-if="props.isOwnPost" class="relative" ref="dropdownRef">
+        <div v-if="props.isOwnPost" class="relative inline-block" ref="dropdownRef">
           <button
             class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md"
             :class="{ 'bg-slate-100 text-slate-900': showManageActions }"
@@ -83,7 +83,7 @@
           >
             <div
               v-if="showManageActions"
-              class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10"
+              class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
             >
               <button
                 class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors text-left"
