@@ -62,24 +62,19 @@ export const useUserStore = defineStore('user', {
     },
     async downloadProfileImage() {
       if (!this.user?.profileImageUrl) {
-        console.warn('⚠️ Kein Profilbild vorhanden für Benutzer:', this.user)
         return null
       }
 
       try {
-        console.log("in lesen")
-        // extrahiere ID aus URL, z. B. "/medias/1234" → "1234"
+        // Extract ID from URL, e.g. "/medias/1234" → "1234"
         const id = this.user.profileImageUrl.split('/').pop()
         if (!id) throw new Error('Invalid profile image URL')
 
-        console.log("id", id)
         const blob = await mediaApi.retrieve(id)
-        console.log('📦 Blob erhalten:', blob, blob instanceof Blob)
         const objectUrl = URL.createObjectURL(blob)
-         console.log('Bild-URL in user store:', objectUrl);
-        return objectUrl // nutzbar in <img :src="objectUrl">
+        return objectUrl
       } catch (err) {
-        console.error('❌ Fehler beim Laden des Profilbilds:', err)
+        console.error('Failed to load profile image:', err)
         return null
       }
     },

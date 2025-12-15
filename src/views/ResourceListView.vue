@@ -6,7 +6,10 @@ import TagSelect from '@/components/molecules/TagSelect.vue'
 import { POSTS } from '@/data/posts'
 import type { PostCardData } from '@/utils/postMapper'
 import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useUserStore } from '@/stores/userStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+
+const userStore = useUserStore()
 
 const q = ref('')
 const tag = ref('')
@@ -54,6 +57,16 @@ function toggleLike(postId: PostCardData['id']) {
 
   posts.value[idx] = { ...post, liked: newLiked, likes: Math.max(0, newLikes) }
 }
+
+// Handle edit (placeholder - ResourceListView uses static demo data)
+function handleEdit(postId: PostCardData['id']) {
+  console.log('Edit post:', postId, '(not implemented for demo data)')
+}
+
+// Handle delete (placeholder - ResourceListView uses static demo data)
+function handleDelete(postId: PostCardData['id']) {
+  console.log('Delete post:', postId, '(not implemented for demo data)')
+}
 </script>
 
 <template>
@@ -87,7 +100,15 @@ function toggleLike(postId: PostCardData['id']) {
 
       <!-- Posts Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PostCard v-for="p in filtered" :key="p.id" :post="p" @like="toggleLike" />
+        <PostCard
+          v-for="p in filtered"
+          :key="p.id"
+          :post="p"
+          :current-user-id="userStore.user?.id"
+          @like="toggleLike"
+          @edit="handleEdit"
+          @delete="handleDelete"
+        />
       </div>
     </div>
   </div>
