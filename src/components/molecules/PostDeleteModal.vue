@@ -1,6 +1,6 @@
 <!-- Delete confirmation modal - calm and safe -->
 <template>
-  <BaseModal :show="show" @close="$emit('close')">
+  <BaseModal v-model="showModal">
     <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 space-y-4">
       <div class="space-y-2">
         <h2 class="text-lg font-semibold text-slate-900">Delete this post?</h2>
@@ -11,13 +11,13 @@
 
       <!-- Actions -->
       <div class="flex items-center justify-end gap-2 pt-2">
-        <BaseButton variant="ghost" size="sm" @click="$emit('close')" :disabled="isDeleting">
+        <BaseButton variant="ghost" size="sm" @click="close" :disabled="isDeleting">
           Cancel
         </BaseButton>
         <BaseButton
           variant="danger"
           size="sm"
-          @click="$emit('confirm')"
+          @click="confirm"
           :disabled="isDeleting"
         >
           {{ isDeleting ? 'Deleting...' : 'Delete post' }}
@@ -28,16 +28,32 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 
-defineProps<{
+const props = defineProps<{
   show: boolean
   isDeleting?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'close'): void
   (e: 'confirm'): void
 }>()
+
+const showModal = computed({
+  get: () => props.show,
+  set: (value) => {
+    if (!value) emit('close')
+  },
+})
+
+function close() {
+  emit('close')
+}
+
+function confirm() {
+  emit('confirm')
+}
 </script>
