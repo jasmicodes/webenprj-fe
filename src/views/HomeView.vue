@@ -118,7 +118,7 @@ onMounted(() => {
   <main class="min-h-screen flex items-start justify-center px-8">
     <div class="w-full max-w-2xl py-8 content-glass-container">
       <!-- Feed Header -->
-      <header class="mb-8">
+      <header class="mb-6 pb-4 border-b border-slate-200/60">
         <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
         <p class="text-sm text-slate-600 mt-1">Latest posts from the Motivise community</p>
       </header>
@@ -167,14 +167,14 @@ onMounted(() => {
 <style scoped>
 /**
  * Glass effect for main content container
- * Rounded corners + glass backdrop for feed area
+ * Subtle backdrop for the feed column (cards remain solid white)
  */
 .content-glass-container {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   margin-top: 16px;
   margin-bottom: 16px;
   padding-left: 24px;
@@ -182,9 +182,9 @@ onMounted(() => {
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(20px)) {
+@supports not (backdrop-filter: blur(8px)) {
   .content-glass-container {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.85);
   }
 }
 </style>

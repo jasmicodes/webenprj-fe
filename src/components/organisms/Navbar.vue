@@ -25,7 +25,7 @@ function handleLogout() {
   <!-- Sidebar (Desktop) - Glass effect for chrome surfaces -->
   <nav
     :class="[
-      'hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between p-6 shadow-sm transition-all duration-300 navbar-glass',
+      'hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between p-6 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
       isCollapsed ? 'w-20' : 'w-64',
     ]"
   >
@@ -245,10 +245,15 @@ function handleLogout() {
  * - Background = ambient only
  */
 .navbar-glass {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%); /* Safari support */
-  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Subtle separation from content */
+.navbar-separator {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
 }
 
 /* Fallback for browsers without backdrop-filter support */

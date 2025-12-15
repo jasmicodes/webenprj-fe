@@ -62,14 +62,14 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 <style scoped>
 /**
  * Glass effect for main content container
- * Rounded corners + glass backdrop for help area
+ * Subtle backdrop for the help area
  */
 .content-glass-container {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   margin-top: 16px;
   margin-bottom: 16px;
   padding-left: 24px;
@@ -77,9 +77,9 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(20px)) {
+@supports not (backdrop-filter: blur(8px)) {
   .content-glass-container {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.85);
   }
 }
 </style>
