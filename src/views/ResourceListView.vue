@@ -36,36 +36,35 @@ const filtered = computed<PostCardData[]>(() => {
 </script>
 
 <template>
-  <section class="section">
-    <header class="mb-8">
-      <div class="max-w-3xl mx-auto flex flex-col items-stretch gap-4">
-        <h1 class="self-start md:self-center">Resources</h1>
+  <div class="bg-slate-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6">
+      <!-- Page Title -->
+      <h1 class="text-2xl font-semibold text-slate-900 mb-6">Resources</h1>
 
-        <div class="w-full md:w-[520px] mx-auto">
-          <SearchBar class="w-full" @search="onSearch" />
-        </div>
+      <!-- Filters -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6 space-y-4">
+        <SearchBar @search="onSearch" />
 
-        <div class="flex flex-col items-stretch md:flex-row md:justify-center gap-3">
-          <TagSelect
-            v-model="tag"
-            :options="tagOptions"
-            placeholder="Filter by tag…"
-            class="w-full md:w-72"
-          />
-        </div>
+        <TagSelect
+          v-model="tag"
+          :options="tagOptions"
+          placeholder="Filter by tag…"
+          class="w-full md:w-72"
+        />
       </div>
-    </header>
 
-    <div v-if="filtered.length === 0" class="card card-pad text-neutral-600">
-      No posts found. Try another tag or search term.
+      <!-- Empty State -->
+      <div
+        v-if="filtered.length === 0"
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center"
+      >
+        <p class="text-sm text-slate-500">No posts found. Try another tag or search term.</p>
+      </div>
+
+      <!-- Posts Grid -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <PostCard v-for="p in filtered" :key="p.id" :post="p" />
+      </div>
     </div>
-
-    <div v-else class="flex flex-col items-center gap-3 py-8">
-      <template v-for="(p, index) in filtered" :key="p.id">
-        <PostCard :post="p" />
-
-        <BaseDivider v-if="index < filtered.length - 1" class="divider-narrow" />
-      </template>
-    </div>
-  </section>
+  </div>
 </template>
