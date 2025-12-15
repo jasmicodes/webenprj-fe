@@ -4,12 +4,14 @@ import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
+import { useNavbar } from '@/composables/useNavbar'
 import { computed } from 'vue'
 
 defineOptions({ name: 'AppNavbar' })
 
 const userStore = useUserStore()
 const router = useRouter()
+const { isCollapsed, toggleCollapse } = useNavbar()
 
 const isAdmin = computed(() => userStore.user?.role === 'ADMIN')
 
@@ -22,39 +24,85 @@ function handleLogout() {
 <template>
   <!-- Sidebar (Desktop) -->
   <nav
-    class="hidden md:flex fixed left-0 top-0 h-screen w-64 bg-white border-r border-neutral-200 flex-col justify-between p-6 shadow-sm"
+    :class="[
+      'hidden md:flex fixed left-0 top-0 h-screen bg-white border-r border-neutral-200 flex-col justify-between p-6 shadow-sm transition-all duration-300',
+      isCollapsed ? 'w-20' : 'w-64',
+    ]"
   >
     <!-- Logo + Titel -->
     <div>
-      <div class="flex items-center gap-1 mb-10">
+      <div
+        :class="[
+          'flex items-center mb-10 transition-all duration-300',
+          isCollapsed ? 'justify-center gap-0' : 'gap-1',
+        ]"
+      >
         <img
           src="@/assets/Weben - Logo Motivise.svg"
           alt="Motivise Logo"
-          class="w-20 h-20 rounded-lg"
+          class="w-20 h-20 rounded-lg flex-shrink-0"
         />
-        <h1 class="font-heading text-xl tracking-wide">MOTIVISE</h1>
+        <h1
+          v-if="!isCollapsed"
+          class="font-heading text-xl tracking-wide transition-opacity duration-300"
+        >
+          MOTIVISE
+        </h1>
       </div>
 
       <!-- Hauptmenülinks -->
-      <div class="flex flex-col gap-6 w-full mt-2">
-        <RouterLink :to="{ name: 'home' }" class="navbar-link w-full">
-          <BaseIcon name="HomeIcon" />
-          <span><h2>Home</h2></span>
+      <div class="flex flex-col gap-3 w-full mt-2">
+        <RouterLink
+          :to="{ name: 'home' }"
+          :title="isCollapsed ? 'Home' : ''"
+          class="flex items-center rounded-lg px-3 py-2 font-heading text-base text-slate-700 transition-colors duration-200 hover:bg-primary-300 hover:text-primary-900"
+          :class="isCollapsed ? 'justify-center' : 'gap-3'"
+          active-class="bg-primary-300 text-neutral-50"
+        >
+          <div class="h-10 w-10 shrink-0 grid place-items-center">
+            <BaseIcon name="HomeIcon" class="w-6 h-6" />
+          </div>
+          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Home</h2></span>
         </RouterLink>
 
-        <RouterLink v-if="isAdmin" :to="{ name: 'admin' }" class="navbar-link">
-          <BaseIcon name="ShieldCheckIcon" />
-          <span><h2>Admin</h2></span>
+        <RouterLink
+          v-if="isAdmin"
+          :to="{ name: 'admin' }"
+          :title="isCollapsed ? 'Admin' : ''"
+          class="flex items-center rounded-lg px-3 py-2 font-heading text-base text-slate-700 transition-colors duration-200 hover:bg-primary-300 hover:text-primary-900"
+          :class="isCollapsed ? 'justify-center' : 'gap-3'"
+          active-class="bg-primary-300 text-neutral-50"
+        >
+          <div class="h-10 w-10 shrink-0 grid place-items-center">
+            <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
+          </div>
+          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Admin</h2></span>
         </RouterLink>
 
-        <RouterLink :to="{ name: 'resources' }" class="navbar-link">
-          <BaseIcon name="FolderIcon" />
-          <span><h2>Resources</h2></span>
+        <RouterLink
+          :to="{ name: 'resources' }"
+          :title="isCollapsed ? 'Resources' : ''"
+          class="flex items-center rounded-lg px-3 py-2 font-heading text-base text-slate-700 transition-colors duration-200 hover:bg-primary-300 hover:text-primary-900"
+          :class="isCollapsed ? 'justify-center' : 'gap-3'"
+          active-class="bg-primary-300 text-neutral-50"
+        >
+          <div class="h-10 w-10 shrink-0 grid place-items-center">
+            <BaseIcon name="FolderIcon" class="w-6 h-6" />
+          </div>
+          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Resources</h2></span>
         </RouterLink>
 
-        <RouterLink :to="{ name: 'profile' }" class="navbar-link">
-          <UserAvatar class="w-5 h-5 rounded-full object-cover" />
-          <span><h2>Profile</h2></span>
+        <RouterLink
+          :to="{ name: 'profile' }"
+          :title="isCollapsed ? 'Profile' : ''"
+          class="flex items-center rounded-lg px-3 py-2 font-heading text-base text-slate-700 transition-colors duration-200 hover:bg-primary-300 hover:text-primary-900"
+          :class="isCollapsed ? 'justify-center' : 'gap-3'"
+          active-class="bg-primary-300 text-neutral-50"
+        >
+          <div class="h-10 w-10 shrink-0 grid place-items-center">
+            <UserAvatar class="w-6 h-6 rounded-full object-cover" />
+          </div>
+          <span v-show="!isCollapsed" class="font-heading text-base"><h2>Profile</h2></span>
         </RouterLink>
       </div>
     </div>
@@ -62,15 +110,45 @@ function handleLogout() {
     <!-- Bottom actions -->
     <div class="flex flex-col gap-3">
       <!-- Help button (secondary) -->
-      <RouterLink :to="{ name: 'help' }" class="flex items-center gap-3 text-slate-500 hover:text-slate-700 transition-colors px-2 py-1.5">
-        <BaseIcon name="QuestionMarkCircleIcon" class="w-4 h-4" />
-        <span class="text-sm">Help</span>
+      <RouterLink
+        :to="{ name: 'help' }"
+        :title="isCollapsed ? 'Help' : ''"
+        class="flex items-center rounded-lg px-3 py-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        :class="isCollapsed ? 'justify-center' : 'gap-3'"
+      >
+        <div class="h-8 w-8 shrink-0 grid place-items-center">
+          <BaseIcon name="QuestionMarkCircleIcon" class="w-5 h-5" />
+        </div>
+        <span v-show="!isCollapsed" class="text-sm font-medium">Help</span>
       </RouterLink>
 
       <!-- Logout -->
-      <button @click="handleLogout" class="navbar-link">
-        <BaseIcon name="ArrowLeftEndOnRectangleIcon" />
-        <span><h2>Logout</h2></span>
+      <button
+        @click="handleLogout"
+        :title="isCollapsed ? 'Logout' : ''"
+        class="flex items-center rounded-lg px-3 py-2 font-heading text-base text-slate-700 transition-colors duration-200 hover:bg-primary-300 hover:text-primary-900"
+        :class="isCollapsed ? 'justify-center' : 'gap-3'"
+      >
+        <div class="h-10 w-10 shrink-0 grid place-items-center">
+          <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-6 h-6" />
+        </div>
+        <span v-show="!isCollapsed" class="font-heading text-base"><h2>Logout</h2></span>
+      </button>
+
+      <!-- Toggle collapse button -->
+      <button
+        @click="toggleCollapse"
+        :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        class="flex items-center rounded-lg px-3 py-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors mt-2 border-t border-slate-200 pt-4"
+        :class="isCollapsed ? 'justify-center' : 'gap-3'"
+      >
+        <div class="h-8 w-8 shrink-0 grid place-items-center">
+          <BaseIcon
+            :name="isCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'"
+            class="w-5 h-5"
+          />
+        </div>
+        <span v-show="!isCollapsed" class="text-sm font-medium">Collapse</span>
       </button>
     </div>
   </nav>
