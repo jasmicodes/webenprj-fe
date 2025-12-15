@@ -57,6 +57,7 @@ import PostHeader from '@/components/molecules/PostHeader.vue'
 import PostFooter from '@/components/molecules/PostFooter.vue'
 import fallbackAvatar from '@/assets/user1.avif'
 import type { PostCardData } from '@/utils/postMapper'
+import { useMediaImage } from '@/composables/useMediaImage'
 
 const props = defineProps<{
   post: PostCardData
@@ -72,6 +73,7 @@ const emit = defineEmits<{
   (e: 'delete', id: PostCardData['id']): void
 }>()
 
-const avatarSrc = computed(() => props.post.user.avatar || fallbackAvatar)
+// Load avatar via media API (converts /medias/{uuid} to blob URL)
+const { imageUrl: avatarSrc } = useMediaImage(() => props.post.user.avatar, fallbackAvatar)
 const isOwnPost = computed(() => props.currentUserId && props.post.userId === props.currentUserId)
 </script>

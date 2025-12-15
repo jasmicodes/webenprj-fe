@@ -20,7 +20,7 @@ export type PostCardData = {
 
 /**
  * Map a backend Post into the PostCardData shape.
- * Use overrides to inject UI-only fields (e.g., user avatars until the API provides them).
+ * Use overrides to inject UI-only fields (e.g., comment count, streak).
  */
 export function mapApiPostToCard(
   post: ApiPost,
@@ -29,7 +29,10 @@ export function mapApiPostToCard(
   return {
     id: post.id,
     userId: post.userId,
-    user: overrides.user || { name: post.username || 'Unknown user' },
+    user: overrides.user || {
+      name: post.username || 'Unknown user',
+      avatar: post.userProfileImageUrl ?? undefined,
+    },
     tag: overrides.tag || (post.subject ? processTagFromBackend(post.subject) : 'untagged'),
     time: overrides.time || post.createdAt,
     text: post.content ?? '',

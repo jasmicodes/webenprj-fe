@@ -53,6 +53,7 @@ export interface Post {
   updatedAt: string
   userId: string
   username: string
+  userProfileImageUrl?: string
   likeCount: number
   likedByCurrentUser: boolean
 }
