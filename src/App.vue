@@ -1,4 +1,7 @@
 <template>
+  <!-- AppBackground: Curated blurred backgrounds (rendered behind all content) -->
+  <AppBackground />
+
   <!-- Skip to main content link for accessibility -->
   <a
     href="#main-content"
@@ -12,24 +15,25 @@
 
   <main
     id="main-content"
-    class="section transition-all duration-300"
+    class="section transition-all duration-300 min-h-screen flex justify-center"
     :class="{
       'pb-16 md:pb-0': isAuthenticated && !route.meta.authPage,
-      'md:pl-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
-      'md:pl-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+      'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
+      'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
   >
-    <RouterView />
+    <div class="w-full">
+      <RouterView />
+    </div>
   </main>
 
   <!-- Footer (only on authenticated pages) -->
   <AppFooter
     v-if="isAuthenticated && !route.meta.authPage"
-    class="transition-all duration-300"
+    class="transition-all duration-300 fixed bottom-0 right-0 left-0 md:relative"
     :class="{
-      'mb-16 md:mb-0': isAuthenticated && !route.meta.authPage,
-      'md:pl-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
-      'md:pl-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+      'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
+      'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
   />
 
@@ -53,6 +57,7 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useNavbar } from '@/composables/useNavbar'
+import AppBackground from '@/components/organisms/AppBackground.vue'
 import Navbar from '@/components/organisms/Navbar.vue'
 import AppFooter from '@/components/organisms/AppFooter.vue'
 import ToastMessage from '@/components/molecules/ToastMessage.vue'

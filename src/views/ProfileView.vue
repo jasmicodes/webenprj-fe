@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from '@/stores/appearanceStore'
 import { getErrorMessage } from '@/services/api/client'
 import { followApi, mediaApi } from '@/services/api'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
@@ -14,12 +15,13 @@ import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseStat from '@/components/atoms/BaseStat.vue'
-import EmptyState from '@/components/atoms/EmptyState.vue'
+import BaseToggle from '@/components/atoms/BaseToggle.vue'
 import UploadDropZone from '@/components/molecules/UploadDropZone.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
 
 // -------------------- STORES & STATES --------------------
 const userStore = useUserStore()
+const appearanceStore = useAppearanceStore()
 const loading = ref(true)
 const error = ref<string | null>(null)
 const followers = ref<number | null>(null)
@@ -101,8 +103,8 @@ async function handleSaveProfile() {
 </script>
 
 <template>
-  <div class="bg-slate-50 min-h-screen">
-    <div class="max-w-5xl mx-auto p-6">
+  <div class="min-h-screen flex items-start justify-center px-8">
+    <div class="w-full max-w-5xl py-8 content-glass-container">
       <!-- LOADING -->
       <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
         <p class="text-sm text-slate-500">Loading profile...</p>
@@ -117,8 +119,8 @@ async function handleSaveProfile() {
       <div v-else-if="user" class="space-y-6">
         <h1 class="text-2xl font-semibold text-slate-900">Profile</h1>
 
-        <!-- PROFILE HEADER -->
-        <BaseCard>
+        <!-- PROFILE HEADER - Glass surface for chrome -->
+        <BaseCard class="glass-card">
           <div class="flex flex-col md:flex-row md:items-center gap-6">
             <UserAvatar
               v-if="profileImageSrc"
@@ -226,6 +228,108 @@ async function handleSaveProfile() {
             </BaseButton>
           </div>
         </BaseCard>
+
+        <!-- APPEARANCE SETTINGS - Glass surface for chrome -->
+        <BaseCard class="glass-card">
+          <div class="space-y-6">
+            <div>
+              <h2 class="text-lg font-semibold text-slate-900">Appearance</h2>
+              <p class="text-sm text-slate-500 mt-1">
+                Customize your visual experience with curated ambient backgrounds
+              </p>
+            </div>
+
+            <!-- Background Toggle -->
+            <div class="flex items-center justify-between py-3">
+              <div class="flex-1">
+                <label for="bg-toggle" class="text-sm font-medium text-slate-900 block">
+                  Background image
+                </label>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Enable a soft blurred background (disabled on mobile)
+                </p>
+              </div>
+              <BaseToggle
+                id="bg-toggle"
+                :model-value="appearanceStore.bgEnabled"
+                label="Toggle background image"
+                @update:model-value="appearanceStore.setBgEnabled"
+              />
+            </div>
+
+            <!-- Background Selector (only shown when enabled) -->
+            <div
+              v-if="appearanceStore.bgEnabled"
+              class="border-t border-slate-200 pt-6"
+            >
+              <label class="text-sm font-medium text-slate-900 block mb-3">
+                Select background
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <label
+                  v-for="bg in AVAILABLE_BACKGROUNDS"
+                  :key="bg.id"
+                  class="relative cursor-pointer group"
+                >
+                  <input
+                    type="radio"
+                    :value="bg.id"
+                    :checked="appearanceStore.bgId === bg.id"
+                    class="sr-only"
+                    @change="appearanceStore.setBgId(bg.id)"
+                  />
+                  <div
+                    class="relative aspect-video rounded-xl overflow-hidden border-2 transition-all"
+                    :class="
+                      appearanceStore.bgId === bg.id
+                        ? 'border-primary-500 ring-2 ring-primary-200'
+                        : 'border-slate-200 hover:border-slate-300'
+                    "
+                  >
+                    <!-- Preview with blur/overlay applied (matches actual background styling) -->
+                    <img
+                      :src="bg.path"
+                      :alt="bg.name"
+                      class="w-full h-full object-cover"
+                      style="filter: blur(9px) saturate(1.15) brightness(1.0); transform: scale(1.06)"
+                    />
+                    <div
+                      class="absolute inset-0 flex items-center justify-center"
+                      style="background: rgba(248, 250, 252, 0.45)"
+                    >
+                      <span class="text-xs font-medium text-slate-700">
+                        {{ bg.name }}
+                      </span>
+                    </div>
+                    <!-- Selected indicator -->
+                    <div
+                      v-if="appearanceStore.bgId === bg.id"
+                      class="absolute top-2 right-2 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center"
+                    >
+                      <svg
+                        class="w-4 h-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="3"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-2 text-center">{{ bg.name }}</p>
+                </label>
+              </div>
+              <p class="text-xs text-slate-500 mt-4">
+                Backgrounds are automatically blurred and softened to maintain focus on content
+              </p>
+            </div>
+          </div>
+        </BaseCard>
       </div>
 
       <!-- NO USER -->
@@ -235,3 +339,44 @@ async function handleSaveProfile() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/**
+ * Glass effect for main content container
+ * Rounded corners + glass backdrop for profile area
+ */
+.content-glass-container {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/**
+ * Glass effect for chrome surfaces (profile header, appearance settings)
+ *
+ * Visual hierarchy:
+ * - Chrome (profile panels, settings) = glass with backdrop blur
+ * - Content (posts, edit forms) = solid white (no glass)
+ * - Background = ambient only
+ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); /* Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .content-glass-container,
+  .glass-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+</style>

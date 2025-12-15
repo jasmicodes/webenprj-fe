@@ -50,8 +50,8 @@ function toggleLike(postId: PostCardData['id']) {
 </script>
 
 <template>
-  <div class="bg-slate-50 min-h-screen">
-    <div class="max-w-5xl mx-auto p-6">
+  <div class="min-h-screen flex items-start justify-center px-8">
+    <div class="w-full max-w-5xl py-8 content-glass-container">
       <!-- Page Title -->
       <h1 class="text-2xl font-semibold text-slate-900 mb-6">Resources</h1>
 
@@ -82,3 +82,28 @@ function toggleLike(postId: PostCardData['id']) {
     </div>
   </div>
 </template>
+
+<style scoped>
+/**
+ * Glass effect for main content container
+ * Rounded corners + glass backdrop for resources area
+ */
+.content-glass-container {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .content-glass-container {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+</style>

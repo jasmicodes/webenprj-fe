@@ -22,10 +22,10 @@ function handleLogout() {
 </script>
 
 <template>
-  <!-- Sidebar (Desktop) -->
+  <!-- Sidebar (Desktop) - Glass effect for chrome surfaces -->
   <nav
     :class="[
-      'hidden md:flex fixed left-0 top-0 h-screen bg-white border-r border-neutral-200 flex-col justify-between p-6 shadow-sm transition-all duration-300',
+      'hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between p-6 shadow-sm transition-all duration-300 navbar-glass',
       isCollapsed ? 'w-20' : 'w-64',
     ]"
   >
@@ -234,3 +234,27 @@ function handleLogout() {
     </ul>
   </nav>
 </template>
+
+<style scoped>
+/**
+ * Glass effect for navigation chrome (desktop only)
+ *
+ * Visual hierarchy:
+ * - Chrome (navigation) = glass with backdrop blur
+ * - Content (posts) = solid white
+ * - Background = ambient only
+ */
+.navbar-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); /* Safari support */
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .navbar-glass {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+</style>

@@ -115,8 +115,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="bg-slate-50 min-h-screen">
-    <div class="max-w-2xl mx-auto px-4 py-8">
+  <main class="min-h-screen flex items-start justify-center px-8">
+    <div class="w-full max-w-2xl py-8 content-glass-container">
       <!-- Feed Header -->
       <header class="mb-8">
         <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
@@ -163,3 +163,28 @@ onMounted(() => {
     </div>
   </main>
 </template>
+
+<style scoped>
+/**
+ * Glass effect for main content container
+ * Rounded corners + glass backdrop for feed area
+ */
+.content-glass-container {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .content-glass-container {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+</style>
