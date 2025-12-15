@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
@@ -7,6 +7,8 @@ import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
 import { useToastStore } from '@/stores/toastStore'
+import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 
 const posts = ref<PostCardData[]>([])
 const loading = ref(true)
@@ -17,6 +19,11 @@ const totalPages = ref(1)
 const pageSize = 10
 const toastStore = useToastStore()
 const filter = ref<'all' | 'following'>('all')
+
+// Ambient mode detection
+const appearanceStore = useAppearanceStore()
+const isMobile = useMediaQuery('(max-width: 768px)')
+const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
 async function loadPosts(reset = false) {
   if (reset) {
@@ -116,7 +123,10 @@ onMounted(() => {
 
 <template>
   <main class="min-h-screen flex items-start justify-center px-8">
-    <div class="w-full max-w-2xl py-8 content-glass-container">
+    <div
+      class="w-full max-w-2xl py-8 content-glass-container"
+      :class="{ 'ambient-mode': isAmbientMode }"
+    >
       <!-- Feed Header -->
       <header class="mb-6 pb-4 border-b border-slate-200/60">
         <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
@@ -166,24 +176,32 @@ onMounted(() => {
 
 <style scoped>
 /**
- * Glass effect for main content container
- * Subtle backdrop for the feed column (cards remain solid white)
+ * Feed column container
+ * Clean mode: minimal styling
+ * Ambient mode: premium glass panel that frames the content
  */
 .content-glass-container {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  /* Clean mode: very minimal */
+  background: transparent;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
   margin-top: 16px;
   margin-bottom: 16px;
   padding-left: 24px;
   padding-right: 24px;
 }
 
+/* Ambient mode: premium glass panel */
+.content-glass-container.ambient-mode {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(8px)) {
-  .content-glass-container {
+@supports not (backdrop-filter: blur(10px)) {
+  .content-glass-container.ambient-mode {
     background: rgba(255, 255, 255, 0.85);
   }
 }

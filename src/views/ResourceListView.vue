@@ -5,12 +5,19 @@ import SearchBar from '@/components/molecules/SearchBar.vue'
 import TagSelect from '@/components/molecules/TagSelect.vue'
 import { POSTS } from '@/data/posts'
 import type { PostCardData } from '@/utils/postMapper'
+import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 
 const q = ref('')
 const tag = ref('')
 
 // Create reactive copy of posts data to allow likes
 const posts = ref<PostCardData[]>(POSTS.map((p) => ({ ...p })))
+
+// Ambient mode detection
+const appearanceStore = useAppearanceStore()
+const isMobile = useMediaQuery('(max-width: 768px)')
+const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
 const tagOptions = computed(() => {
   const uniqueTags = Array.from(new Set(posts.value.map((p) => p.tag))).sort()
@@ -51,7 +58,10 @@ function toggleLike(postId: PostCardData['id']) {
 
 <template>
   <div class="min-h-screen flex items-start justify-center px-8">
-    <div class="w-full max-w-5xl py-8 content-glass-container">
+    <div
+      class="w-full max-w-5xl py-8 content-glass-container"
+      :class="{ 'ambient-mode': isAmbientMode }"
+    >
       <!-- Page Title -->
       <h1 class="text-2xl font-semibold text-slate-900 mb-6">Resources</h1>
 
@@ -85,24 +95,32 @@ function toggleLike(postId: PostCardData['id']) {
 
 <style scoped>
 /**
- * Glass effect for main content container
- * Subtle backdrop for the resources area
+ * Resources container
+ * Clean mode: minimal styling
+ * Ambient mode: premium glass panel
  */
 .content-glass-container {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  /* Clean mode: very minimal */
+  background: transparent;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
   margin-top: 16px;
   margin-bottom: 16px;
   padding-left: 24px;
   padding-right: 24px;
 }
 
+/* Ambient mode: premium glass panel */
+.content-glass-container.ambient-mode {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(8px)) {
-  .content-glass-container {
+@supports not (backdrop-filter: blur(10px)) {
+  .content-glass-container.ambient-mode {
     background: rgba(255, 255, 255, 0.85);
   }
 }

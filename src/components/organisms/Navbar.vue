@@ -5,6 +5,8 @@ import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
 import { useNavbar } from '@/composables/useNavbar'
+import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 import { computed } from 'vue'
 
 defineOptions({ name: 'AppNavbar' })
@@ -14,6 +16,11 @@ const router = useRouter()
 const { isCollapsed, toggleCollapse } = useNavbar()
 
 const isAdmin = computed(() => userStore.user?.role === 'ADMIN')
+
+// Ambient mode detection for enhanced styling
+const appearanceStore = useAppearanceStore()
+const isMobile = useMediaQuery('(max-width: 768px)')
+const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
 function handleLogout() {
   userStore.logout()
@@ -27,6 +34,7 @@ function handleLogout() {
     :class="[
       'hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between p-6 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
       isCollapsed ? 'w-20' : 'w-64',
+      { 'ambient-mode': isAmbientMode }
     ]"
   >
     <!-- Logo + Titel -->
@@ -245,20 +253,33 @@ function handleLogout() {
  * - Background = ambient only
  */
 .navbar-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%); /* Safari support */
+  /* Clean mode: solid background */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Ambient mode: enhanced glass effect */
+.navbar-glass.ambient-mode {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
 /* Subtle separation from content */
 .navbar-separator {
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Enhanced separation in ambient mode */
+.navbar-separator.ambient-mode {
+  border-right: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 3px 0 12px rgba(0, 0, 0, 0.04);
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(20px)) {
-  .navbar-glass {
+@supports not (backdrop-filter: blur(24px)) {
+  .navbar-glass.ambient-mode {
     background: rgba(255, 255, 255, 0.95);
   }
 }

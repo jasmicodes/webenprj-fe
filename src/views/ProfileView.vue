@@ -8,6 +8,7 @@ import { followApi, mediaApi } from '@/services/api'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
 import { useChangePassword } from '@/composables/useChangePassword'
 import { useProfileForm } from '@/composables/useProfileForm'
+import { useMediaQuery } from '@/composables/useMediaQuery'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
@@ -38,6 +39,10 @@ const countryName = computed(() => {
   return c?.label ?? user.value.countryCode
 })
 const profileImageSrc = ref<string | null>(null)
+
+// Ambient mode detection
+const isMobile = useMediaQuery('(max-width: 768px)')
+const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
 // -------------------- FORMS --------------------
 const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, saveProfile } = useProfileForm()
@@ -104,7 +109,10 @@ async function handleSaveProfile() {
 
 <template>
   <div class="min-h-screen flex items-start justify-center px-8">
-    <div class="w-full max-w-5xl py-8 content-glass-container">
+    <div
+      class="w-full max-w-5xl py-8 content-glass-container"
+      :class="{ 'ambient-mode': isAmbientMode }"
+    >
       <!-- LOADING -->
       <div v-if="loading" class="flex justify-center items-center min-h-[400px]">
         <p class="text-sm text-slate-500">Loading profile...</p>
@@ -342,19 +350,27 @@ async function handleSaveProfile() {
 
 <style scoped>
 /**
- * Glass effect for main content container
- * Subtle backdrop for the profile area
+ * Profile container
+ * Clean mode: minimal styling
+ * Ambient mode: premium glass panel
  */
 .content-glass-container {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px) saturate(120%);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  /* Clean mode: very minimal */
+  background: transparent;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
   margin-top: 16px;
   margin-bottom: 16px;
   padding-left: 24px;
   padding-right: 24px;
+}
+
+/* Ambient mode: premium glass panel */
+.content-glass-container.ambient-mode {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 /**
@@ -373,8 +389,8 @@ async function handleSaveProfile() {
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(8px)) {
-  .content-glass-container {
+@supports not (backdrop-filter: blur(10px)) {
+  .content-glass-container.ambient-mode {
     background: rgba(255, 255, 255, 0.85);
   }
 }
