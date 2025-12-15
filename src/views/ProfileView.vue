@@ -40,6 +40,8 @@ const isOwnProfile = computed(() => !!userStore.user) // single-user app
 
 const uploadingAvatar = ref(false)
 
+const profileImageSrc = ref<string | null>(null)
+
 // -------------------- Profile Form (EDIT) --------------------
 const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, saveProfile } =
   useProfileForm()
@@ -63,6 +65,9 @@ onMounted(async () => {
     error.value = getErrorMessage(err)
   } finally {
     loading.value = false
+  }
+  if (userStore.user?.profileImageUrl) {
+    profileImageSrc.value = await userStore.downloadProfileImage()
   }
 })
 
@@ -140,7 +145,9 @@ async function onAvatarSelected(file: File) {
       <h1 class="text-2xl font-heading mb-4"><strong>Profile</strong></h1>
 
       <div class="flex items-center gap-4 mb-6">
-        <UserAvatar class="avatar avatar-lg" />
+        <UserAvatar v-if="profileImageSrc"
+  :src="profileImageSrc"
+  alt="Profile Picture" class="avatar avatar-lg" />
 
         <div>
           <h1 class="text-2xl font-heading">{{ user.username }}</h1>
@@ -292,7 +299,8 @@ async function onAvatarSelected(file: File) {
           </UploadDropZone>
         </div>
 
-        <BaseButton class="mt-4" variant="primary" :disabled="savingProfile" @click="saveProfile">
+        <BaseButton class="mt-4" variant="primary" :disabled="savingProfile"  @click="() => saveProfile((u) => (userStore.user = u))">
+
           {{ savingProfile ? 'Saving…' : 'Save changes' }}
         </BaseButton>
       </section>

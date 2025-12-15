@@ -1,6 +1,7 @@
 <!-- src/components/organisms/Navbar.vue -->
 <script setup lang="ts">
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
+import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'

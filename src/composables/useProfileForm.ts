@@ -56,7 +56,7 @@ export function useProfileForm() {
     }
   }
 
-  async function saveProfile(onSuccess: (updatedUser: User) => void) {
+  async function saveProfile(onSuccess?: (updatedUser: User) => void) {
     clearEditErrors()
     toast.clear()
 
@@ -77,7 +77,9 @@ export function useProfileForm() {
 
       toast.showSuccess('Profile updated successfully')
       showEditProfile.value = false
-      onSuccess(updated)
+      if (onSuccess) {
+        onSuccess(updated)
+      }
     } catch (err) {
       toast.showError(getErrorMessage(err))
     } finally {
