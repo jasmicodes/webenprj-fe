@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
-import BaseDivider from '@/components/atoms/BaseDivider.vue'
+import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
-import { postsApi } from '@/services/api'
+import { postsApi, mediaApi } from '@/services/api'
 import { useToastStore } from '@/stores/toastStore'
 
 const posts = ref<PostCardData[]>([])
@@ -80,45 +80,86 @@ async function toggleLike(postId: PostCardData['id']) {
   }
 }
 
+async function handleCreatePost(payload: { subject: string; content: string; file: File | null }) {
+  try {
+    let imageUrl: string | undefined
+
+    // Upload media if provided
+    if (payload.file) {
+      const media = await mediaApi.upload(payload.file)
+      imageUrl = `/medias/${media.id}`
+    }
+
+    // Create post - payload now matches PostCreateRequest exactly
+    const newPost = await postsApi.createPost({
+      subject: payload.subject, // Backend requires 'subject' (not 'tag')
+      content: payload.content, // Content validated in composer (10-500 chars)
+      imageUrl, // Optional, validated pattern already passed
+    })
+
+    // Add new post to the top of the feed
+    const mapped = mapApiPostToCard(newPost, { user: { name: newPost.username } })
+    posts.value = [mapped, ...posts.value]
+
+    // Show success message
+    toastStore.showSuccess('Post created successfully!', 'Success')
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to create post'
+    toastStore.showError(message, 'Create Post')
+  }
+}
+
 onMounted(() => {
   void loadPosts(true)
 })
 </script>
 
 <template>
-  <main class="flex flex-col items-center gap-3 py-8">
-    <!-- Loading skeleton -->
-    <div v-if="loading" class="space-y-4 w-full max-w-2xl">
-      <div v-for="i in 3" :key="i" class="bg-gray-100 rounded-lg p-6 animate-pulse">
-        <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-        <div class="h-3 bg-gray-300 rounded w-full mb-1"></div>
-        <div class="h-3 bg-gray-300 rounded w-5/6"></div>
+  <main class="bg-slate-50 min-h-screen">
+    <div class="max-w-2xl mx-auto px-4 py-8">
+      <!-- Feed Header -->
+      <header class="mb-8">
+        <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
+        <p class="text-sm text-slate-600 mt-1">Latest posts from the Motivise community</p>
+      </header>
+
+      <!-- Composer Card -->
+      <div class="mb-6">
+        <ComposerCard @post="handleCreatePost" />
+      </div>
+
+      <!-- Loading skeleton -->
+      <div v-if="loading" class="space-y-6">
+        <div v-for="i in 3" :key="i" class="bg-gray-100 rounded-lg p-6 animate-pulse">
+          <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+          <div class="h-3 bg-gray-300 rounded w-full mb-1"></div>
+          <div class="h-3 bg-gray-300 rounded w-5/6"></div>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p class="text-red-600">Failed to load posts: {{ error }}</p>
+        <BaseButton class="mt-3" @click="retry">Retry</BaseButton>
+      </div>
+
+      <!-- Empty state -->
+      <div v-else-if="posts.length === 0" class="text-center py-12">
+        <p class="text-gray-600">No posts yet. Be the first to share!</p>
+      </div>
+
+      <!-- Posts -->
+      <div v-else class="space-y-6">
+        <PostCard v-for="p in posts" :key="p.id" :post="p" @like="toggleLike" />
+
+        <!-- Load more button -->
+        <div v-if="page + 1 < totalPages" class="flex justify-center pt-2">
+          <BaseButton :disabled="loadingMore" @click="loadMore">
+            <span v-if="loadingMore">Loading...</span>
+            <span v-else>Load more</span>
+          </BaseButton>
+        </div>
       </div>
     </div>
-
-    <!-- Error state -->
-    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 max-w-2xl">
-      <p class="text-red-600">Failed to load posts: {{ error }}</p>
-      <BaseButton class="mt-3" @click="retry">Retry</BaseButton>
-    </div>
-
-    <!-- Empty state -->
-    <div v-else-if="posts.length === 0" class="text-center py-12">
-      <p class="text-gray-600">No posts yet. Be the first to share!</p>
-    </div>
-
-    <!-- Posts -->
-    <template v-else>
-      <template v-for="(p, index) in posts" :key="p.id">
-        <PostCard :post="p" @like="toggleLike" />
-        <BaseDivider v-if="index < posts.length - 1" class="divider-narrow" />
-      </template>
-      <div v-if="page + 1 < totalPages" class="mt-6">
-        <BaseButton :disabled="loadingMore" @click="loadMore">
-          <span v-if="loadingMore">Loading...</span>
-          <span v-else>Load more</span>
-        </BaseButton>
-      </div>
-    </template>
   </main>
 </template>

@@ -1,4 +1,4 @@
-<!--„Wrapper“ (Atom) für deine Icons aus der Heroicons-Bibliothek-->
+<!--„Wrapper" (Atom) für deine Icons aus der Heroicons-Bibliothek-->
 <template>
   <!-- nimmt Größe IMMER, Farbe NUR wenn gesetzt -->
   <component :is="iconComponent" :class="[size, color]" aria-hidden="true" />
@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
-import * as Icons from '@heroicons/vue/24/solid'
+import * as SolidIcons from '@heroicons/vue/24/solid'
+import * as OutlineIcons from '@heroicons/vue/24/outline'
 
 type Props = {
   name: string
@@ -18,5 +19,18 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'w-5 h-5',
 })
 
-const iconComponent = computed(() => (Icons as Record<string, Component>)[props.name] || null)
+// Merge solid and outline icons
+// Outline icons get an "Outline" suffix (e.g., HeartOutline)
+// Solid icons use their default name (e.g., HeartIcon)
+const allIcons: Record<string, Component> = {
+  ...SolidIcons,
+}
+
+// Add outline icons with "Outline" suffix
+Object.entries(OutlineIcons).forEach(([name, component]) => {
+  const outlineName = name.replace('Icon', 'OutlineIcon')
+  allIcons[outlineName] = component as Component
+})
+
+const iconComponent = computed(() => allIcons[props.name] || null)
 </script>

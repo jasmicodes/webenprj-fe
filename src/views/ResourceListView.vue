@@ -3,15 +3,17 @@ import { ref, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import SearchBar from '@/components/molecules/SearchBar.vue'
 import TagSelect from '@/components/molecules/TagSelect.vue'
-import BaseDivider from '@/components/atoms/BaseDivider.vue'
 import { POSTS } from '@/data/posts'
 import type { PostCardData } from '@/utils/postMapper'
 
 const q = ref('')
 const tag = ref('')
 
+// Create reactive copy of posts data to allow likes
+const posts = ref<PostCardData[]>(POSTS.map((p) => ({ ...p })))
+
 const tagOptions = computed(() => {
-  const uniqueTags = Array.from(new Set(POSTS.map((p) => p.tag))).sort()
+  const uniqueTags = Array.from(new Set(posts.value.map((p) => p.tag))).sort()
   return [{ label: 'All tags', value: '' }, ...uniqueTags.map((t) => ({ label: t, value: t }))]
 })
 
@@ -22,7 +24,7 @@ function onSearch(value: string) {
 const filtered = computed<PostCardData[]>(() => {
   const term = q.value.trim().toLowerCase()
 
-  return POSTS.filter((p) => {
+  return posts.value.filter((p) => {
     const byTagFilter = tag.value ? p.tag === tag.value : true
 
     const byText = term
@@ -33,6 +35,18 @@ const filtered = computed<PostCardData[]>(() => {
     return byTagFilter && byText
   })
 })
+
+// Handle like toggle
+function toggleLike(postId: PostCardData['id']) {
+  const idx = posts.value.findIndex((p) => p.id === postId)
+  if (idx === -1) return
+
+  const post = posts.value[idx]
+  const newLiked = !post.liked
+  const newLikes = post.likes + (newLiked ? 1 : -1)
+
+  posts.value[idx] = { ...post, liked: newLiked, likes: Math.max(0, newLikes) }
+}
 </script>
 
 <template>
@@ -63,7 +77,7 @@ const filtered = computed<PostCardData[]>(() => {
 
       <!-- Posts Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PostCard v-for="p in filtered" :key="p.id" :post="p" />
+        <PostCard v-for="p in filtered" :key="p.id" :post="p" @like="toggleLike" />
       </div>
     </div>
   </div>

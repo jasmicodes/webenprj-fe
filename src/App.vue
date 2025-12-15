@@ -12,8 +12,12 @@
 
   <main
     id="main-content"
-    class="section"
-    :class="{ 'md:pl-64 pb-16 md:pb-0': isAuthenticated && !route.meta.authPage }"
+    class="section transition-all duration-300"
+    :class="{
+      'pb-16 md:pb-0': isAuthenticated && !route.meta.authPage,
+      'md:pl-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
+      'md:pl-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+    }"
   >
     <RouterView />
   </main>
@@ -21,7 +25,12 @@
   <!-- Footer (only on authenticated pages) -->
   <AppFooter
     v-if="isAuthenticated && !route.meta.authPage"
-    :class="{ 'md:pl-64 mb-16 md:mb-0': isAuthenticated && !route.meta.authPage }"
+    class="transition-all duration-300"
+    :class="{
+      'mb-16 md:mb-0': isAuthenticated && !route.meta.authPage,
+      'md:pl-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
+      'md:pl-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+    }"
   />
 
   <div
@@ -43,6 +52,7 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
+import { useNavbar } from '@/composables/useNavbar'
 import Navbar from '@/components/organisms/Navbar.vue'
 import AppFooter from '@/components/organisms/AppFooter.vue'
 import ToastMessage from '@/components/molecules/ToastMessage.vue'
@@ -51,4 +61,5 @@ const route = useRoute()
 const userStore = useUserStore()
 const toast = useToastStore()
 const { isAuthenticated } = storeToRefs(userStore)
+const { isCollapsed } = useNavbar()
 </script>

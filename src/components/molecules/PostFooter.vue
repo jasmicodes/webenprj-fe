@@ -1,27 +1,39 @@
 <!--(ActionsBar) – Likes/Comments/Save/Share-->
 <template>
-  <div class="card-actions justify-between text-neutral-900">
+  <div
+    class="card-actions flex items-center justify-between border-t border-slate-100 pt-4 text-neutral-900"
+  >
     <div class="flex items-center gap-5">
       <button
-        class="flex items-center gap-1"
+        class="flex items-center gap-1.5 transition-colors hover:text-rose-600"
         :class="props.liked ? 'text-rose-600' : 'text-neutral-900'"
         @click="emit('like')"
       >
-        <BaseIcon :name="props.liked ? 'HeartSolidIcon' : 'HeartIcon'" /><span>{{ props.likes }}</span>
+        <BaseIcon :name="props.liked ? 'HeartIcon' : 'HeartOutlineIcon'" />
+        <span class="text-sm font-medium">{{ props.likes }}</span>
       </button>
-      <button class="flex items-center gap-1" @click="emit('comment')">
-        <BaseIcon name="ChatBubbleOvalLeftIcon" /><span>{{ props.comments }}</span>
+      <button
+        class="flex items-center gap-1.5 transition-colors hover:text-blue-600"
+        @click="emit('comment')"
+      >
+        <BaseIcon name="ChatBubbleOvalLeftIcon" />
+        <span class="text-sm font-medium">{{ props.comments }}</span>
       </button>
-      <div class="flex items-center gap-1">
-        <BaseIcon name="BoltIcon" /><span>{{ props.streak }}</span>
+      <div class="flex items-center gap-1.5 text-amber-600">
+        <BaseIcon name="BoltIcon" />
+        <span class="text-sm font-medium">{{ props.streak }}</span>
       </div>
     </div>
     <div class="flex items-center gap-4">
-      <button @click="emit('save')"><BaseIcon name="BookmarkIcon" /></button>
-      <button @click="emit('share')"><BaseIcon name="ShareIcon" /></button>
+      <button class="transition-colors hover:text-blue-600" @click="emit('save')">
+        <BaseIcon name="BookmarkIcon" />
+      </button>
+      <button class="transition-colors hover:text-blue-600" @click="emit('share')">
+        <BaseIcon name="ShareIcon" />
+      </button>
     </div>
   </div>
- </template>
+</template>
 
 <script setup lang="ts">
 import BaseIcon from '@/components/atoms/BaseIcon.vue'

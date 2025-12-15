@@ -1,5 +1,5 @@
 <template>
-  <BaseCard size="lg" class="space-y-4">
+  <BaseCard size="lg">
     <!-- HEADER-SLOT -->
     <template #header>
       <PostHeader
@@ -11,21 +11,25 @@
     </template>
 
     <!-- BODY (default slot) -->
-    <figure
-      v-if="post.image"
-      class="mt-2 relative w-full aspect-[16/10] max-h-80 bg-neutral-50 overflow-hidden rounded-xl"
-    >
-      <img
-        :src="post.image"
-        :alt="post.imageAlt || 'Image by ' + post.user.name"
-        class="absolute inset-0 w-full h-full object-cover"
-        loading="lazy"
-      />
-    </figure>
+    <div class="space-y-4">
+      <!-- Image with fixed aspect ratio -->
+      <figure
+        v-if="post.image"
+        class="relative w-full aspect-[4/3] bg-neutral-50 overflow-hidden rounded-xl"
+      >
+        <img
+          :src="post.image"
+          :alt="post.imageAlt || 'Image by ' + post.user.name"
+          class="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      </figure>
 
-    <p v-if="post.text" class="text-slate-900 text-sm leading-relaxed line-clamp-4">
-      {{ post.text }}
-    </p>
+      <!-- Post text/caption -->
+      <p v-if="post.text" class="text-slate-900 text-sm leading-relaxed line-clamp-4">
+        {{ post.text }}
+      </p>
+    </div>
 
     <!-- FOOTER-SLOT (actions) -->
     <template #actions>
