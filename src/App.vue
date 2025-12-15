@@ -15,27 +15,35 @@
 
   <main
     id="main-content"
-    class="section transition-all duration-300 min-h-screen flex justify-center"
+    class="section transition-all duration-300 min-h-screen w-full"
     :class="{
       'pb-16 md:pb-0': isAuthenticated && !route.meta.authPage,
-      'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
-      'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
   >
-    <div class="w-full">
-      <RouterView />
+    <div
+      class="flex justify-center min-h-screen transition-all duration-300"
+      :class="{
+        'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
+        'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+      }"
+    >
+      <div class="w-full">
+        <RouterView />
+      </div>
     </div>
   </main>
 
   <!-- Footer (only on authenticated pages) -->
-  <AppFooter
+  <div
     v-if="isAuthenticated && !route.meta.authPage"
-    class="transition-all duration-300 fixed bottom-0 right-0 left-0 md:relative"
+    class="transition-all duration-300"
     :class="{
       'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
       'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
-  />
+  >
+    <AppFooter class="fixed bottom-0 right-0 left-0 md:relative" />
+  </div>
 
   <div
     class="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md px-4 md:px-0 md:left-auto md:right-6 md:translate-x-0 space-y-2 z-50"
