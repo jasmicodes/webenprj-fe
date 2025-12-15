@@ -121,6 +121,16 @@ async function onAvatarSelected(file: File) {
     error.value = getErrorMessage(err)
   }
 }
+
+// -------------------- Save Profile Handler --------------------
+async function handleSaveProfile() {
+  await saveProfile((updatedUser) => {
+    // Update userStore with fresh data
+    userStore.user = updatedUser
+    // Re-initialize form with updated data
+    initEditForm(updatedUser)
+  })
+}
 </script>
 
 <template>
@@ -292,7 +302,7 @@ async function onAvatarSelected(file: File) {
           </UploadDropZone>
         </div>
 
-        <BaseButton class="mt-4" variant="primary" :disabled="savingProfile" @click="saveProfile">
+        <BaseButton class="mt-4" variant="primary" :disabled="savingProfile" @click="handleSaveProfile">
           {{ savingProfile ? 'Saving…' : 'Save changes' }}
         </BaseButton>
       </section>
