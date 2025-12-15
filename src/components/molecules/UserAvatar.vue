@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import avatarPlaceholder from '@/assets/avatar-placeholder.svg'
 
@@ -10,6 +10,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     size?: 'xs' | 'sm' | 'md' | 'lg'
+    src?: string
   }>(),
   { size: 'md' },
 )
@@ -18,8 +19,16 @@ const userStore = useUserStore()
 const sizeClass = computed(() => `avatar-${props.size}`)
 const imageUrl = ref<string>(avatarPlaceholder)
 
-onMounted(async () => {
-  if (!userStore.user?.profileImageUrl) return
+async function loadProfileImage() {
+  if (props.src) {
+    imageUrl.value = props.src
+    return
+  }
+
+  if (!userStore.user?.profileImageUrl) {
+    imageUrl.value = avatarPlaceholder
+    return
+  }
 
   try {
     const objectUrl = await userStore.downloadProfileImage()
@@ -28,10 +37,24 @@ onMounted(async () => {
       console.log('✅ Bild-URL erhalten:', objectUrl)
     } else {
       console.warn('⚠️ Keine Bild-URL zurückgegeben.')
+      imageUrl.value = avatarPlaceholder
     }
   } catch (err) {
     console.error('❌ Fehler beim Laden des Profilbilds:', err)
+    imageUrl.value = avatarPlaceholder
   }
+}
+
+onMounted(() => {
+  loadProfileImage()
+})
+
+watch(() => userStore.user?.profileImageUrl, () => {
+  loadProfileImage()
+})
+
+watch(() => props.src, () => {
+  loadProfileImage()
 })
 </script>
 

@@ -91,6 +91,10 @@ async function onAvatarSelected(file: File) {
   try {
     const media = await mediaApi.upload(file)
     editForm.value.profileImageUrl = `/medias/${media.id}`
+
+    // Immediately download and display the new avatar
+    const blob = await mediaApi.retrieve(media.id)
+    profileImageSrc.value = URL.createObjectURL(blob)
   } catch (err) {
     error.value = getErrorMessage(err)
   } finally {
@@ -100,9 +104,13 @@ async function onAvatarSelected(file: File) {
 
 // -------------------- SAVE PROFILE --------------------
 async function handleSaveProfile() {
-  await saveProfile((updatedUser) => {
+  await saveProfile(async (updatedUser) => {
     userStore.user = updatedUser
     initEditForm(updatedUser)
+    // Reload profile image after save
+    if (updatedUser.profileImageUrl) {
+      profileImageSrc.value = await userStore.downloadProfileImage()
+    }
   })
 }
 </script>
@@ -199,7 +207,8 @@ async function handleSaveProfile() {
             <div class="border-t border-slate-200 pt-6">
               <label class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3 block">Profile Photo</label>
               <div class="flex items-center gap-4">
-                <UserAvatar class="w-16 h-16 rounded-full object-cover" />
+                <UserAvatar v-if="profileImageSrc" :src="profileImageSrc" class="w-16 h-16 rounded-full object-cover" />
+                <UserAvatar v-else class="w-16 h-16 rounded-full object-cover" />
                 <UploadDropZone accept="image/*" @selected="onAvatarSelected">
                   <BaseButton variant="outline" :disabled="uploadingAvatar">
                     {{ uploadingAvatar ? 'Uploading…' : 'Change photo' }}
