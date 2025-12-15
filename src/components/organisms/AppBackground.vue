@@ -138,43 +138,46 @@ watch(effectiveBgEnabled, (enabled) => {
 </script>
 
 <template>
-  <!-- Only render background layers when effectively enabled -->
-  <div v-if="effectiveBgEnabled" class="app-background">
-    <!-- Image Layer A -->
-    <div
-      class="app-background__layer"
-      :class="{
-        'app-background__layer--active': activeLayer === 'A' && layerA_loaded && !imageError,
-        'app-background__layer--transitioning': isTransitioning,
-      }"
-      :style="{
-        backgroundImage: layerA_loaded && layerA_url ? `url(${layerA_url})` : 'none',
-      }"
-    />
+  <!-- Always render background - either image or fallback gradient -->
+  <div class="app-background" :class="{ 'app-background--fallback': !effectiveBgEnabled }">
+    <!-- Only render image layers when background is enabled -->
+    <template v-if="effectiveBgEnabled">
+      <!-- Image Layer A -->
+      <div
+        class="app-background__layer"
+        :class="{
+          'app-background__layer--active': activeLayer === 'A' && layerA_loaded && !imageError,
+          'app-background__layer--transitioning': isTransitioning,
+        }"
+        :style="{
+          backgroundImage: layerA_loaded && layerA_url ? `url(${layerA_url})` : 'none',
+        }"
+      />
 
-    <!-- Image Layer B -->
-    <div
-      class="app-background__layer"
-      :class="{
-        'app-background__layer--active': activeLayer === 'B' && layerB_loaded && !imageError,
-        'app-background__layer--transitioning': isTransitioning,
-      }"
-      :style="{
-        backgroundImage: layerB_loaded && layerB_url ? `url(${layerB_url})` : 'none',
-      }"
-    />
+      <!-- Image Layer B -->
+      <div
+        class="app-background__layer"
+        :class="{
+          'app-background__layer--active': activeLayer === 'B' && layerB_loaded && !imageError,
+          'app-background__layer--transitioning': isTransitioning,
+        }"
+        :style="{
+          backgroundImage: layerB_loaded && layerB_url ? `url(${layerB_url})` : 'none',
+        }"
+      />
 
-    <!-- Fallback gradient if image fails to load -->
-    <div
-      v-if="imageError"
-      class="app-background__layer app-background__layer--error app-background__layer--active"
-    />
+      <!-- Fallback gradient if image fails to load -->
+      <div
+        v-if="imageError"
+        class="app-background__layer app-background__layer--error app-background__layer--active"
+      />
 
-    <!-- Tint layer: subtle "glass lift" effect without washing out colors -->
-    <div class="app-background__tint" />
+      <!-- Tint layer: subtle "glass lift" effect without washing out colors -->
+      <div class="app-background__tint" />
 
-    <!-- Overlay layer: guaranteed readability for UI content -->
-    <div class="app-background__overlay" />
+      <!-- Overlay layer: guaranteed readability for UI content -->
+      <div class="app-background__overlay" />
+    </template>
   </div>
 </template>
 
@@ -291,5 +294,20 @@ watch(effectiveBgEnabled, (enabled) => {
   height: 100%;
   background: rgba(248, 250, 252, 0.45); /* slate-50 with 45% opacity - background is very visible */
   pointer-events: none;
+}
+
+/**
+ * Fallback background when image backgrounds are disabled
+ *
+ * Provides a subtle gradient for better contrast with the glass navbar
+ * and white content cards. Ensures the app doesn't look washed out.
+ */
+.app-background--fallback {
+  background: linear-gradient(
+    135deg,
+    #f1f5f9 0%,
+    #e2e8f0 50%,
+    #cbd5e1 100%
+  );
 }
 </style>
