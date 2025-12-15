@@ -1,4 +1,5 @@
 import type { Post as ApiPost } from '@/services/api/types'
+import { processTagFromBackend } from './tagUtils'
 
 /**
  * UI-friendly post shape expected by PostCard/feed views.
@@ -27,7 +28,7 @@ export function mapApiPostToCard(
   return {
     id: post.id,
     user: overrides.user || { name: post.username || 'Unknown user' },
-    tag: overrides.tag || post.subject || '#untagged',
+    tag: overrides.tag || (post.subject ? processTagFromBackend(post.subject) : 'untagged'),
     time: overrides.time,
     text: post.content ?? '',
     image: post.imageUrl ?? undefined,

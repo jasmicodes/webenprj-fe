@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
+import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
-import { postsApi } from '@/services/api'
+import { postsApi, mediaApi } from '@/services/api'
 import { useToastStore } from '@/stores/toastStore'
 
 const posts = ref<PostCardData[]>([])
@@ -79,6 +80,35 @@ async function toggleLike(postId: PostCardData['id']) {
   }
 }
 
+async function handleCreatePost(payload: { subject: string; content: string; file: File | null }) {
+  try {
+    let imageUrl: string | undefined
+
+    // Upload media if provided
+    if (payload.file) {
+      const media = await mediaApi.upload(payload.file)
+      imageUrl = `/medias/${media.id}`
+    }
+
+    // Create post - payload now matches PostCreateRequest exactly
+    const newPost = await postsApi.createPost({
+      subject: payload.subject, // Backend requires 'subject' (not 'tag')
+      content: payload.content, // Content validated in composer (10-500 chars)
+      imageUrl, // Optional, validated pattern already passed
+    })
+
+    // Add new post to the top of the feed
+    const mapped = mapApiPostToCard(newPost, { user: { name: newPost.username } })
+    posts.value = [mapped, ...posts.value]
+
+    // Show success message
+    toastStore.showSuccess('Post created successfully!', 'Success')
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to create post'
+    toastStore.showError(message, 'Create Post')
+  }
+}
+
 onMounted(() => {
   void loadPosts(true)
 })
@@ -92,6 +122,11 @@ onMounted(() => {
         <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
         <p class="text-sm text-slate-600 mt-1">Latest posts from the Motivise community</p>
       </header>
+
+      <!-- Composer Card -->
+      <div class="mb-6">
+        <ComposerCard @post="handleCreatePost" />
+      </div>
 
       <!-- Loading skeleton -->
       <div v-if="loading" class="space-y-6">
