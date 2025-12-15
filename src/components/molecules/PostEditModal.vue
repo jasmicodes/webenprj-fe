@@ -1,6 +1,6 @@
 <!-- Edit post modal with composer-style UI -->
 <template>
-  <BaseModal :show="show" @close="$emit('close')">
+  <BaseModal v-model="showModal">
     <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 p-6 space-y-4">
       <h2 class="text-xl font-semibold text-slate-900">Edit your reflection</h2>
 
@@ -46,7 +46,7 @@
           }}
         </p>
         <div class="flex items-center gap-2">
-          <BaseButton variant="ghost" size="sm" @click="$emit('close')">Cancel</BaseButton>
+          <BaseButton variant="ghost" size="sm" @click="close">Cancel</BaseButton>
           <BaseButton
             variant="primary"
             size="sm"
@@ -84,6 +84,14 @@ const emit = defineEmits<{
 const localContent = ref(props.content)
 const localSubject = ref(props.subject)
 
+// Computed property to bridge show prop to v-model
+const showModal = computed({
+  get: () => props.show,
+  set: (value) => {
+    if (!value) emit('close')
+  },
+})
+
 // Reset local state when modal opens with new data
 watch(
   () => props.show,
@@ -104,6 +112,10 @@ const isValid = computed(() => {
 
   return true
 })
+
+function close() {
+  emit('close')
+}
 
 function handleSave() {
   if (!isValid.value) return
