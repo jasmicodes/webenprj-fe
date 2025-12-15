@@ -25,6 +25,24 @@ const appearanceStore = useAppearanceStore()
 const isMobile = useMediaQuery('(max-width: 768px)')
 const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
+// Gentle progress presence: Check if user posted today
+const hasPostedToday = computed(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return posts.value.some(post => {
+    const postDate = new Date(post.time || '')
+    postDate.setHours(0, 0, 0, 0)
+    return postDate.getTime() === today.getTime()
+  })
+})
+
+const dailyStatusMessage = computed(() => {
+  return hasPostedToday.value
+    ? "You've shared an update today"
+    : 'No update yet today'
+})
+
 async function loadPosts(reset = false) {
   if (reset) {
     page.value = 0
@@ -129,8 +147,20 @@ onMounted(() => {
     >
       <!-- Feed Header -->
       <header class="mb-6 pb-4 border-b border-slate-200/60">
-        <h1 class="text-2xl font-semibold text-slate-900">Your feed</h1>
-        <p class="text-sm text-slate-600 mt-1">Latest posts from the Motivise community</p>
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <h1 class="text-2xl font-semibold text-slate-900">Today's Workbench</h1>
+            <p class="text-sm text-slate-600 mt-1">Your daily study reflections</p>
+          </div>
+          <!-- Gentle progress presence (non-gamified, calm) -->
+          <div
+            v-if="!loading"
+            class="text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full flex-shrink-0"
+            :class="hasPostedToday ? 'opacity-70' : 'opacity-60'"
+          >
+            {{ dailyStatusMessage }}
+          </div>
+        </div>
       </header>
 
       <!-- Composer Card -->
@@ -153,9 +183,10 @@ onMounted(() => {
         <BaseButton class="mt-3" @click="retry">Retry</BaseButton>
       </div>
 
-      <!-- Empty state -->
+      <!-- Empty state (calm and welcoming) -->
       <div v-else-if="posts.length === 0" class="text-center py-12">
-        <p class="text-gray-600">No posts yet. Be the first to share!</p>
+        <p class="text-slate-600 text-sm">Your study reflections will appear here.</p>
+        <p class="text-slate-500 text-xs mt-2">Start by sharing what you're learning today.</p>
       </div>
 
       <!-- Posts -->

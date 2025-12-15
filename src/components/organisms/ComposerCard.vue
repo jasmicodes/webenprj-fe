@@ -95,12 +95,13 @@ function removeFile() {
         @click="expand"
         class="flex items-center gap-3 w-full text-left group"
         type="button"
+        aria-label="Start writing about your study session"
       >
         <UserAvatar class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
         <div
           class="flex-1 px-4 py-3 rounded-xl bg-slate-50 text-slate-500 group-hover:bg-slate-100 group-hover:text-slate-600 transition-colors"
         >
-          Share what you worked on today…
+          What did you study today?
         </div>
       </button>
     </div>
@@ -117,22 +118,25 @@ function removeFile() {
         </div>
       </div>
 
-      <!-- Content textarea -->
-      <CharCounterTextarea
-        v-model="content"
-        placeholder="Share your progress, insights, or questions..."
-        :max="500"
-        :max-length="500"
-        :rows="4"
-      />
+      <!-- Content textarea with helper hint -->
+      <div class="space-y-1.5">
+        <CharCounterTextarea
+          v-model="content"
+          placeholder="What did you study today?"
+          :max="500"
+          :max-length="500"
+          :rows="4"
+        />
+        <p class="text-xs text-slate-500 pl-1">One sentence is enough.</p>
+      </div>
 
       <!-- Tag input -->
       <div>
         <label class="block text-xs font-medium text-slate-700 mb-1.5">
-          Subject/Tag
-          <span class="text-slate-500 font-normal">(optional, defaults to 'general')</span>
+          Subject
+          <span class="text-slate-500 font-normal">(optional)</span>
         </label>
-        <TagInput v-model="subject" placeholder="Add a subject (e.g., webengineering)" />
+        <TagInput v-model="subject" placeholder="e.g., webengineering, algorithms, databases" />
       </div>
 
       <!-- Media upload area -->
@@ -190,26 +194,26 @@ function removeFile() {
             content.trim().length === 0
               ? 'text-slate-500'
               : content.trim().length < 10
-                ? 'text-amber-600'
+                ? 'text-slate-600'
                 : !isSubjectValid
-                  ? 'text-red-600'
+                  ? 'text-slate-700'
                   : 'text-slate-500'
           "
         >
           {{
             content.trim().length === 0
-              ? 'Minimum 10 characters required for content'
+              ? 'Reflect on your learning'
               : content.trim().length < 10
-                ? `${10 - content.trim().length} more characters needed for content`
+                ? `${10 - content.trim().length} more characters`
                 : !isSubjectValid
-                  ? 'Subject must be 2-30 characters (letters, numbers, spaces, dashes, underscores)'
-                  : 'Posts are visible to all users'
+                  ? 'Subject: 2-30 characters, letters and numbers only'
+                  : 'Visible to your study community'
           }}
         </p>
         <div class="flex items-center gap-2">
           <BaseButton variant="ghost" size="sm" @click="collapse">Cancel</BaseButton>
           <BaseButton variant="primary" size="sm" :disabled="!canPost" @click="handlePost">
-            Post
+            Share
           </BaseButton>
         </div>
       </div>
