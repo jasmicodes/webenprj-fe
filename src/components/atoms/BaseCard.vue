@@ -1,15 +1,15 @@
 <!--Container für Posts, Profile, etc. - follows design tokens: bg-white, rounded-2xl, border, shadow-sm, p-6-->
 <template>
   <article class="bg-white rounded-2xl border border-slate-200 shadow-sm">
-    <header v-if="$slots.header" class="p-6 pb-0">
+    <header v-if="$slots.header" class="px-6 pt-6 pb-4">
       <slot name="header" />
     </header>
 
-    <div class="p-6" :class="{ 'pt-4': $slots.header }">
+    <div class="px-6" :class="$slots.header ? 'pb-4' : 'pt-6 pb-4'">
       <slot />
     </div>
 
-    <footer v-if="$slots.actions" class="p-6 pt-0">
+    <footer v-if="$slots.actions" class="px-6 pb-6">
       <slot name="actions" />
     </footer>
   </article>

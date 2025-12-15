@@ -155,7 +155,7 @@ async function handleSaveProfile() {
                 <p class="text-sm text-slate-500">{{ user.email }}</p>
               </div>
 
-              <!-- Meta row: Country + Role -->
+              <!-- Meta row: Country (+ Role for admins only) -->
               <div class="flex flex-wrap gap-4 text-sm">
                 <div>
                   <span class="text-xs font-medium text-slate-500 uppercase tracking-wide"
@@ -163,7 +163,7 @@ async function handleSaveProfile() {
                   >
                   <p class="text-slate-900">{{ countryName }}</p>
                 </div>
-                <div>
+                <div v-if="user.role === 'ADMIN'">
                   <span class="text-xs font-medium text-slate-500 uppercase tracking-wide"
                     >Role</span
                   >
