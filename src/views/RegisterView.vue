@@ -5,6 +5,7 @@ import { AxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { authApi } from '@/services/api/'
 import { useToastStore } from '@/stores/toastStore'
+import type { RegisterRequest } from '@/services/api/types'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
