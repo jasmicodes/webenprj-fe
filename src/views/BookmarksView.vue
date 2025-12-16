@@ -71,6 +71,17 @@ function handleCreateCollection(data: any) {
   console.log('Create collection:', data)
   showCreateModal.value = false
 }
+
+// Handle bookmark removal
+async function handleRemoveBookmark(postId: string) {
+  try {
+    await bookmarkStore.removeBookmark(postId)
+    // Refresh the bookmarks list
+    await bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId)
+  } catch (error) {
+    console.error('Failed to remove bookmark:', error)
+  }
+}
 </script>
 
 <template>
@@ -216,6 +227,7 @@ function handleCreateCollection(data: any) {
               v-for="bookmark in searchFiltered"
               :key="bookmark.id"
               :bookmark="bookmark"
+              @remove="handleRemoveBookmark"
             />
           </div>
         </div>
