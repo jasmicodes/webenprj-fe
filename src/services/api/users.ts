@@ -55,6 +55,19 @@ export const adminUsersApi = {
   async deleteUser(id: string): Promise<void> {
     await api.delete(`/users/${id}`)
   },
+
+  /**
+   * Toggle user active status (activate/deactivate)
+   * Uses dedicated PATCH endpoint for atomic status updates
+   * @param id User UUID
+   * @param active New active status
+   */
+  async toggleUserActive(id: string, active: boolean): Promise<AdminUser> {
+    const res = await api.patch<AdminUser>(`/users/${id}/active`, null, {
+      params: { active },
+    })
+    return res.data
+  },
 }
 
 export const followApi = {

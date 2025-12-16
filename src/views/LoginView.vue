@@ -59,10 +59,17 @@ async function onSubmit() {
   } catch (err: unknown) {
     // Login failed (API error)
     const status = (err as AxiosError)?.response?.status
+    const errorMsg = getErrorMessage(err)
+
     if (status === 401 || status === 403) {
-      toast.showError('Invalid username/email or password.')
+      // Check if it's a disabled account error
+      if (errorMsg.toLowerCase().includes('deactivated') || errorMsg.toLowerCase().includes('disabled')) {
+        toast.showError(errorMsg)
+      } else {
+        toast.showError('Invalid username/email or password.')
+      }
     } else {
-      toast.showError(getErrorMessage(err))
+      toast.showError(errorMsg)
     }
   } finally {
     loading.value = false
