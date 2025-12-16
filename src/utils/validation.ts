@@ -11,7 +11,7 @@ export const VALIDATION_MESSAGES = {
   INVALID_EMAIL: 'Invalid email address',
   WEAK_PASSWORD: PASSWORD_REQUIREMENTS,
   PASSWORDS_DONT_MATCH: 'Passwords must match',
-  USERNAME_TOO_SHORT: 'Username must be at least 3 characters',
+  USERNAME_TOO_SHORT: 'Username must be at least 5 characters',
   USERNAME_INVALID: 'Username can only contain letters, numbers, and underscores',
   SUBJECT_INVALID:
     "Subject can include letters, numbers, spaces, dashes, underscores, and optional leading '#'",
@@ -45,7 +45,7 @@ export const createUsernameSchema = () =>
     .string()
     .transform((value) => value?.trim())
     .required(VALIDATION_MESSAGES.REQUIRED)
-    .min(3, VALIDATION_MESSAGES.USERNAME_TOO_SHORT)
+    .min(5, VALIDATION_MESSAGES.USERNAME_TOO_SHORT)
     .matches(/^[a-zA-Z0-9_]+$/, VALIDATION_MESSAGES.USERNAME_INVALID)
 
 export const createPostSubjectSchema = () =>
