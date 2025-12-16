@@ -4,12 +4,14 @@ import * as yup from 'yup'
 
 import { usersApi } from '@/services/api/users'
 import { useToastStore } from '@/stores/toastStore'
+import { useUserStore } from '@/stores/userStore'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { getErrorMessage } from '@/services/api/client'
 import type { User } from '@/services/api/types'
 
 export function useProfileForm() {
   const toast = useToastStore()
+  const userStore = useUserStore()
 
   const showEditProfile = ref(false)
   const savingProfile = ref(false)
@@ -66,6 +68,13 @@ export function useProfileForm() {
       return
     }
 
+    // Check if credentials (email or username) are being changed
+    const currentUser = userStore.user
+    const credentialsChanged =
+      currentUser &&
+      (currentUser.email !== editForm.value.email ||
+        currentUser.username !== editForm.value.username)
+
     savingProfile.value = true
     try {
       const updated = await usersApi.updateMyProfile({
@@ -75,8 +84,16 @@ export function useProfileForm() {
         profileImageUrl: editForm.value.profileImageUrl || undefined,
       })
 
-      toast.showSuccess('Profile updated successfully')
       showEditProfile.value = false
+
+      // If credentials changed, force re-login for security
+      if (credentialsChanged) {
+        toast.showSuccess('Credentials updated successfully. Please log in again.')
+        userStore.logout()
+        return
+      }
+
+      toast.showSuccess('Profile updated successfully')
       if (onSuccess) {
         onSuccess(updated)
       }
