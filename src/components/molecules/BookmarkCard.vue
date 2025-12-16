@@ -1,63 +1,63 @@
+<!--
+  BookmarkCard - Study-focused saved post display
+
+  UX improvements applied:
+  - Reuses PostHeader component for visual consistency with main feed
+  - De-emphasizes social engagement (likes/comments) with opacity + outline icons
+  - Matches PostFooter icon order (like, comment, bookmark) for familiarity
+  - Kebab menu only visible on hover to reduce visual clutter
+  - "Remove from saved" action separated from engagement - prevents accidental deletions
+  - Student-friendly copy: "Saved X ago" instead of technical "Bookmarked"
+  - Soft dividers and generous spacing for calm, study-appropriate aesthetic
+-->
 <template>
   <div
-    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow"
+    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow relative bookmark-card"
   >
-    <!-- Header with avatar and user info -->
-    <div class="flex items-start gap-3 mb-3">
-      <img
-        v-if="avatarSrc"
-        :src="avatarSrc"
-        :alt="bookmark.post.username"
-        class="w-10 h-10 rounded-full object-cover"
-      />
-      <div
-        v-else
-        class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold text-sm"
+    <!-- Reuse PostHeader for consistency with main feed -->
+    <PostHeader
+      :username="bookmark.post.username"
+      :avatar-src="avatarSrc"
+      :tag="bookmark.post.subject"
+      :time="bookmark.post.createdAt"
+    />
+
+    <!-- Actions menu (subtle, appears on hover) -->
+    <div class="absolute top-4 right-4 bookmark-card-menu" ref="dropdownRef">
+      <button
+        class="p-1.5 transition-all hover:text-slate-700 hover:bg-slate-50 rounded-md text-slate-300"
+        :class="{ 'bg-slate-100 text-slate-900': showMenu }"
+        @click="showMenu = !showMenu"
+        :aria-label="showMenu ? 'Hide options' : 'Show options'"
+        :aria-expanded="showMenu"
+        title="Options"
       >
-        {{ bookmark.post.username[0].toUpperCase() }}
-      </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium text-slate-900">{{ bookmark.post.username }}</p>
-        <p class="text-xs text-slate-500">{{ bookmark.post.subject }}</p>
-      </div>
+        <BaseIcon name="EllipsisVerticalIcon" class="w-5 h-5" />
+      </button>
 
-      <!-- Actions menu -->
-      <div class="relative" ref="dropdownRef">
-        <button
-          class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md text-slate-400"
-          :class="{ 'bg-slate-100 text-slate-900': showMenu }"
-          @click="showMenu = !showMenu"
-          :aria-label="showMenu ? 'Hide options' : 'Show options'"
-          :aria-expanded="showMenu"
-          title="Options"
+      <!-- Dropdown menu -->
+      <Transition
+        enter-active-class="transition ease-out duration-100"
+        enter-from-class="transform opacity-0 scale-95"
+        enter-to-class="transform opacity-100 scale-100"
+        leave-active-class="transition ease-in duration-75"
+        leave-from-class="transform opacity-100 scale-100"
+        leave-to-class="transform opacity-0 scale-95"
+      >
+        <div
+          v-if="showMenu"
+          class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
         >
-          <BaseIcon name="EllipsisVerticalIcon" class="w-5 h-5" />
-        </button>
-
-        <!-- Dropdown menu -->
-        <Transition
-          enter-active-class="transition ease-out duration-100"
-          enter-from-class="transform opacity-0 scale-95"
-          enter-to-class="transform opacity-100 scale-100"
-          leave-active-class="transition ease-in duration-75"
-          leave-from-class="transform opacity-100 scale-100"
-          leave-to-class="transform opacity-0 scale-95"
-        >
-          <div
-            v-if="showMenu"
-            class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
+          <button
+            class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors text-left"
+            @click="handleRemoveClick"
+            aria-label="Remove from saved posts"
           >
-            <button
-              class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
-              @click="handleRemoveClick"
-              aria-label="Remove bookmark"
-            >
-              <BaseIcon name="TrashIcon" class="w-4 h-4" />
-              <span>Remove bookmark</span>
-            </button>
-          </div>
-        </Transition>
-      </div>
+            <BaseIcon name="BookmarkIcon" class="w-4 h-4" />
+            <span>Remove from saved</span>
+          </button>
+        </div>
+      </Transition>
     </div>
 
     <!-- Post content -->
@@ -73,30 +73,26 @@
       </p>
     </div>
 
-    <!-- Footer with dates and stats -->
-    <div class="space-y-2">
-      <!-- Stats row -->
-      <div class="flex items-center justify-between text-xs text-slate-500">
-        <div class="flex items-center gap-3">
-          <span class="flex items-center gap-1" :title="`${bookmark.post.likeCount} likes`">
-            <BaseIcon name="HeartIcon" class="w-4 h-4 text-rose-500" />
-            {{ bookmark.post.likeCount }}
+    <!-- Footer: engagement stats (de-emphasized) + save time -->
+    <div class="border-t border-slate-100 pt-3 mt-3">
+      <div class="flex items-center justify-between">
+        <!-- De-emphasized engagement stats (matches PostFooter icon order: like, comment, bookmark) -->
+        <div class="flex items-center gap-4 text-xs text-slate-400 opacity-60">
+          <!-- Like count (read-only, de-emphasized) -->
+          <span class="flex items-center gap-1.5" :title="`${bookmark.post.likeCount} likes`">
+            <BaseIcon name="HeartOutlineIcon" class="w-4 h-4" />
+            <span class="font-medium">{{ bookmark.post.likeCount }}</span>
           </span>
-          <span class="flex items-center gap-1" :title="`${bookmark.post.bookmarkCount} bookmarks`">
-            <BaseIcon name="BookmarkIcon" class="w-4 h-4 text-blue-500" />
-            {{ bookmark.post.bookmarkCount }}
+
+          <!-- Comment count placeholder (kept for consistency, shows 0) -->
+          <span class="flex items-center gap-1.5" title="Comments not shown for saved posts">
+            <BaseIcon name="ChatBubbleOvalLeftIcon" class="w-4 h-4" />
+            <span class="font-medium">0</span>
           </span>
         </div>
-      </div>
 
-      <!-- Dates row -->
-      <div class="flex items-center justify-between text-xs text-slate-400">
-        <span :title="'Posted ' + formatDateTime(bookmark.post.createdAt)">
-          <BaseIcon name="ClockIcon" class="w-3 h-3 inline mr-1" />
-          Posted {{ formatRelativeTime(bookmark.post.createdAt) }}
-        </span>
-        <span :title="'Bookmarked ' + formatDateTime(bookmark.createdAt)">
-          <BaseIcon name="BookmarkIcon" class="w-3 h-3 inline mr-1" />
+        <!-- Saved timestamp (student-friendly copy) -->
+        <span class="text-xs text-slate-500" :title="'Saved on ' + formatDateTime(bookmark.createdAt)">
           Saved {{ formatRelativeTime(bookmark.createdAt) }}
         </span>
       </div>
@@ -135,9 +131,9 @@
                 <BaseIcon name="ExclamationTriangleIcon" class="w-6 h-6 text-red-600" />
               </div>
               <div class="flex-1">
-                <h3 class="text-lg font-semibold text-slate-900 mb-2">Remove bookmark?</h3>
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Remove from saved posts?</h3>
                 <p class="text-sm text-slate-600">
-                  This will remove the bookmark for this post. Any personal notes you added will be lost.
+                  This post will be removed from your saved collection. Any personal notes will be lost.
                 </p>
               </div>
             </div>
@@ -153,7 +149,7 @@
                 @click="confirmRemove"
                 class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
               >
-                Remove bookmark
+                Remove from saved
               </button>
             </div>
           </div>
@@ -166,6 +162,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
+import PostHeader from '@/components/molecules/PostHeader.vue'
 import { useMediaImage } from '@/composables/useMediaImage'
 import fallbackAvatar from '@/assets/user1.avif'
 import type { Bookmark } from '@/services/api/types'
@@ -183,7 +180,7 @@ const showMenu = ref(false)
 const showConfirmModal = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
-// Load avatar via media API
+// Load avatar via media API (same pattern as PostCard)
 const { imageUrl: avatarSrc } = useMediaImage(
   () => props.bookmark.post.userProfileImageUrl,
   fallbackAvatar,
@@ -240,3 +237,20 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
+<style scoped>
+/* Subtle kebab menu: only visible on card hover (UX improvement: reduce visual clutter) */
+.bookmark-card-menu {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bookmark-card:hover .bookmark-card-menu {
+  opacity: 1;
+}
+
+/* If menu is open, keep it visible even without hover */
+.bookmark-card-menu:has(button[aria-expanded="true"]) {
+  opacity: 1;
+}
+</style>

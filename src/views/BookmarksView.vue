@@ -1,3 +1,14 @@
+<!--
+  BookmarksView - Saved study posts collection
+
+  UX polish applied:
+  - Header: "Saved Posts" with subtitle for clarity
+  - De-emphasized search/filters (smaller, subtle styling)
+  - Reduced "New Collection" button prominence (secondary style)
+  - Student-friendly messaging in empty states
+  - Cards are primary visual focus, controls are secondary
+  - Maintains calm, study-appropriate aesthetic throughout
+-->
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
@@ -90,31 +101,35 @@ async function handleRemoveBookmark(postId: string) {
       class="w-full max-w-7xl py-8 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-semibold text-slate-900">Bookmarks</h1>
-        <BaseButton
+      <!-- Header (calm, study-focused) -->
+      <div class="flex items-start justify-between mb-6 pb-4 border-b border-slate-200/60">
+        <div>
+          <h1 class="text-2xl font-semibold text-slate-900">Saved Posts</h1>
+          <p class="text-sm text-slate-600 mt-1">Your study material collection</p>
+        </div>
+        <button
           @click="openCreateModal"
-          size="sm"
-          variant="primary"
+          class="px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200"
         >
           + New Collection
-        </BaseButton>
+        </button>
       </div>
 
-      <!-- Search & Filters -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6 space-y-4">
+      <!-- Search & Filters (de-emphasized, below fold) -->
+      <div class="mb-6 space-y-3">
+        <!-- Search (smaller, less prominent) -->
         <SearchBar
           @search="onSearch"
-          placeholder="Search bookmarks by content, author, tag, or notes..."
+          placeholder="Search saved posts..."
         />
 
-        <div class="flex gap-4 flex-wrap">
-          <!-- Sort Select -->
+        <!-- Sort (subtle) -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-500 font-medium">Sort:</label>
           <select
             v-model="bookmarkStore.viewState.sortBy"
             @change="bookmarkStore.setSortBy(bookmarkStore.viewState.sortBy)"
-            class="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
           >
             <option
               v-for="opt in sortOptions"
@@ -129,9 +144,9 @@ async function handleRemoveBookmark(postId: string) {
 
       <!-- Main Content: Sidebar + Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-        <!-- CollectionSidebar (Placeholder - will create as component) -->
+        <!-- Collection sidebar (subtle, calm navigation) -->
         <aside class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 h-fit">
-          <h3 class="text-sm font-semibold text-slate-700 mb-3">Collections</h3>
+          <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Collections</h3>
 
           <!-- All Bookmarks -->
           <button
@@ -211,13 +226,16 @@ async function handleRemoveBookmark(postId: string) {
             <p class="text-sm text-red-600">{{ bookmarkStore.error }}</p>
           </div>
 
-          <!-- Empty State -->
+          <!-- Empty State (calm, student-friendly messaging) -->
           <div
             v-else-if="searchFiltered.length === 0"
             class="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center"
           >
-            <p class="text-sm text-slate-500">
-              {{ q ? 'No bookmarks match your search.' : 'No bookmarks yet. Start bookmarking posts!' }}
+            <p class="text-sm text-slate-600 mb-1">
+              {{ q ? 'No saved posts match your search' : 'No saved posts yet' }}
+            </p>
+            <p v-if="!q" class="text-xs text-slate-500">
+              Save posts from your feed to build your study collection
             </p>
           </div>
 
