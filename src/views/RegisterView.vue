@@ -83,13 +83,14 @@ async function submit() {
 
     // 2) Payload fürs Backend (/users)
     //    Backend erwartet:
-    //    { email, username, password, countryCode, profileImageUrl }
-    const apiPayload = {
+    //    { email, username, password, countryCode, profileImageUrl? }
+    //    Note: profileImageUrl is optional - omit it entirely if not provided
+    const apiPayload: RegisterRequest = {
       email: email.value.trim(),
       username: username.value.trim(),
       password: password.value,
       countryCode: country.value, // ⚠️ muss ein Code wie "AT" sein
-      profileImageUrl: undefined as string | undefined,
+      // profileImageUrl omitted - optional field, not needed during registration
     }
 
     await authApi.register(apiPayload)
