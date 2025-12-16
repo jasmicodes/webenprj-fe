@@ -16,6 +16,8 @@ export type PostCardData = {
   liked: boolean
   comments: number
   streak: number
+  bookmarkCount: number
+  bookmarked: boolean
 }
 
 /**
@@ -41,5 +43,7 @@ export function mapApiPostToCard(
     liked: overrides.liked ?? post.likedByCurrentUser ?? false,
     comments: overrides.comments ?? 0,
     streak: overrides.streak ?? 0,
+    bookmarkCount: overrides.bookmarkCount ?? post.bookmarkCount ?? 0,
+    bookmarked: overrides.bookmarked ?? post.bookmarkedByCurrentUser ?? false,
   }
 }

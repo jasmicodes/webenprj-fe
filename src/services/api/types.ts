@@ -56,6 +56,8 @@ export interface Post {
   userProfileImageUrl?: string
   likeCount: number
   likedByCurrentUser: boolean
+  bookmarkCount: number
+  bookmarkedByCurrentUser: boolean
 }
 
 export interface PostCreateRequest {
@@ -83,4 +85,42 @@ export interface Page<T> {
   totalPages: number
   size: number
   number: number
+}
+
+// Bookmark types
+
+export interface BookmarkCollection {
+  id: string
+  name: string
+  description?: string
+  color?: string
+  iconName?: string
+  bookmarkCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Bookmark {
+  id: string
+  post: Post
+  collection: BookmarkCollection | null
+  notes?: string
+  createdAt: string
+}
+
+export interface BookmarkCreateRequest {
+  collectionId?: string | null
+  notes?: string | null
+}
+
+export interface BookmarkUpdateRequest {
+  collectionId?: string | null
+  notes?: string | null
+}
+
+export interface CollectionCreateRequest {
+  name: string
+  description?: string | null
+  color?: string | null
+  iconName?: string | null
 }

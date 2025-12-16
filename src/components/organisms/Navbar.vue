@@ -124,6 +124,26 @@ function handleLogout() {
         </RouterLink>
 
         <RouterLink
+          :to="{ name: 'bookmarks' }"
+          :title="isCollapsed ? 'Bookmarks' : ''"
+          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
+          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
+          active-class="bg-primary-300 text-neutral-50"
+        >
+          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
+            <BaseIcon name="BookmarkIcon" class="w-6 h-6" />
+          </div>
+          <span
+            :class="[
+              'font-heading text-base transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            <h2>Bookmarks</h2>
+          </span>
+        </RouterLink>
+
+        <RouterLink
           :to="{ name: 'profile' }"
           :title="isCollapsed ? 'Profile' : ''"
           class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
@@ -227,10 +247,10 @@ function handleLogout() {
           <small>Resources</small>
         </RouterLink>
       </li>
-      <li v-if="isAdmin">
-        <RouterLink :to="{ name: 'admin' }" class="tab-link">
-          <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
-          <small>Admin</small>
+      <li>
+        <RouterLink :to="{ name: 'bookmarks' }" class="tab-link">
+          <BaseIcon name="BookmarkIcon" class="w-6 h-6" />
+          <small>Bookmarks</small>
         </RouterLink>
       </li>
       <li>

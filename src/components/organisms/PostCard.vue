@@ -38,6 +38,8 @@
         :liked="post.liked"
         :comments="post.comments"
         :streak="post.streak"
+        :bookmark-count="post.bookmarkCount"
+        :bookmarked="post.bookmarked"
         :is-own-post="isOwnPost"
         @like="emit('like', post.id)"
         @comment="emit('comment', post.id)"

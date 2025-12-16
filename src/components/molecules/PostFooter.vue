@@ -42,13 +42,34 @@
 
       <!-- Secondary utility actions -->
       <div class="flex items-center gap-2">
+        <!-- Bookmark button with badge (social proof) -->
         <button
-          class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md"
+          class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md relative"
+          :class="props.bookmarked ? 'text-blue-600' : 'text-slate-600'"
           @click="emit('save')"
-          aria-label="Bookmark this post"
-          title="Bookmark"
+          :aria-label="props.bookmarked ? 'Remove bookmark' : 'Bookmark this post'"
+          :title="props.bookmarked ? 'Remove bookmark' : 'Bookmark'"
         >
-          <BaseIcon name="BookmarkIcon" class="w-5 h-5" />
+          <BaseIcon
+            :name="props.bookmarked ? 'BookmarkIcon' : 'BookmarkOutlineIcon'"
+            class="w-5 h-5"
+          />
+          <!-- Bookmark count badge (only if > 0) -->
+          <Transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 scale-50"
+            enter-to-class="opacity-100 scale-100"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-50"
+          >
+            <span
+              v-if="props.bookmarkCount > 0"
+              class="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-sm"
+            >
+              {{ props.bookmarkCount > 99 ? '99+' : props.bookmarkCount }}
+            </span>
+          </Transition>
         </button>
         <button
           class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md"
@@ -121,6 +142,8 @@ const props = withDefaults(
     comments?: number
     streak?: number
     isOwnPost?: boolean
+    bookmarkCount?: number
+    bookmarked?: boolean
   }>(),
   {
     likes: 0,
@@ -128,6 +151,8 @@ const props = withDefaults(
     comments: 0,
     streak: 0,
     isOwnPost: false,
+    bookmarkCount: 0,
+    bookmarked: false,
   },
 )
 

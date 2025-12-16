@@ -8,6 +8,7 @@ import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
+import { bookmarksApi } from '@/services/api/bookmarks'
 import { useToastStore } from '@/stores/toastStore'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
@@ -119,6 +120,31 @@ async function toggleLike(postId: PostCardData['id']) {
     posts.value[idx] = original
     const message = err instanceof Error ? err.message : 'Failed to update like'
     toastStore.showError(message, 'Like')
+  }
+}
+
+async function toggleBookmark(postId: PostCardData['id']) {
+  const idx = posts.value.findIndex((p) => p.id === postId)
+  if (idx === -1) return
+  const original = posts.value[idx]
+  const optimisticBookmarked = !original.bookmarked
+  const optimisticBookmarkCount = original.bookmarkCount + (optimisticBookmarked ? 1 : -1)
+  posts.value[idx] = {
+    ...original,
+    bookmarked: optimisticBookmarked,
+    bookmarkCount: Math.max(0, optimisticBookmarkCount),
+  }
+
+  try {
+    if (optimisticBookmarked) {
+      await bookmarksApi.createBookmark(String(postId))
+    } else {
+      await bookmarksApi.deleteBookmark(String(postId))
+    }
+  } catch (err: unknown) {
+    posts.value[idx] = original
+    const message = err instanceof Error ? err.message : 'Failed to update bookmark'
+    toastStore.showError(message, 'Bookmark')
   }
 }
 
@@ -281,6 +307,7 @@ onMounted(() => {
           :post="p"
           :current-user-id="userStore.user?.id"
           @like="toggleLike"
+          @save="toggleBookmark"
           @edit="openEditModal"
           @delete="openDeleteModal"
         />

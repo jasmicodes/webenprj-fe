@@ -41,6 +41,11 @@ const routes: RouteRecordRaw[] = [
     name: 'resources',
     component: () => import('@/views/ResourceListView.vue'),
   },
+  {
+    path: '/bookmarks',
+    name: 'bookmarks',
+    component: () => import('@/views/BookmarksView.vue'),
+  },
   { path: '/imprint', name: 'imprint', component: () => import('@/views/ImprintView.vue') },
   { path: '/help', name: 'help', component: () => import('@/views/HelpView.vue') },
   { path: '/profile', name: 'profile', component: () => import('@/views/ProfileView.vue') },
