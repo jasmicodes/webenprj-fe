@@ -5,6 +5,7 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import SearchBar from '@/components/molecules/SearchBar.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
+import BookmarkCard from '@/components/molecules/BookmarkCard.vue'
 
 const bookmarkStore = useBookmarkStore()
 const appearanceStore = useAppearanceStore()
@@ -211,50 +212,11 @@ function handleCreateCollection(data: any) {
 
           <!-- Bookmarks Grid -->
           <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Placeholder cards (will replace with BookmarkCard component) -->
-            <div
+            <BookmarkCard
               v-for="bookmark in searchFiltered"
               :key="bookmark.id"
-              class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow"
-            >
-              <div class="flex items-start gap-3 mb-3">
-                <img
-                  v-if="bookmark.post.userProfileImageUrl"
-                  :src="bookmark.post.userProfileImageUrl"
-                  :alt="bookmark.post.username"
-                  class="w-10 h-10 rounded-full"
-                />
-                <div
-                  v-else
-                  class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold"
-                >
-                  {{ bookmark.post.username[0].toUpperCase() }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-slate-900">{{ bookmark.post.username }}</p>
-                  <p class="text-xs text-slate-500">{{ bookmark.post.subject }}</p>
-                </div>
-              </div>
-
-              <p class="text-sm text-slate-700 mb-3 line-clamp-3">{{ bookmark.post.content }}</p>
-
-              <div
-                v-if="bookmark.notes"
-                class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3"
-              >
-                <p class="text-xs text-amber-800">
-                  <strong>Note:</strong> {{ bookmark.notes }}
-                </p>
-              </div>
-
-              <div class="flex items-center justify-between text-xs text-slate-500">
-                <span>{{ new Date(bookmark.createdAt).toLocaleDateString() }}</span>
-                <div class="flex gap-2">
-                  <span>❤️ {{ bookmark.post.likeCount }}</span>
-                  <span>🔖 {{ bookmark.post.bookmarkCount }}</span>
-                </div>
-              </div>
-            </div>
+              :bookmark="bookmark"
+            />
           </div>
         </div>
       </div>
