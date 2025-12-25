@@ -5,24 +5,24 @@
     <div class="flex items-center gap-1 border-t border-slate-100 pt-4 text-slate-600">
       <!-- Primary engagement actions -->
       <div class="flex items-center gap-4">
-        <!-- Like button (subtle pink when liked) -->
+        <!-- Like button (red when liked) -->
         <button
-          class="flex items-center gap-1.5 transition-colors hover:text-slate-800"
+          class="flex items-center gap-1.5 transition-colors hover:text-rose-500"
           :class="props.liked ? 'text-rose-500' : 'text-slate-600'"
           @click="emit('like')"
           :aria-label="props.liked ? 'Unlike this post' : 'Like this post'"
         >
-          <BaseIcon :name="props.liked ? 'HeartIcon' : 'HeartOutlineIcon'" class="w-5 h-5" />
+          <HeartIcon class="w-5 h-5" :class="{ 'fill-current': props.liked }" />
           <span class="text-sm font-medium">{{ props.likes }}</span>
         </button>
 
-        <!-- Comment button -->
+        <!-- Comment button (blue hover hint) -->
         <button
-          class="flex items-center gap-1.5 transition-colors hover:text-slate-800"
+          class="flex items-center gap-1.5 transition-colors hover:text-sky-500"
           @click="emit('comment')"
           aria-label="Comment on this post"
         >
-          <BaseIcon name="ChatBubbleOvalLeftIcon" class="w-5 h-5" />
+          <ChatBubbleOvalLeftIcon class="w-5 h-5" />
           <span class="text-sm font-medium">{{ props.comments }}</span>
         </button>
 
@@ -44,16 +44,13 @@
       <div class="flex items-center gap-2">
         <!-- Bookmark button with badge (social proof) -->
         <button
-          class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md relative"
+          class="p-1.5 transition-colors hover:text-blue-500 hover:bg-blue-50/50 rounded-md relative"
           :class="props.bookmarked ? 'text-blue-600' : 'text-slate-600'"
           @click="emit('save')"
           :aria-label="props.bookmarked ? 'Remove bookmark' : 'Bookmark this post'"
           :title="props.bookmarked ? 'Remove bookmark' : 'Bookmark'"
         >
-          <BaseIcon
-            :name="props.bookmarked ? 'BookmarkIcon' : 'BookmarkOutlineIcon'"
-            class="w-5 h-5"
-          />
+          <BookmarkIcon class="w-5 h-5" :class="{ 'fill-current': props.bookmarked }" />
           <!-- Bookmark count badge (only if > 0) -->
           <Transition
             enter-active-class="transition-all duration-300 ease-out"
@@ -72,12 +69,12 @@
           </Transition>
         </button>
         <button
-          class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md"
+          class="p-1.5 transition-colors hover:text-emerald-500 hover:bg-emerald-50/50 rounded-md"
           @click="emit('share')"
           aria-label="Share this post"
           title="Share"
         >
-          <BaseIcon name="ShareIcon" class="w-5 h-5" />
+          <BaseIcon name="ShareOutlineIcon" class="w-5 h-5" />
         </button>
 
         <!-- Kebab menu for management (for own posts or admin) -->
@@ -134,6 +131,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { HeartIcon, ChatBubbleOvalLeftIcon, BookmarkIcon } from '@heroicons/vue/24/outline'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 const props = withDefaults(
