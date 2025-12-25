@@ -1,10 +1,14 @@
 <!-- src/views/SettingsView.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import * as yup from 'yup'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from '@/stores/appearanceStore'
 import { useChangePassword } from '@/composables/useChangePassword'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useToastStore } from '@/stores/toastStore'
+import { usersApi } from '@/services/api/users'
+import { getErrorMessage } from '@/services/api/client'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
@@ -15,10 +19,75 @@ import BaseToggle from '@/components/atoms/BaseToggle.vue'
 // -------------------- STORES --------------------
 const userStore = useUserStore()
 const appearanceStore = useAppearanceStore()
+const toast = useToastStore()
 
 // Ambient mode detection
 const isMobile = useMediaQuery('(max-width: 768px)')
 const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
+
+// -------------------- EMAIL FORM --------------------
+const showChangeEmail = ref(false)
+const savingEmail = ref(false)
+const emailForm = ref({
+  newEmail: '',
+  confirmPassword: '',
+})
+const emailErrors = ref<{ newEmail?: string; confirmPassword?: string }>({})
+
+const emailSchema = yup.object({
+  newEmail: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('New email is required'),
+  confirmPassword: yup
+    .string()
+    .min(1, 'Password is required to change email')
+    .required('Password is required to change email'),
+})
+
+async function saveEmail() {
+  emailErrors.value = {}
+
+  try {
+    await emailSchema.validate(emailForm.value, { abortEarly: false })
+  } catch (err) {
+    if (err instanceof yup.ValidationError) {
+      err.inner.forEach((e) => {
+        if (e.path) {
+          emailErrors.value[e.path as keyof typeof emailErrors.value] = e.message
+        }
+      })
+    }
+    return
+  }
+
+  savingEmail.value = true
+
+  try {
+    const currentUser = userStore.user!
+    const updatedUser = await usersApi.updateMyProfile({
+      email: emailForm.value.newEmail,
+      username: currentUser.username,
+      countryCode: currentUser.countryCode,
+      profileImageUrl: currentUser.profileImageUrl || undefined,
+      salutation: currentUser.salutation || undefined,
+    })
+
+    // Email changed successfully - force re-login
+    toast.showSuccess('Email updated. Please log in again with your new email.')
+    userStore.logout()
+  } catch (err) {
+    toast.showError(getErrorMessage(err))
+  } finally {
+    savingEmail.value = false
+  }
+}
+
+function cancelEmailChange() {
+  showChangeEmail.value = false
+  emailForm.value = { newEmail: '', confirmPassword: '' }
+  emailErrors.value = {}
+}
 
 // -------------------- PASSWORD FORM --------------------
 const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePassword } = useChangePassword()
@@ -43,6 +112,61 @@ const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePa
             <div>
               <h2 class="text-base font-semibold text-slate-900">Account</h2>
               <p class="text-sm text-slate-500 mt-0.5">Manage your account security</p>
+            </div>
+
+            <!-- Email Section -->
+            <div class="border-t border-slate-100 pt-4">
+              <div class="flex items-center justify-between">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-slate-900">Email address</p>
+                  <p class="text-xs text-slate-500 mt-0.5 truncate">{{ userStore.user?.email }}</p>
+                </div>
+                <BaseButton
+                  v-if="!showChangeEmail"
+                  variant="outline"
+                  size="sm"
+                  @click="showChangeEmail = true"
+                >
+                  Change email
+                </BaseButton>
+                <BaseButton
+                  v-else
+                  variant="ghost"
+                  size="sm"
+                  @click="cancelEmailChange"
+                >
+                  Cancel
+                </BaseButton>
+              </div>
+
+              <!-- Email Change Form (expandable) -->
+              <div v-if="showChangeEmail" class="mt-4 pt-4 border-t border-slate-100 space-y-4 max-w-md">
+                <p class="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+                  Changing your email affects how you sign in.
+                </p>
+
+                <BaseFormfield label="New email address" :error="emailErrors.newEmail">
+                  <BaseInput
+                    v-model="emailForm.newEmail"
+                    type="email"
+                    placeholder="Enter new email address"
+                    :invalid="!!emailErrors.newEmail"
+                  />
+                </BaseFormfield>
+
+                <BaseFormfield label="Confirm with password" :error="emailErrors.confirmPassword">
+                  <BaseInput
+                    v-model="emailForm.confirmPassword"
+                    type="password"
+                    placeholder="Enter your current password"
+                    :invalid="!!emailErrors.confirmPassword"
+                  />
+                </BaseFormfield>
+
+                <BaseButton variant="primary" size="sm" :disabled="savingEmail" @click="saveEmail">
+                  {{ savingEmail ? 'Updating...' : 'Update email' }}
+                </BaseButton>
+              </div>
             </div>
 
             <!-- Change Password Toggle -->

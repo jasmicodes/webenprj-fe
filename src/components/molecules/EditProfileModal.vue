@@ -8,7 +8,6 @@ import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { getErrorMessage } from '@/services/api/client'
-import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
 import type { User, AdminUser, UserRole } from '@/services/api/types'
 
 import BaseModal from '@/components/atoms/BaseModal.vue'
@@ -48,23 +47,36 @@ const saving = ref(false)
 const uploadingAvatar = ref(false)
 const avatarPreview = ref<string | null>(null)
 
-const form = ref({
-  email: '',
+// Original values for change detection
+const originalValues = ref({
   username: '',
-  countryCode: '',
-  profileImageUrl: '',
   salutation: '',
+  profileImageUrl: '',
   role: 'USER' as UserRole,
   active: true,
 })
 
+const form = ref({
+  username: '',
+  salutation: '',
+  profileImageUrl: '',
+  role: 'USER' as UserRole,
+  active: true,
+})
+
+// -------------------- CHANGE DETECTION --------------------
+const hasChanges = computed(() => {
+  return (
+    form.value.username !== originalValues.value.username ||
+    form.value.salutation !== originalValues.value.salutation ||
+    form.value.profileImageUrl !== originalValues.value.profileImageUrl ||
+    (canEditAdminFields.value && form.value.role !== originalValues.value.role) ||
+    (canEditAdminFields.value && form.value.active !== originalValues.value.active)
+  )
+})
+
 // -------------------- VALIDATION --------------------
-const baseSchema = yup.object({
-  email: yup
-    .string()
-    .transform((v) => v?.trim())
-    .email('Email must be a valid email address')
-    .required('Email is required'),
+const schema = yup.object({
   username: yup
     .string()
     .transform((v) => v?.trim())
@@ -72,14 +84,13 @@ const baseSchema = yup.object({
     .max(50, 'Username must be between 5 and 50 characters')
     .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
     .required('Username is required'),
-  countryCode: yup.string().required('Country is required'),
-  profileImageUrl: yup.string().notRequired(),
   salutation: yup.string().max(48, 'Salutation cannot exceed 48 characters').notRequired(),
+  profileImageUrl: yup.string().notRequired(),
   role: yup.string().oneOf(['USER', 'ADMIN']).required(),
   active: yup.boolean().required(),
 })
 
-const { errors, validate, clearErrors } = useFormValidation(baseSchema)
+const { errors, validate, clearErrors } = useFormValidation(schema)
 
 // -------------------- INIT FORM ON OPEN --------------------
 watch(
@@ -93,15 +104,16 @@ watch(
 )
 
 function initForm(user: User | AdminUser) {
-  form.value = {
-    email: user.email ?? '',
+  const values = {
     username: user.username ?? '',
-    countryCode: user.countryCode ?? '',
-    profileImageUrl: user.profileImageUrl ?? '',
     salutation: user.salutation ?? '',
+    profileImageUrl: user.profileImageUrl ?? '',
     role: user.role ?? 'USER',
     active: 'active' in user ? user.active : true,
   }
+
+  form.value = { ...values }
+  originalValues.value = { ...values }
   avatarPreview.value = null
   clearErrors()
 
@@ -153,23 +165,21 @@ async function handleSave() {
     let updatedUser: User | AdminUser
 
     if (isEditingSelf.value) {
-      // Self-edit: use regular user API
+      // Self-edit: use regular user API (email comes from current user)
       const currentUser = userStore.user!
-      const credentialsChanged =
-        currentUser.email !== form.value.email ||
-        currentUser.username !== form.value.username
+      const usernameChanged = currentUser.username !== form.value.username
 
       updatedUser = await usersApi.updateMyProfile({
-        email: form.value.email,
+        email: currentUser.email, // Keep current email
         username: form.value.username,
-        countryCode: form.value.countryCode,
+        countryCode: currentUser.countryCode, // Keep current country
         profileImageUrl: form.value.profileImageUrl || undefined,
         salutation: form.value.salutation || undefined,
       })
 
-      // If credentials changed, force re-login
-      if (credentialsChanged) {
-        toast.showSuccess('Credentials updated. Please log in again.')
+      // If username changed, force re-login
+      if (usernameChanged) {
+        toast.showSuccess('Username updated. Please log in again.')
         userStore.logout()
         return
       }
@@ -177,11 +187,12 @@ async function handleSave() {
       // Update local user store
       userStore.user = updatedUser
     } else {
-      // Admin editing another user
-      updatedUser = await adminUsersApi.updateUser(props.user!.id, {
-        email: form.value.email,
+      // Admin editing another user (email not editable here either)
+      const targetUser = props.user!
+      updatedUser = await adminUsersApi.updateUser(targetUser.id, {
+        email: targetUser.email, // Keep current email
         username: form.value.username,
-        countryCode: form.value.countryCode,
+        countryCode: targetUser.countryCode, // Keep current country
         profileImageUrl: form.value.profileImageUrl || undefined,
         role: form.value.role,
         active: form.value.active,
@@ -212,68 +223,77 @@ function handleCancel() {
           {{ isEditingSelf ? 'Edit Profile' : `Edit ${user?.username}` }}
         </h2>
         <p class="text-sm text-slate-500 mt-0.5">
-          {{ isEditingSelf ? 'Update your public profile' : 'Manage user account' }}
+          {{ isEditingSelf ? 'Update your public identity' : 'Edit public profile' }}
         </p>
       </div>
 
       <!-- Body -->
-      <div class="px-6 py-5 space-y-5 max-h-[60vh] overflow-y-auto">
-        <!-- Avatar Upload -->
-        <div class="flex items-center gap-4">
-          <UserAvatar
-            v-if="avatarPreview"
-            :src="avatarPreview"
-            class="w-16 h-16 rounded-full object-cover ring-2 ring-slate-100"
-          />
-          <UserAvatar v-else class="w-16 h-16 rounded-full object-cover ring-2 ring-slate-100" />
-          <UploadDropZone accept="image/*" @selected="onAvatarSelected">
-            <BaseButton variant="outline" size="sm" :disabled="uploadingAvatar">
-              {{ uploadingAvatar ? 'Uploading...' : 'Change photo' }}
-            </BaseButton>
-          </UploadDropZone>
-        </div>
-
-        <!-- Basic Fields (everyone can edit) -->
+      <div class="px-6 py-5 space-y-6">
+        <!-- ========== SECTION: Identity ========== -->
         <div class="space-y-4">
-          <BaseFormfield label="Email" :error="errors.email">
-            <BaseInput
-              v-model="form.email"
-              type="email"
-              :invalid="!!errors.email"
-              placeholder="Email address"
-            />
-          </BaseFormfield>
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">
+            Identity
+          </p>
 
-          <BaseFormfield label="Username" :error="errors.username">
+          <!-- Username (Display Name) -->
+          <BaseFormfield label="Display name" :error="errors.username">
             <BaseInput
               v-model="form.username"
               :invalid="!!errors.username"
-              placeholder="Username"
+              placeholder="Your display name"
             />
+            <template #help>
+              <span class="text-xs text-slate-400">Used in mentions and profile URL</span>
+            </template>
           </BaseFormfield>
 
-          <BaseFormfield label="Salutation" :error="errors.salutation" help="Optional title (e.g., Dr., Prof.)">
+          <!-- Salutation -->
+          <BaseFormfield label="Salutation" :error="errors.salutation">
             <BaseInput
               v-model="form.salutation"
               :invalid="!!errors.salutation"
-              placeholder="e.g., Dr., Prof., or leave empty"
+              placeholder="e.g. Dr."
               maxlength="48"
             />
-          </BaseFormfield>
-
-          <BaseFormfield label="Country" :error="errors.countryCode">
-            <BaseSelect v-model="form.countryCode" :invalid="!!errors.countryCode">
-              <option value="" disabled>Select country...</option>
-              <option v-for="c in COUNTRIES_DACH_FIRST" :key="c.code" :value="c.code">
-                {{ c.label }}
-              </option>
-            </BaseSelect>
+            <template #help>
+              <span class="text-xs text-slate-400">Shown before your name (e.g. Dr., Mx., Prof.)</span>
+            </template>
           </BaseFormfield>
         </div>
 
-        <!-- Admin-only Fields (when editing other users) -->
+        <!-- ========== SECTION: Appearance ========== -->
+        <div class="space-y-3 pt-2">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">
+            Appearance
+          </p>
+
+          <!-- Compact Avatar Row -->
+          <div class="flex items-center gap-3">
+            <UserAvatar
+              v-if="avatarPreview"
+              :src="avatarPreview"
+              class="w-12 h-12 rounded-full object-cover ring-1 ring-slate-200"
+            />
+            <UserAvatar v-else class="w-12 h-12 rounded-full object-cover ring-1 ring-slate-200" />
+
+            <div class="flex-1">
+              <UploadDropZone accept="image/*" @selected="onAvatarSelected">
+                <button
+                  type="button"
+                  class="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                  :disabled="uploadingAvatar"
+                >
+                  {{ uploadingAvatar ? 'Uploading...' : 'Change profile photo' }}
+                </button>
+              </UploadDropZone>
+              <p class="text-xs text-slate-400 mt-0.5">JPG, PNG, or GIF</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== SECTION: Admin Controls (when editing other users) ========== -->
         <div v-if="canEditAdminFields" class="pt-4 border-t border-slate-100 space-y-4">
-          <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">
             Admin Controls
           </p>
 
@@ -311,7 +331,12 @@ function handleCancel() {
         <BaseButton variant="ghost" size="sm" :disabled="saving" @click="handleCancel">
           Cancel
         </BaseButton>
-        <BaseButton variant="primary" size="sm" :disabled="saving" @click="handleSave">
+        <BaseButton
+          variant="primary"
+          size="sm"
+          :disabled="saving || !hasChanges"
+          @click="handleSave"
+        >
           {{ saving ? 'Saving...' : 'Save changes' }}
         </BaseButton>
       </div>
