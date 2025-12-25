@@ -11,6 +11,7 @@
           :class="props.liked ? 'text-rose-500' : 'text-slate-600'"
           @click="emit('like')"
           :aria-label="props.liked ? 'Unlike this post' : 'Like this post'"
+          :title="props.liked ? 'Unlike' : 'Like'"
         >
           <HeartIcon class="w-5 h-5" :class="{ 'fill-current': props.liked }" />
           <span class="text-sm font-medium">{{ props.likes }}</span>
@@ -21,6 +22,7 @@
           class="flex items-center gap-1.5 transition-colors hover:text-sky-500"
           @click="emit('comment')"
           aria-label="Comment on this post"
+          title="Comment"
         >
           <ChatBubbleOvalLeftIcon class="w-5 h-5" />
           <span class="text-sm font-medium">{{ props.comments }}</span>
