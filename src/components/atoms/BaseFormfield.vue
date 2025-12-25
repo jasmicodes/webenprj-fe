@@ -1,10 +1,12 @@
 <!-- kombiniert Label + Control + Help/Error zu einem Paket, für später z. B. im Post-Formular)-->
 <template>
-  <div class="mb-4">
-    <BaseLabel v-if="label">{{ label }}</BaseLabel>
+  <div :class="compact ? 'mb-2' : 'mb-4'">
+    <BaseLabel v-if="label" :class="{ 'text-xs': compact }">{{ label }}</BaseLabel>
     <slot />
-    <BaseHelp v-if="help">{{ help }}</BaseHelp>
-    <BaseError v-if="error">{{ error }}</BaseError>
+    <slot name="help">
+      <BaseHelp v-if="help">{{ help }}</BaseHelp>
+    </slot>
+    <BaseError v-if="error" :class="{ 'text-xs': compact }">{{ error }}</BaseError>
   </div>
 </template>
 
@@ -17,6 +19,7 @@ interface Props {
   label?: string
   help?: string
   error?: string
+  compact?: boolean
 }
 defineProps<Props>()
 </script>

@@ -11,6 +11,7 @@ const props = withDefaults(
   defineProps<{
     size?: 'xs' | 'sm' | 'md' | 'lg'
     src?: string
+    alt?: string
   }>(),
   { size: 'md' },
 )
@@ -62,7 +63,7 @@ watch(() => props.src, () => {
   <div class="avatar" :class="sizeClass">
     <img
       :src="imageUrl"
-      :alt="userStore.user?.username ? `${userStore.user.username}'s avatar` : 'User avatar'"
+      :alt="props.alt ?? (userStore.user?.username ? `${userStore.user.username}'s avatar` : 'User avatar')"
       class="avatar-img object-cover rounded-full"
     />
   </div>

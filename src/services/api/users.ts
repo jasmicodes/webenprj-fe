@@ -21,6 +21,15 @@ export const usersApi = {
     return res.data
   },
 
+  /**
+   * Remove avatar (set to null/placeholder)
+   * Returns updated user with null profileImageUrl
+   */
+  async removeAvatar(): Promise<ProfileUpdateResponse> {
+    const res = await api.delete<ProfileUpdateResponse>('/users/me/avatar')
+    return res.data
+  },
+
   async changePassword(payload: ChangePasswordRequest): Promise<void> {
     await api.patch('/users/me/password', payload)
   },
@@ -61,6 +70,15 @@ export const adminUsersApi = {
 
   async deleteUser(id: string): Promise<void> {
     await api.delete(`/users/${id}`)
+  },
+
+  /**
+   * Remove avatar for a specific user (admin only)
+   * @param id User UUID
+   */
+  async removeUserAvatar(id: string): Promise<AdminUser> {
+    const res = await api.delete<AdminUser>(`/users/${id}/avatar`)
+    return res.data
   },
 
   /**
