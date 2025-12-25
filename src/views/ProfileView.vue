@@ -4,18 +4,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { getErrorMessage } from '@/services/api/client'
-import { followApi, mediaApi } from '@/services/api'
+import { followApi } from '@/services/api'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
-import { useProfileForm } from '@/composables/useProfileForm'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import type { User } from '@/services/api/types'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import BaseCard from '@/components/atoms/BaseCard.vue'
-import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
-import BaseInput from '@/components/atoms/BaseInput.vue'
-import BaseSelect from '@/components/atoms/BaseSelect.vue'
-import UploadDropZone from '@/components/molecules/UploadDropZone.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
 
 // -------------------- STORES & STATES --------------------
 const userStore = useUserStore()
@@ -24,7 +20,6 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const followers = ref<number | null>(null)
 const following = ref<number | null>(null)
-const uploadingAvatar = ref(false)
 
 const user = computed(() => userStore.user)
 const countryName = computed(() => {
@@ -38,15 +33,28 @@ const profileImageSrc = ref<string | null>(null)
 const isMobile = useMediaQuery('(max-width: 768px)')
 const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
-// -------------------- FORMS --------------------
-const { showEditProfile, savingProfile, editForm, editErrors, initEditForm, saveProfile } = useProfileForm()
+// -------------------- EDIT MODAL --------------------
+const showEditModal = ref(false)
+
+function openEditModal() {
+  showEditModal.value = true
+}
+
+async function onProfileSaved(updatedUser: User) {
+  userStore.user = updatedUser
+  // Reload profile image after save
+  if (updatedUser.profileImageUrl) {
+    profileImageSrc.value = await userStore.downloadProfileImage()
+  } else {
+    profileImageSrc.value = null
+  }
+}
 
 // -------------------- LIFECYCLE --------------------
 onMounted(async () => {
   try {
     if (!userStore.user) await userStore.fetchCurrentUser()
     if (userStore.user) {
-      initEditForm(userStore.user)
       await loadFollowData()
       if (userStore.user.profileImageUrl)
         profileImageSrc.value = await userStore.downloadProfileImage()
@@ -71,35 +79,6 @@ async function loadFollowData() {
   } catch (err) {
     error.value = getErrorMessage(err)
   }
-}
-
-// -------------------- AVATAR UPLOAD --------------------
-async function onAvatarSelected(file: File) {
-  uploadingAvatar.value = true
-  try {
-    const media = await mediaApi.upload(file)
-    editForm.value.profileImageUrl = `/medias/${media.id}`
-
-    // Immediately download and display the new avatar
-    const blob = await mediaApi.retrieve(media.id)
-    profileImageSrc.value = URL.createObjectURL(blob)
-  } catch (err) {
-    error.value = getErrorMessage(err)
-  } finally {
-    uploadingAvatar.value = false
-  }
-}
-
-// -------------------- SAVE PROFILE --------------------
-async function handleSaveProfile() {
-  await saveProfile(async (updatedUser) => {
-    userStore.user = updatedUser
-    initEditForm(updatedUser)
-    // Reload profile image after save
-    if (updatedUser.profileImageUrl) {
-      profileImageSrc.value = await userStore.downloadProfileImage()
-    }
-  })
 }
 </script>
 
@@ -128,8 +107,8 @@ async function handleSaveProfile() {
         </header>
 
         <!-- PROFILE HEADER -->
-        <div class="flex flex-col items-center text-center py-4">
-          <!-- Avatar - larger, centered anchor -->
+        <div class="flex flex-col items-center md:items-start text-center md:text-left pt-1 pb-4">
+          <!-- Avatar - anchored left on desktop -->
           <UserAvatar
             v-if="profileImageSrc"
             :src="profileImageSrc"
@@ -163,51 +142,11 @@ async function handleSaveProfile() {
             </div>
           </div>
 
-          <!-- Edit action -->
-          <BaseButton variant="outline" size="sm" class="mt-6" @click="showEditProfile = !showEditProfile">
-            {{ showEditProfile ? 'Cancel' : 'Edit profile' }}
+          <!-- Edit action - opens modal -->
+          <BaseButton variant="outline" size="sm" class="mt-5" @click="openEditModal">
+            Edit profile
           </BaseButton>
         </div>
-
-        <!-- EDIT PROFILE -->
-        <BaseCard v-if="showEditProfile">
-          <div class="space-y-6">
-            <h2 class="text-base font-semibold text-slate-900">Edit profile</h2>
-
-            <BaseFormfield label="Email" :error="editErrors.email">
-              <BaseInput v-model="editForm.email" :invalid="!!editErrors.email" placeholder="Email" />
-            </BaseFormfield>
-
-            <BaseFormfield label="Username" :error="editErrors.username">
-              <BaseInput v-model="editForm.username" :invalid="!!editErrors.username" placeholder="Username" />
-            </BaseFormfield>
-
-            <BaseFormfield label="Country" :error="editErrors.countryCode">
-              <BaseSelect v-model="editForm.countryCode" :invalid="!!editErrors.countryCode">
-                <option value="" disabled>Select country...</option>
-                <option v-for="c in COUNTRIES_DACH_FIRST" :key="c.code" :value="c.code">{{ c.label }}</option>
-              </BaseSelect>
-            </BaseFormfield>
-
-            <!-- Avatar Upload -->
-            <div class="border-t border-slate-100 pt-6">
-              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3 block">Profile Photo</label>
-              <div class="flex items-center gap-4">
-                <UserAvatar v-if="profileImageSrc" :src="profileImageSrc" class="w-16 h-16 rounded-full object-cover" />
-                <UserAvatar v-else class="w-16 h-16 rounded-full object-cover" />
-                <UploadDropZone accept="image/*" @selected="onAvatarSelected">
-                  <BaseButton variant="outline" :disabled="uploadingAvatar">
-                    {{ uploadingAvatar ? 'Uploading...' : 'Change photo' }}
-                  </BaseButton>
-                </UploadDropZone>
-              </div>
-            </div>
-
-            <BaseButton variant="primary" :disabled="savingProfile" @click="handleSaveProfile">
-              {{ savingProfile ? 'Saving...' : 'Save changes' }}
-            </BaseButton>
-          </div>
-        </BaseCard>
       </div>
 
       <!-- NO USER -->
@@ -215,6 +154,13 @@ async function handleSaveProfile() {
         <p class="text-sm text-slate-500">No user data available</p>
       </div>
     </div>
+
+    <!-- Edit Profile Modal -->
+    <EditProfileModal
+      v-model="showEditModal"
+      :user="user"
+      @saved="onProfileSaved"
+    />
   </div>
 </template>
 
@@ -242,24 +188,10 @@ async function handleSaveProfile() {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
-/* Glass effect for profile card */
-.glass-card {
-  background: rgba(255, 255, 255, 0.65) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-}
-
 /* Fallback for browsers without backdrop-filter support */
 @supports not (backdrop-filter: blur(10px)) {
   .content-glass-container.ambient-mode {
     background: rgba(255, 255, 255, 0.85);
-  }
-}
-
-@supports not (backdrop-filter: blur(20px)) {
-  .glass-card {
-    background: rgba(255, 255, 255, 0.95) !important;
   }
 }
 </style>

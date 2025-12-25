@@ -10,7 +10,8 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import { TrashIcon, NoSymbolIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
+import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
+import { TrashIcon, NoSymbolIcon, CheckCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 
 const users = ref<AdminUser[]>([])
 const loading = ref(true)
@@ -31,6 +32,23 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 // User count for header badge
 const userCount = computed(() => users.value.length)
 const activeCount = computed(() => users.value.filter(u => u.active).length)
+
+// Edit modal state
+const showEditModal = ref(false)
+const selectedUser = ref<AdminUser | null>(null)
+
+function openEditModal(user: AdminUser) {
+  selectedUser.value = user
+  showEditModal.value = true
+}
+
+function onUserSaved(updatedUser: AdminUser) {
+  // Update user in the list
+  const index = users.value.findIndex(u => u.id === updatedUser.id)
+  if (index !== -1) {
+    users.value[index] = updatedUser
+  }
+}
 
 onMounted(async () => {
   try {
@@ -206,6 +224,15 @@ async function deleteUser(user: AdminUser) {
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex items-center justify-end gap-1">
+                    <!-- Edit Button -->
+                    <button
+                      class="p-1.5 rounded-md transition-colors text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                      title="Edit user"
+                      @click="openEditModal(u)"
+                    >
+                      <PencilSquareIcon class="w-4 h-4" />
+                    </button>
+
                     <!-- Toggle Active Button -->
                     <button
                       class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -247,6 +274,13 @@ async function deleteUser(user: AdminUser) {
         </div>
       </BaseCard>
     </div>
+
+    <!-- Edit User Modal -->
+    <EditProfileModal
+      v-model="showEditModal"
+      :user="selectedUser"
+      @saved="onUserSaved"
+    />
   </div>
 </template>
 
