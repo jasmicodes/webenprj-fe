@@ -5,6 +5,7 @@ import { adminUsersApi } from '@/services/api/users'
 import type { AdminUser } from '@/services/api/types'
 import { getErrorMessage } from '@/services/api/client'
 import { useToastStore } from '@/stores/toastStore'
+import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseCard from '@/components/atoms/BaseCard.vue'
@@ -16,6 +17,11 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const togglingUserId = ref<string | null>(null)
 const toast = useToastStore()
+const userStore = useUserStore()
+
+// Current user check (to prevent self-modification)
+const currentUserId = computed(() => userStore.user?.id)
+const isCurrentUser = (userId: string) => userId === currentUserId.value
 
 // Ambient mode detection
 const appearanceStore = useAppearanceStore()
@@ -161,10 +167,19 @@ async function deleteUser(user: AdminUser) {
               <tr
                 v-for="u in users"
                 :key="u.id"
-                class="hover:bg-slate-50/50 transition-colors"
+                class="transition-colors"
+                :class="isCurrentUser(u.id) ? 'bg-blue-50/40' : 'hover:bg-slate-50/50'"
               >
                 <td class="px-4 py-3">
-                  <span class="font-medium text-slate-900">{{ u.username }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-slate-900">{{ u.username }}</span>
+                    <span
+                      v-if="isCurrentUser(u.id)"
+                      class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
+                    >
+                      You
+                    </span>
+                  </div>
                 </td>
                 <td class="px-4 py-3 text-slate-600">
                   {{ u.email }}
@@ -193,12 +208,16 @@ async function deleteUser(user: AdminUser) {
                   <div class="flex items-center justify-end gap-1">
                     <!-- Toggle Active Button -->
                     <button
-                      class="p-1.5 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      :class="u.active
-                        ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
-                        : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'"
-                      :disabled="togglingUserId === u.id"
-                      :title="u.active ? 'Deactivate user' : 'Activate user'"
+                      class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      :class="isCurrentUser(u.id)
+                        ? 'text-slate-400'
+                        : u.active
+                          ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
+                          : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'"
+                      :disabled="togglingUserId === u.id || isCurrentUser(u.id)"
+                      :title="isCurrentUser(u.id)
+                        ? 'Cannot modify your own account'
+                        : u.active ? 'Deactivate user' : 'Activate user'"
                       @click="toggleActive(u)"
                     >
                       <component
@@ -210,8 +229,12 @@ async function deleteUser(user: AdminUser) {
 
                     <!-- Delete Button -->
                     <button
-                      class="p-1.5 rounded-md text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-                      title="Delete user"
+                      class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      :class="isCurrentUser(u.id)
+                        ? 'text-slate-400'
+                        : 'text-red-500 hover:bg-red-50 hover:text-red-600'"
+                      :disabled="isCurrentUser(u.id)"
+                      :title="isCurrentUser(u.id) ? 'Cannot delete your own account' : 'Delete user'"
                       @click="deleteUser(u)"
                     >
                       <TrashIcon class="w-4 h-4" />
