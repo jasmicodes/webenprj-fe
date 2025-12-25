@@ -75,8 +75,11 @@ function handleDelete(postId: PostCardData['id']) {
       class="w-full max-w-5xl py-8 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
-      <!-- Page Title -->
-      <h1 class="text-2xl font-semibold text-slate-900 mb-6">Resources</h1>
+      <!-- Page Header -->
+      <header class="mb-6 pb-3 border-b border-slate-100">
+        <h1 class="text-lg font-medium text-slate-800 tracking-tight">Resources</h1>
+        <p class="text-sm text-slate-500 mt-0.5">Browse shared study materials</p>
+      </header>
 
       <!-- Filters -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6 space-y-4">

@@ -16,12 +16,13 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
       class="w-full max-w-4xl py-8 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
-      <!-- Page Title -->
-      <h1 class="text-2xl font-semibold text-slate-900 mb-3">Help & Support</h1>
-      <p class="text-sm text-slate-600 mb-8">
-        Need assistance with Motivise? Below you'll find useful information and answers to common
-        questions.
-      </p>
+      <!-- Page Header -->
+      <header class="mb-6 pb-3 border-b border-slate-100">
+        <h1 class="text-lg font-medium text-slate-800 tracking-tight">Help & Support</h1>
+        <p class="text-sm text-slate-500 mt-0.5">
+          Answers to common questions and ways to get assistance
+        </p>
+      </header>
 
       <!-- FAQ Items -->
       <div class="space-y-6">

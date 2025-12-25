@@ -133,7 +133,11 @@ async function handleSaveProfile() {
 
       <!-- CONTENT -->
       <div v-else-if="user" class="space-y-6">
-        <h1 class="text-2xl font-semibold text-slate-900">Profile</h1>
+        <!-- Page Header -->
+        <header class="pb-3 border-b border-slate-100">
+          <h1 class="text-lg font-medium text-slate-800 tracking-tight">Profile</h1>
+          <p class="text-sm text-slate-500 mt-0.5">Manage your account settings</p>
+        </header>
 
         <!-- PROFILE HEADER - Glass surface for chrome -->
         <BaseCard class="glass-card">

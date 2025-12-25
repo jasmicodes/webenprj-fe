@@ -252,20 +252,20 @@ onMounted(() => {
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Feed Header -->
-      <header class="mb-6 pb-4 border-b border-slate-200/60">
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex-1">
-            <h1 class="text-2xl font-semibold text-slate-900">Today's Workbench</h1>
-            <p class="text-sm text-slate-600 mt-1">Your daily study reflections</p>
+      <header class="mb-6 pb-3 border-b border-slate-100">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-lg font-medium text-slate-800 tracking-tight">Today's Workbench</h1>
+            <p class="text-sm text-slate-500 mt-0.5">Your daily study reflections</p>
           </div>
           <!-- Gentle progress presence (non-gamified, calm) -->
           <div
             v-if="!loading"
-            class="text-xs px-3 py-1.5 rounded-full flex-shrink-0 transition-all duration-300"
+            class="text-xs font-medium px-2.5 py-1 rounded-md flex-shrink-0 transition-colors"
             :class="
               hasPostedToday
-                ? 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
-                : 'text-slate-500 bg-slate-50/80 opacity-60'
+                ? 'text-emerald-600 bg-emerald-50/80 border border-emerald-100'
+                : 'text-slate-400 bg-slate-50/60 border border-slate-100'
             "
           >
             {{ dailyStatusMessage }}

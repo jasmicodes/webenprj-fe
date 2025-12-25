@@ -102,18 +102,18 @@ async function handleRemoveBookmark(postId: string) {
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Header (calm, study-focused) -->
-      <div class="flex items-start justify-between mb-6 pb-4 border-b border-slate-200/60">
-        <div>
-          <h1 class="text-2xl font-semibold text-slate-900">Saved Posts</h1>
-          <p class="text-sm text-slate-600 mt-1">Your study material collection</p>
+      <header class="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-lg font-medium text-slate-800 tracking-tight">Saved Posts</h1>
+          <p class="text-sm text-slate-500 mt-0.5">Your study material collection</p>
         </div>
         <button
           @click="openCreateModal"
-          class="px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors border border-slate-200"
+          class="text-xs font-medium px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors border border-slate-200 flex-shrink-0"
         >
           + New Collection
         </button>
-      </div>
+      </header>
 
       <!-- Search & Filters (de-emphasized, below fold) -->
       <div class="mb-6 space-y-3">

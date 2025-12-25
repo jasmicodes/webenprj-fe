@@ -60,10 +60,14 @@ async function deleteUser(user: AdminUser) {
 </script>
 
 <template>
-  <section class="max-w-4xl">
-    <h1 class="text-2xl font-heading mb-4">Admin Dashboard</h1>
+  <section class="max-w-4xl py-8 px-6">
+    <!-- Page Header -->
+    <header class="mb-6 pb-3 border-b border-slate-100">
+      <h1 class="text-lg font-medium text-slate-800 tracking-tight">Admin Dashboard</h1>
+      <p class="text-sm text-slate-500 mt-0.5">Manage users and system settings</p>
+    </header>
 
-    <div v-if="loading">Loading users…</div>
+    <div v-if="loading" class="text-sm text-slate-500">Loading users…</div>
     <div v-else-if="error" class="text-red-600">{{ error }}</div>
 
     <table v-else class="w-full border text-sm">
