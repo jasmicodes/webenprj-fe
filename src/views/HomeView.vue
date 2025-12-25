@@ -248,7 +248,7 @@ onMounted(() => {
 <template>
   <main class="min-h-screen flex items-start justify-center px-8">
     <div
-      class="w-full max-w-2xl py-8 content-glass-container"
+      class="w-full max-w-3xl py-8 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Feed Header -->
