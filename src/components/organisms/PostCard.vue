@@ -10,8 +10,8 @@
       />
     </template>
 
-    <!-- BODY (default slot) -->
-    <div class="space-y-3">
+    <!-- BODY (default slot) - clickable to open post detail -->
+    <div class="space-y-3 cursor-pointer" @click="handlePostClick">
       <!-- Parent deleted banner (for comments on deleted posts) -->
       <div
         v-if="post.parentDeleted"
@@ -114,6 +114,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseProgressRing from '@/components/atoms/BaseProgressRing.vue'
@@ -146,7 +147,17 @@ const emit = defineEmits<{
 // Load avatar via media API (converts /medias/{uuid} to blob URL)
 const { imageUrl: avatarSrc } = useMediaImage(() => props.post.user.avatar, fallbackAvatar)
 const userStore = useUserStore()
+const router = useRouter()
 const isOwnPost = computed(() => props.currentUserId && props.post.userId === props.currentUserId)
+
+// Navigate to post detail view (ignores text selection)
+function handlePostClick() {
+  const selection = window.getSelection()
+  if (selection && selection.toString().length > 0) {
+    return
+  }
+  router.push({ name: 'post', params: { id: String(props.post.id) } })
+}
 
 // Comment section state
 const showComments = ref(false)
