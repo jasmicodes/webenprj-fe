@@ -1,6 +1,6 @@
 <!-- TagInput - Free-form tag input with suggestions -->
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import { normalizeTagName, formatTagDisplay, isValidTag } from '@/utils/tagUtils'
 
@@ -35,6 +35,30 @@ const inputValue = ref('')
 const showSuggestions = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 const dropdownRef = ref<HTMLDivElement | null>(null)
+const containerRef = ref<HTMLDivElement | null>(null)
+
+// Dropdown positioning for Teleport
+const dropdownStyle = ref<Record<string, string>>({})
+
+function updateDropdownPosition() {
+  if (!inputRef.value || !showSuggestions.value) return
+
+  const rect = inputRef.value.getBoundingClientRect()
+  dropdownStyle.value = {
+    position: 'fixed',
+    top: `${rect.bottom + 4}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    zIndex: '9999',
+  }
+}
+
+watch(showSuggestions, async (show) => {
+  if (show) {
+    await nextTick()
+    updateDropdownPosition()
+  }
+})
 
 // Filter suggestions based on input
 const filteredSuggestions = computed(() => {
@@ -99,18 +123,19 @@ function clearTag() {
 }
 
 function handleClickOutside(event: MouseEvent) {
-  if (
-    inputRef.value &&
-    dropdownRef.value &&
-    !inputRef.value.contains(event.target as Node) &&
-    !dropdownRef.value.contains(event.target as Node)
-  ) {
+  const target = event.target as Node
+  const isInsideContainer = containerRef.value?.contains(target)
+  const isInsideDropdown = dropdownRef.value?.contains(target)
+
+  if (!isInsideContainer && !isInsideDropdown) {
     showSuggestions.value = false
   }
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  window.addEventListener('scroll', updateDropdownPosition, true)
+  window.addEventListener('resize', updateDropdownPosition)
   if (props.modelValue) {
     // Display with '#' prefix
     inputValue.value = formatTagDisplay(props.modelValue)
@@ -119,6 +144,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('scroll', updateDropdownPosition, true)
+  window.removeEventListener('resize', updateDropdownPosition)
 })
 
 // Watch for external changes
@@ -126,7 +153,7 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
 </script>
 
 <template>
-  <div class="relative">
+  <div ref="containerRef" class="tag-input-container">
     <!-- Input with chip preview -->
     <div class="relative">
       <input
@@ -135,9 +162,9 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
         type="text"
         :placeholder="placeholder"
         :maxlength="maxLength"
-        class="w-full px-3 py-2 rounded-xl border bg-white text-sm transition-colors outline-none"
+        class="tag-input-field"
         :class="[
-          errorMessage ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-slate-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200',
+          errorMessage ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100',
           hasTag && 'pr-8'
         ]"
         @focus="onFocus"
@@ -160,26 +187,81 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
     <!-- Error message -->
     <p v-if="errorMessage" class="mt-1 text-xs text-red-600">{{ errorMessage }}</p>
 
-    <!-- Suggestions dropdown -->
-    <div
-      v-if="showSuggestions && filteredSuggestions.length > 0"
-      ref="dropdownRef"
-      class="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto"
-    >
-      <button
-        v-for="tag in filteredSuggestions"
-        :key="tag"
-        type="button"
-        class="w-full px-3 py-2 text-left text-sm hover:bg-slate-50 transition-colors"
-        @click="selectTag(tag)"
+    <!-- Suggestions dropdown (Teleported to body to avoid clipping) -->
+    <Teleport to="body">
+      <div
+        v-if="showSuggestions && filteredSuggestions.length > 0"
+        ref="dropdownRef"
+        class="tag-dropdown"
+        :style="dropdownStyle"
       >
-        <span class="text-slate-900">{{ formatTagDisplay(tag) }}</span>
-      </button>
-    </div>
-
-    <!-- Help text -->
-    <p class="mt-1 text-xs text-slate-500">
-      Type a tag or select from suggestions. Press Enter to confirm.
-    </p>
+        <button
+          v-for="tag in filteredSuggestions"
+          :key="tag"
+          type="button"
+          class="tag-dropdown-item"
+          @click="selectTag(tag)"
+        >
+          <span>{{ formatTagDisplay(tag) }}</span>
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>
+
+<style scoped>
+.tag-input-container {
+  position: relative;
+}
+
+.tag-input-field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: theme('colors.slate.800');
+  background: white;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tag-input-field::placeholder {
+  color: theme('colors.slate.400');
+}
+</style>
+
+<style>
+/* Dropdown styles - not scoped so they work with Teleport */
+.tag-dropdown {
+  background: white;
+  border: 1px solid theme('colors.slate.200');
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.tag-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  text-align: left;
+  color: theme('colors.slate.700');
+  transition: background-color 0.1s ease;
+}
+
+.tag-dropdown-item:first-child {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.tag-dropdown-item:last-child {
+  border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.tag-dropdown-item:hover {
+  background: theme('colors.slate.50');
+}
+</style>
