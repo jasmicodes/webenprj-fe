@@ -37,6 +37,11 @@ const routes: RouteRecordRaw[] = [
   // Main Sites (only after login)
   { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
   {
+    path: '/post/:id',
+    name: 'post',
+    component: () => import('@/views/PostDetailView.vue'),
+  },
+  {
     path: '/resources',
     name: 'resources',
     component: () => import('@/views/ResourceListView.vue'),

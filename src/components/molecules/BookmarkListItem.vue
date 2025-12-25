@@ -98,17 +98,6 @@
         >
           <button
             type="button"
-            class="p-1.5 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-            title="Open"
-            aria-label="Open post"
-            @click.stop="handleOpen"
-          >
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </button>
-          <button
-            type="button"
             class="p-1.5 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
             title="Remove"
             aria-label="Remove bookmark"
@@ -185,6 +174,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import { useMediaImage } from '@/composables/useMediaImage'
@@ -201,10 +191,11 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  open: [postId: string]
   remove: [postId: string]
   select: [event: MouseEvent]
 }>()
+
+const router = useRouter()
 
 // Modal state
 const showConfirmModal = ref(false)
@@ -258,21 +249,22 @@ function formatRelativeTime(dateString: string): string {
 
 // Handle row click (open or select depending on mode)
 function handleClick(event: MouseEvent) {
+  // Ignore if user is selecting text
+  const selection = window.getSelection()
+  if (selection && selection.toString().length > 0) {
+    return
+  }
+
   if (props.selectable) {
     emit('select', event)
   } else {
-    emit('open', props.bookmark.post.id)
+    router.push({ name: 'post', params: { id: props.bookmark.post.id } })
   }
 }
 
 // Handle checkbox click specifically
 function handleCheckboxClick(event: MouseEvent) {
   emit('select', event)
-}
-
-// Handle open action
-function handleOpen() {
-  emit('open', props.bookmark.post.id)
 }
 
 // Handle remove click

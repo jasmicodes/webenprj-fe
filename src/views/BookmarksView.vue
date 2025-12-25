@@ -11,7 +11,6 @@
 -->
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
@@ -20,7 +19,6 @@ import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'
 
 const bookmarkStore = useBookmarkStore()
 const appearanceStore = useAppearanceStore()
-const router = useRouter()
 
 // Search state with debouncing
 const searchInput = ref('')
@@ -139,12 +137,6 @@ async function handleRemoveBookmark(postId: string) {
   } catch (error) {
     console.error('Failed to remove bookmark:', error)
   }
-}
-
-// Handle opening a bookmark (navigate to home with post highlighted)
-function handleOpenBookmark(postId: string) {
-  // Navigate to home - a post detail view could be added later
-  router.push({ name: 'home', query: { post: postId } })
 }
 
 // ========== Bulk Select Functions ==========
@@ -657,7 +649,6 @@ async function bulkMoveToCollection(collectionId: string | null) {
                 :bookmark="bookmark"
                 :selectable="selectMode"
                 :selected="isSelected(bookmark.post.id)"
-                @open="handleOpenBookmark"
                 @remove="handleRemoveBookmark"
                 @select="(e: MouseEvent) => handleSelect(bookmark.post.id, index, e)"
               />
