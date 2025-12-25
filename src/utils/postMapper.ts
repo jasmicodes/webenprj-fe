@@ -7,6 +7,8 @@ import { processTagFromBackend } from './tagUtils'
 export type PostCardData = {
   id: string | number
   userId: string // Author's user ID for ownership detection
+  parentId?: string | null // Parent post ID if this is a comment
+  parentDeleted: boolean // Whether parent post was soft-deleted
   user: { name: string; avatar?: string }
   tag?: string
   time?: string
@@ -14,7 +16,7 @@ export type PostCardData = {
   image?: string
   likes: number
   liked: boolean
-  comments: number
+  comments: number // Now populated from backend commentCount
   streak: number
   bookmarkCount: number
   bookmarked: boolean
@@ -22,7 +24,7 @@ export type PostCardData = {
 
 /**
  * Map a backend Post into the PostCardData shape.
- * Use overrides to inject UI-only fields (e.g., comment count, streak).
+ * Use overrides to inject UI-only fields (e.g., streak).
  */
 export function mapApiPostToCard(
   post: ApiPost,
@@ -31,6 +33,8 @@ export function mapApiPostToCard(
   return {
     id: post.id,
     userId: post.userId,
+    parentId: post.parentId ?? null,
+    parentDeleted: post.parentDeleted ?? false,
     user: overrides.user || {
       name: post.username || 'Unknown user',
       avatar: post.userProfileImageUrl ?? undefined,
@@ -41,7 +45,7 @@ export function mapApiPostToCard(
     image: post.imageUrl ?? undefined,
     likes: overrides.likes ?? post.likeCount ?? 0,
     liked: overrides.liked ?? post.likedByCurrentUser ?? false,
-    comments: overrides.comments ?? 0,
+    comments: overrides.comments ?? post.commentCount ?? 0,
     streak: overrides.streak ?? 0,
     bookmarkCount: overrides.bookmarkCount ?? post.bookmarkCount ?? 0,
     bookmarked: overrides.bookmarked ?? post.bookmarkedByCurrentUser ?? false,

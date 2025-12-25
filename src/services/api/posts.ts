@@ -55,4 +55,30 @@ export const postsApi = {
   async unlikePost(id: string): Promise<void> {
     await api.delete(`/posts/${id}/like`)
   },
+
+  /**
+   * Get comments for a post.
+   * @param postId The parent post ID
+   * @param page   Zero-based page index
+   * @param size   Page size
+   */
+  async getComments(postId: string, page = 0, size = 20): Promise<Page<Post>> {
+    const res = await api.get<Page<Post>>(`/posts/${postId}/comments`, {
+      params: { page, size },
+    })
+    return res.data
+  },
+
+  /**
+   * Create a comment on a post.
+   * @param postId The parent post ID
+   * @param data   Comment content (subject, content, optional imageUrl)
+   */
+  async createComment(postId: string, data: Omit<PostCreateRequest, 'parentId'>): Promise<Post> {
+    const res = await api.post<Post>('/posts', {
+      ...data,
+      parentId: postId,
+    })
+    return res.data
+  },
 }

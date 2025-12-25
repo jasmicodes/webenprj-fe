@@ -46,6 +46,9 @@ export interface ChangePasswordRequest {
 
 export interface Post {
   id: string
+  parentId?: string | null
+  commentCount: number
+  parentDeleted: boolean
   subject: string
   content: string
   imageUrl?: string
@@ -64,6 +67,7 @@ export interface PostCreateRequest {
   subject: string
   content: string
   imageUrl?: string
+  parentId?: string
 }
 
 export interface PostUpdateRequest {
