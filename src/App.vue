@@ -23,8 +23,8 @@
     <div
       class="flex justify-center min-h-screen transition-all duration-300"
       :class="{
-        'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
-        'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+        'md:ml-52': isAuthenticated && !route.meta.authPage && !isCollapsed,
+        'md:ml-16': isAuthenticated && !route.meta.authPage && isCollapsed,
       }"
     >
       <div class="w-full">
@@ -38,8 +38,8 @@
     v-if="isAuthenticated && !route.meta.authPage"
     class="transition-all duration-300"
     :class="{
-      'md:ml-64': isAuthenticated && !route.meta.authPage && !isCollapsed,
-      'md:ml-20': isAuthenticated && !route.meta.authPage && isCollapsed,
+      'md:ml-52': isAuthenticated && !route.meta.authPage && !isCollapsed,
+      'md:ml-16': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
   >
     <AppFooter class="fixed bottom-0 right-0 left-0 md:relative" />

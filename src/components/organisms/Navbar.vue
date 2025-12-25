@@ -32,8 +32,8 @@ function handleLogout() {
   <!-- Sidebar (Desktop) - Glass effect for chrome surfaces -->
   <nav
     :class="[
-      'hidden md:flex fixed left-0 top-0 h-screen flex-col py-5 px-4 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
-      isCollapsed ? 'w-20' : 'w-64',
+      'hidden md:flex fixed left-0 top-0 h-screen flex-col py-4 px-3 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
+      isCollapsed ? 'w-16' : 'w-52',
       { 'ambient-mode': isAmbientMode }
     ]"
   >
