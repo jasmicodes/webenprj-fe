@@ -167,7 +167,28 @@ function handleLogout() {
 
     <!-- Bottom actions -->
     <div class="flex flex-col gap-1">
-      <!-- Help button (secondary) -->
+      <!-- Settings -->
+      <RouterLink
+        :to="{ name: 'settings' }"
+        :title="isCollapsed ? 'Settings' : ''"
+        class="nav-item group flex items-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100/80 transition-all"
+        :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+        active-class="nav-item-active bg-slate-100/60 text-slate-700"
+      >
+        <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-600">
+          <BaseIcon name="Cog6ToothIcon" class="w-5 h-5" />
+        </div>
+        <span
+          :class="[
+            'text-sm font-medium transition-opacity duration-200',
+            isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+          ]"
+        >
+          Settings
+        </span>
+      </RouterLink>
+
+      <!-- Help -->
       <RouterLink
         :to="{ name: 'help' }"
         :title="isCollapsed ? 'Help' : ''"
