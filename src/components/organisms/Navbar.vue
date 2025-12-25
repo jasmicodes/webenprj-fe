@@ -61,24 +61,24 @@ function handleLogout() {
       </div>
 
       <!-- Hauptmenülinks -->
-      <div class="flex flex-col gap-2 w-full mt-2">
+      <div class="flex flex-col gap-1 w-full mt-2">
         <RouterLink
           :to="{ name: 'home' }"
           :title="isCollapsed ? 'Home' : ''"
-          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
-          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
-          active-class="bg-primary-300 text-neutral-50"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-            <BaseIcon name="HomeIcon" class="w-6 h-6" />
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
+            <BaseIcon name="HomeIcon" class="w-5 h-5" />
           </div>
           <span
             :class="[
-              'font-heading text-base transition-opacity duration-200',
+              'font-heading text-sm transition-opacity duration-200',
               isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
             ]"
           >
-            <h2>Home</h2>
+            Home
           </span>
         </RouterLink>
 
@@ -86,95 +86,96 @@ function handleLogout() {
           v-if="isAdmin"
           :to="{ name: 'admin' }"
           :title="isCollapsed ? 'Admin' : ''"
-          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
-          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
-          active-class="bg-primary-300 text-neutral-50"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-            <BaseIcon name="ShieldCheckIcon" class="w-6 h-6" />
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
+            <BaseIcon name="ShieldCheckIcon" class="w-5 h-5" />
           </div>
           <span
             :class="[
-              'font-heading text-base transition-opacity duration-200',
+              'font-heading text-sm transition-opacity duration-200',
               isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
             ]"
           >
-            <h2>Admin</h2>
+            Admin
           </span>
         </RouterLink>
 
         <RouterLink
           :to="{ name: 'resources' }"
           :title="isCollapsed ? 'Resources' : ''"
-          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
-          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
-          active-class="bg-primary-300 text-neutral-50"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-            <BaseIcon name="FolderIcon" class="w-6 h-6" />
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
+            <BaseIcon name="FolderIcon" class="w-5 h-5" />
           </div>
           <span
             :class="[
-              'font-heading text-base transition-opacity duration-200',
+              'font-heading text-sm transition-opacity duration-200',
               isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
             ]"
           >
-            <h2>Resources</h2>
+            Resources
           </span>
         </RouterLink>
 
         <RouterLink
           :to="{ name: 'bookmarks' }"
           :title="isCollapsed ? 'Bookmarks' : ''"
-          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
-          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
-          active-class="bg-primary-300 text-neutral-50"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-            <BaseIcon name="BookmarkIcon" class="w-6 h-6" />
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
+            <BaseIcon name="BookmarkIcon" class="w-5 h-5" />
           </div>
           <span
             :class="[
-              'font-heading text-base transition-opacity duration-200',
+              'font-heading text-sm transition-opacity duration-200',
               isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
             ]"
           >
-            <h2>Bookmarks</h2>
+            Bookmarks
           </span>
         </RouterLink>
 
         <RouterLink
           :to="{ name: 'profile' }"
           :title="isCollapsed ? 'Profile' : ''"
-          class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-primary-300 hover:text-primary-900"
-          :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
-          active-class="bg-primary-300 text-neutral-50"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
             <UserAvatar size="xs" />
           </div>
           <span
             :class="[
-              'font-heading text-base transition-opacity duration-200',
+              'font-heading text-sm transition-opacity duration-200',
               isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
             ]"
           >
-            <h2>Profile</h2>
+            Profile
           </span>
         </RouterLink>
       </div>
     </div>
 
     <!-- Bottom actions -->
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-1">
       <!-- Help button (secondary) -->
       <RouterLink
         :to="{ name: 'help' }"
         :title="isCollapsed ? 'Help' : ''"
-        class="flex items-center rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all"
-        :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
+        class="nav-item group flex items-center rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100/80 transition-all"
+        :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+        active-class="nav-item-active bg-slate-100/60 text-slate-700"
       >
-        <div class="h-10 w-10 shrink-0 grid place-items-center rounded-xl">
+        <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-600">
           <BaseIcon name="QuestionMarkCircleIcon" class="w-5 h-5" />
         </div>
         <span
@@ -191,19 +192,19 @@ function handleLogout() {
       <button
         @click="handleLogout"
         :title="isCollapsed ? 'Logout' : ''"
-        class="flex items-center rounded-xl font-heading text-base text-slate-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
-        :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
+        class="group flex items-center rounded-lg text-sm text-slate-600 transition-all duration-200 hover:bg-red-50/80 hover:text-red-600"
+        :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
       >
-        <div class="h-11 w-11 shrink-0 grid place-items-center rounded-xl">
-          <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-6 h-6" />
+        <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-red-500">
+          <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-5 h-5" />
         </div>
         <span
           :class="[
-            'font-heading text-base transition-opacity duration-200',
+            'font-medium text-sm transition-opacity duration-200',
             isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
           ]"
         >
-          <h2>Logout</h2>
+          Logout
         </span>
       </button>
 
@@ -211,13 +212,13 @@ function handleLogout() {
       <button
         @click="toggleCollapse"
         :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-        class="flex items-center rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all mt-2 border-t border-slate-200 pt-4"
-        :class="isCollapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2'"
+        class="group flex items-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all mt-2 border-t border-slate-200/60 pt-3"
+        :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
       >
-        <div class="h-10 w-10 shrink-0 grid place-items-center rounded-xl">
+        <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-500">
           <BaseIcon
             :name="isCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'"
-            class="w-5 h-5"
+            class="w-4 h-4"
           />
         </div>
         <span
@@ -302,5 +303,27 @@ function handleLogout() {
   .navbar-glass.ambient-mode {
     background: rgba(255, 255, 255, 0.95);
   }
+}
+
+/* Nav item active state with left accent indicator */
+.nav-item-active {
+  position: relative;
+}
+
+.nav-item-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: #64748b; /* slate-500 - subtle accent */
+  border-radius: 0 2px 2px 0;
+}
+
+/* Hover state enhancement for inactive nav items */
+.nav-item:not(.nav-item-active):hover {
+  background: rgba(241, 245, 249, 0.8); /* slate-100 with transparency */
 }
 </style>

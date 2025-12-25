@@ -49,6 +49,7 @@
         :bookmark-count="post.bookmarkCount"
         :bookmarked="post.bookmarked"
         :is-own-post="isOwnPost"
+        :is-admin="userStore.isAdmin"
         @like="emit('like', post.id)"
         @comment="toggleComments"
         @save="emit('save', post.id)"
@@ -125,6 +126,7 @@ import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { useMediaImage } from '@/composables/useMediaImage'
 import { postsApi } from '@/services/api/posts'
+import { useUserStore } from '@/stores/userStore'
 
 const props = defineProps<{
   post: PostCardData
@@ -143,6 +145,7 @@ const emit = defineEmits<{
 
 // Load avatar via media API (converts /medias/{uuid} to blob URL)
 const { imageUrl: avatarSrc } = useMediaImage(() => props.post.user.avatar, fallbackAvatar)
+const userStore = useUserStore()
 const isOwnPost = computed(() => props.currentUserId && props.post.userId === props.currentUserId)
 
 // Comment section state

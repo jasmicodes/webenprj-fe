@@ -80,8 +80,8 @@
           <BaseIcon name="ShareIcon" class="w-5 h-5" />
         </button>
 
-        <!-- Kebab menu for management (only for own posts) -->
-        <div v-if="props.isOwnPost" class="relative inline-block" ref="dropdownRef">
+        <!-- Kebab menu for management (for own posts or admin) -->
+        <div v-if="props.isOwnPost || props.isAdmin" class="relative inline-block" ref="dropdownRef">
           <button
             class="p-1.5 transition-colors hover:text-slate-700 hover:bg-slate-50 rounded-md"
             :class="{ 'bg-slate-100 text-slate-900': showManageActions }"
@@ -107,6 +107,7 @@
               class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
             >
               <button
+                v-if="props.isOwnPost"
                 class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors text-left"
                 @click="handleEdit"
                 aria-label="Edit this post"
@@ -114,7 +115,7 @@
                 <BaseIcon name="PencilIcon" class="w-4 h-4" />
                 <span>Edit post</span>
               </button>
-              <div class="h-px bg-slate-100 my-1"></div>
+              <div v-if="props.isOwnPost" class="h-px bg-slate-100 my-1"></div>
               <button
                 class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
                 @click="handleDelete"
@@ -142,6 +143,7 @@ const props = withDefaults(
     comments?: number
     streak?: number
     isOwnPost?: boolean
+    isAdmin?: boolean
     bookmarkCount?: number
     bookmarked?: boolean
   }>(),
@@ -151,6 +153,7 @@ const props = withDefaults(
     comments: 0,
     streak: 0,
     isOwnPost: false,
+    isAdmin: false,
     bookmarkCount: 0,
     bookmarked: false,
   },
