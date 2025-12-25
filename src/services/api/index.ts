@@ -1,6 +1,7 @@
 export { authApi } from './auth'
 export { usersApi, adminUsersApi } from './users'
 export { postsApi } from './posts'
+export { bookmarksApi } from './bookmarks'
 export { mediaApi } from './media'
 export { api, getErrorMessage } from './client'
 export { followApi } from './users'
