@@ -1,7 +1,6 @@
 <!-- ComposerCard - Create new posts in the feed -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import CharCounterTextarea from '@/components/molecules/CharCounterTextarea.vue'
@@ -88,55 +87,55 @@ function removeFile() {
 </script>
 
 <template>
-  <BaseCard>
-    <!-- Collapsed State: Placeholder -->
-    <div v-if="!isExpanded" class="px-6 py-4">
+  <!-- Composer with elevated presence - primary action in feed -->
+  <article class="composer-card bg-white rounded-2xl border border-slate-200 shadow-md ring-1 ring-slate-900/5">
+    <!-- Collapsed State: Inviting input trigger -->
+    <div v-if="!isExpanded" class="p-4">
       <button
         @click="expand"
         class="flex items-center gap-3 w-full text-left group"
         type="button"
-        aria-label="Start writing about your study session"
+        aria-label="Share what you learned today"
       >
-        <UserAvatar class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+        <UserAvatar class="w-9 h-9 rounded-full object-cover flex-shrink-0" />
         <div
-          class="flex-1 px-4 py-3 rounded-xl bg-slate-50 text-slate-500 group-hover:bg-slate-100 group-hover:text-slate-600 transition-colors"
+          class="composer-trigger flex-1 px-4 py-2.5 rounded-xl bg-slate-50/80 text-sm text-slate-500 border border-transparent transition-all duration-200 group-hover:bg-slate-100 group-hover:text-slate-600 group-hover:border-slate-200 group-focus-visible:ring-2 group-focus-visible:ring-blue-500/20 group-focus-visible:border-blue-300 group-focus-visible:bg-white"
         >
-          What did you study today?
+          Share a learning moment...
         </div>
       </button>
     </div>
 
     <!-- Expanded State: Full Composer -->
-    <div v-else class="px-6 py-4 space-y-4">
-      <!-- Header with avatar -->
+    <div v-else class="p-4 space-y-4">
+      <!-- Header with avatar and username -->
       <div class="flex items-center gap-3">
-        <UserAvatar class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-        <div class="flex-1">
-          <p class="text-sm font-medium text-slate-900">
-            {{ userStore.user?.username || 'User' }}
-          </p>
-        </div>
+        <UserAvatar class="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+        <p class="text-sm font-medium text-slate-800">
+          {{ userStore.user?.username || 'User' }}
+        </p>
       </div>
 
       <!-- Content textarea with helper hint -->
-      <div class="space-y-1.5">
+      <div class="space-y-1">
         <CharCounterTextarea
           v-model="content"
-          placeholder="What did you study today?"
+          placeholder="What did you learn or work on today?"
           :max="500"
           :max-length="500"
-          :rows="4"
+          :rows="3"
+          class="composer-textarea"
         />
-        <p class="text-xs text-slate-500 pl-1">One sentence is enough.</p>
+        <p class="text-xs text-slate-400 pl-0.5">A sentence or two is plenty.</p>
       </div>
 
       <!-- Tag input -->
       <div>
-        <label class="block text-xs font-medium text-slate-700 mb-1.5">
+        <label class="block text-xs font-medium text-slate-600 mb-1">
           Subject
-          <span class="text-slate-500 font-normal">(optional)</span>
+          <span class="text-slate-400 font-normal">(optional)</span>
         </label>
-        <TagInput v-model="subject" placeholder="e.g., webengineering, algorithms, databases" />
+        <TagInput v-model="subject" placeholder="e.g., webengineering, algorithms" />
       </div>
 
       <!-- Media upload area -->
@@ -149,30 +148,30 @@ function removeFile() {
           @change="onFileChange"
         />
 
-        <div v-if="!selectedFile" class="flex items-center gap-2">
+        <div v-if="!selectedFile">
           <button
             @click="handleFileSelect"
             type="button"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
           >
-            <BaseIcon name="PhotoIcon" class="w-5 h-5" />
-            <span>Add image or PDF</span>
+            <BaseIcon name="PhotoOutlineIcon" class="w-4 h-4" />
+            <span>Add image</span>
           </button>
         </div>
 
         <!-- File preview -->
         <div
           v-else
-          class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-lg"
+          class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg"
         >
           <div class="flex items-center gap-2 min-w-0 flex-1">
             <BaseIcon
               :name="selectedFile.type.startsWith('image/') ? 'PhotoIcon' : 'DocumentIcon'"
-              class="w-5 h-5 text-slate-600 flex-shrink-0"
+              class="w-4 h-4 text-slate-500 flex-shrink-0"
             />
-            <span class="text-sm text-slate-700 truncate">{{ selectedFile.name }}</span>
-            <span class="text-xs text-slate-500 flex-shrink-0">
-              ({{ (selectedFile.size / 1024).toFixed(1) }} KB)
+            <span class="text-xs text-slate-600 truncate">{{ selectedFile.name }}</span>
+            <span class="text-xs text-slate-400 flex-shrink-0">
+              {{ (selectedFile.size / 1024).toFixed(0) }} KB
             </span>
           </div>
           <button
@@ -181,32 +180,21 @@ function removeFile() {
             class="ml-2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded transition-colors"
             title="Remove file"
           >
-            <BaseIcon name="XMarkIcon" class="w-4 h-4" />
+            <BaseIcon name="XMarkIcon" class="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       <!-- Actions row -->
-      <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-        <p
-          class="text-xs"
-          :class="
-            content.trim().length === 0
-              ? 'text-slate-500'
-              : content.trim().length < 10
-                ? 'text-slate-600'
-                : !isSubjectValid
-                  ? 'text-slate-700'
-                  : 'text-slate-500'
-          "
-        >
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <p class="text-xs text-slate-400">
           {{
             content.trim().length === 0
-              ? 'Reflect on your learning'
+              ? 'Reflect on your progress'
               : content.trim().length < 10
-                ? `${10 - content.trim().length} more characters`
+                ? `${10 - content.trim().length} more characters needed`
                 : !isSubjectValid
-                  ? 'Subject: 2-30 characters, letters and numbers only'
+                  ? 'Subject: letters and numbers only'
                   : 'Visible to your study community'
           }}
         </p>
@@ -218,5 +206,31 @@ function removeFile() {
         </div>
       </div>
     </div>
-  </BaseCard>
+  </article>
 </template>
+
+<style scoped>
+/* Elevated composer card - stands out as primary action */
+.composer-card {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+/* Focus state for composer trigger */
+.composer-trigger:focus-visible {
+  outline: none;
+}
+
+/* Enhanced textarea focus within composer */
+.composer-textarea :deep(textarea) {
+  transition: all 0.2s ease;
+}
+
+.composer-textarea :deep(textarea:focus) {
+  background-color: rgb(248 250 252); /* slate-50 */
+  border-color: rgb(203 213 225); /* slate-300 */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+</style>
