@@ -37,8 +37,8 @@ function handleLogout() {
       { 'ambient-mode': isAmbientMode }
     ]"
   >
-    <!-- ========== ZONE 1: Primary Activity Navigation (top) ========== -->
-    <div class="flex-1 min-h-0 flex flex-col">
+    <!-- ========== ZONE 1: Primary Activity Navigation (top, scrollable if needed) ========== -->
+    <div class="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden scrollbar-hide">
       <!-- Logo + Title -->
       <div
         :class="[
@@ -145,7 +145,9 @@ function handleLogout() {
       </div>
 
       <!-- ========== ZONE 2: Admin / Power Navigation (middle, conditional) ========== -->
-      <div v-if="isAdmin" class="mt-4 pt-4 border-t border-slate-200/60">
+      <div v-if="isAdmin" class="mt-3 pt-3">
+        <!-- Section divider -->
+        <div class="nav-divider mb-3" />
         <RouterLink
           :to="{ name: 'admin' }"
           :title="isCollapsed ? 'Admin' : ''"
@@ -169,7 +171,9 @@ function handleLogout() {
     </div>
 
     <!-- ========== ZONE 3: Account & System Actions (bottom, anchored) ========== -->
-    <div class="mt-auto pt-3 border-t border-slate-200/60 flex flex-col gap-0.5">
+    <div class="mt-auto pt-3 flex flex-col gap-0.5 flex-shrink-0">
+      <!-- Section divider -->
+      <div class="nav-divider mb-2" />
       <!-- Settings -->
       <RouterLink
         :to="{ name: 'settings' }"
@@ -349,5 +353,28 @@ function handleLogout() {
 /* Hover state enhancement for inactive nav items */
 .nav-item:not(.nav-item-active):hover {
   background: rgba(241, 245, 249, 0.8); /* slate-100 with transparency */
+}
+
+/* Subtle section divider - inset with low opacity */
+.nav-divider {
+  height: 1px;
+  margin-left: 12px;
+  margin-right: 12px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(148, 163, 184, 0.25) 20%,
+    rgba(148, 163, 184, 0.25) 80%,
+    transparent
+  );
+}
+
+/* Hide scrollbar while preserving scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
 }
 </style>
