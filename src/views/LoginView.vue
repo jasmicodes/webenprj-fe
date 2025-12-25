@@ -71,7 +71,7 @@ async function onSubmit() {
     } else {
       toast.showError(errorMsg)
     }
-  } finally {
+    // Only reset loading on error - on success, let navigation handle the transition
     loading.value = false
   }
 }
