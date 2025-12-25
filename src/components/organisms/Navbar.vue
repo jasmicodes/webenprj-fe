@@ -42,18 +42,18 @@ function handleLogout() {
       <!-- Logo + Title -->
       <div
         :class="[
-          'flex items-center mb-4 transition-all duration-300',
-          isCollapsed ? 'justify-center gap-0 px-0' : 'gap-1 px-1',
+          'flex items-center mb-3 transition-all duration-300',
+          isCollapsed ? 'justify-center gap-0 px-0' : 'gap-1.5 px-1',
         ]"
       >
         <img
           src="@/assets/Weben - Logo Motivise.svg"
           alt="Motivise Logo"
-          class="w-12 h-12 rounded-lg flex-shrink-0"
+          class="w-8 h-8 rounded-md flex-shrink-0"
         />
         <h1
           :class="[
-            'font-heading text-lg tracking-wide transition-opacity duration-200',
+            'font-heading text-base tracking-wide transition-opacity duration-200',
             isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
           ]"
         >
