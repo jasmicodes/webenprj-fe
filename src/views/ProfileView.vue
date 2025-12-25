@@ -219,16 +219,10 @@ function goToHome() {
             </div>
 
             <!-- Right: Actions -->
-            <div class="flex-shrink-0 flex flex-col items-center sm:items-end gap-2">
+            <div class="flex-shrink-0">
               <BaseButton variant="primary" size="sm" @click="openEditModal">
                 Edit profile
               </BaseButton>
-              <RouterLink
-                :to="{ name: 'settings' }"
-                class="text-xs text-slate-500 hover:text-slate-700 transition-colors"
-              >
-                Account settings
-              </RouterLink>
             </div>
           </div>
         </BaseCard>
