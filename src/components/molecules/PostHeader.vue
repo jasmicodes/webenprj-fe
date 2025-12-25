@@ -1,30 +1,39 @@
-<!--UserBadge + Tag (learning anchor)-->
+<!-- Post header: Author info + tag -->
 <template>
-  <div class="card-header flex items-center gap-3">
-    <!-- Avatar + Name + Time -->
-    <UserBadge
+  <div class="flex items-center gap-3">
+    <!-- Avatar -->
+    <img
+      v-if="avatarSrc"
       :src="avatarSrc"
-      :name="username"
-      :subtitle="formattedTime"
-      size="sm"
-      class="min-w-0 flex-1"
+      :alt="username"
+      class="w-9 h-9 rounded-full object-cover flex-shrink-0"
     />
-    <!-- Study subject tag (calm, supportive) -->
-    <BaseChip
-      v-if="tag"
-      variant="tag"
-      class="flex-shrink-0 max-w-[140px] truncate"
-      :title="`Subject: ${formatTagDisplay(tag)}`"
-    >
-      {{ formatTagDisplay(tag) }}
-    </BaseChip>
+    <div
+      v-else
+      class="w-9 h-9 rounded-full bg-slate-200 flex-shrink-0"
+    />
+
+    <!-- Author info: name + time stacked tightly -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-baseline gap-2">
+        <span class="font-medium text-sm text-slate-900 truncate">{{ username }}</span>
+        <span class="text-xs text-slate-400 flex-shrink-0">{{ formattedTime }}</span>
+      </div>
+      <!-- Tag on second line for cleaner alignment -->
+      <div v-if="tag" class="mt-0.5">
+        <span
+          class="inline-block text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded"
+          :title="`Subject: ${formatTagDisplay(tag)}`"
+        >
+          {{ formatTagDisplay(tag) }}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import UserBadge from '@/components/molecules/UserBadge.vue'
-import BaseChip from '@/components/atoms/BaseChip.vue'
 import { formatTagDisplay } from '@/utils/tagUtils'
 import { formatTimeAgo } from '@/utils/timeUtils'
 

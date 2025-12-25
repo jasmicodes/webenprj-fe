@@ -11,11 +11,11 @@
     </template>
 
     <!-- BODY (default slot) -->
-    <div class="space-y-4">
+    <div class="space-y-3">
       <!-- Parent deleted banner (for comments on deleted posts) -->
       <div
         v-if="post.parentDeleted"
-        class="bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 rounded-lg text-sm"
+        class="bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg text-xs"
       >
         The original post was deleted.
       </div>
@@ -23,7 +23,7 @@
       <!-- Image with fixed aspect ratio -->
       <figure
         v-if="post.image"
-        class="relative w-full aspect-[4/3] bg-neutral-50 overflow-hidden rounded-xl"
+        class="relative w-full aspect-[4/3] bg-slate-50 overflow-hidden rounded-xl"
       >
         <img
           :src="post.image"
@@ -34,7 +34,7 @@
       </figure>
 
       <!-- Post text/caption -->
-      <p v-if="post.text" class="text-slate-900 text-sm leading-relaxed line-clamp-4">
+      <p v-if="post.text" class="text-slate-800 text-sm leading-relaxed">
         {{ post.text }}
       </p>
     </div>
