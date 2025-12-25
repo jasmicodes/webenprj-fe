@@ -84,13 +84,16 @@ async function submit() {
 
     // 2) Payload fürs Backend (/users)
     //    Backend erwartet:
-    //    { email, username, password, countryCode, profileImageUrl? }
+    //    { email, username, password, countryCode, profileImageUrl?, salutation? }
     //    Note: profileImageUrl is optional - omit it entirely if not provided
+    const finalSalutation =
+      salutation.value === 'other' ? otherText.value.trim() : salutation.value
     const apiPayload: RegisterRequest = {
       email: email.value.trim(),
       username: username.value.trim(),
       password: password.value,
       countryCode: country.value, // ⚠️ muss ein Code wie "AT" sein
+      salutation: finalSalutation || undefined,
       // profileImageUrl omitted - optional field, not needed during registration
     }
 

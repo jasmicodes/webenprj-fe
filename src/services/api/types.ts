@@ -6,6 +6,7 @@ export interface User {
   username: string
   countryCode: string
   profileImageUrl?: string | null
+  salutation?: string | null
   role: UserRole
   createdAt: string
   updatedAt: string
@@ -30,6 +31,7 @@ export interface RegisterRequest {
   password: string
   countryCode: string
   profileImageUrl?: string
+  salutation?: string
 }
 
 export interface UpdateProfileRequest {
@@ -37,6 +39,7 @@ export interface UpdateProfileRequest {
   username: string
   countryCode: string
   profileImageUrl?: string
+  salutation?: string
 }
 
 export interface ChangePasswordRequest {

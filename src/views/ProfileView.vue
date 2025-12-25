@@ -184,46 +184,51 @@ function goToHome() {
 
             <!-- Center: Identity -->
             <div class="flex-1 min-w-0 text-center sm:text-left">
-              <!-- Name row -->
-              <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                <h1 class="text-lg font-semibold text-slate-900 truncate">{{ user.username }}</h1>
-                <span class="text-sm text-slate-400">@{{ user.username }}</span>
-              </div>
+              <!-- Username as primary identity -->
+              <h1 class="text-lg font-semibold text-slate-900 truncate">
+                {{ user.username }}
+              </h1>
+              <!-- Salutation below username (replaces redundant @handle) -->
+              <p v-if="user.salutation" class="text-sm text-slate-600 mt-0.5">{{ user.salutation }}</p>
 
-              <!-- Meta row: email + country + role -->
+              <!-- Meta row: country + demoted admin badge -->
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1.5">
-                <span class="text-xs text-slate-400">{{ user.email }}</span>
-                <span class="text-slate-300">·</span>
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs">
                   {{ countryName }}
                 </span>
                 <span
                   v-if="isAdmin"
-                  class="inline-flex items-center px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-xs font-medium border border-purple-100"
+                  class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-slate-50 text-slate-500 text-[10px] font-medium border border-slate-200"
                 >
                   Admin
                 </span>
               </div>
 
-              <!-- Stats row: followers / following -->
+              <!-- Stats row: followers / following (always show, mute zeros) -->
               <div class="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm">
                 <div class="flex items-baseline gap-1">
-                  <span class="font-semibold text-slate-900">{{ followers }}</span>
+                  <span :class="followers === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ followers }}</span>
                   <span class="text-slate-400">Followers</span>
                 </div>
                 <div class="w-px h-3.5 bg-slate-200"></div>
                 <div class="flex items-baseline gap-1">
-                  <span class="font-semibold text-slate-900">{{ following }}</span>
+                  <span :class="following === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ following }}</span>
                   <span class="text-slate-400">Following</span>
                 </div>
               </div>
             </div>
 
-            <!-- Right: Edit button -->
-            <div class="flex-shrink-0 flex justify-center sm:justify-end sm:items-start">
+            <!-- Right: Actions -->
+            <div class="flex-shrink-0 flex flex-col items-center sm:items-end gap-2">
               <BaseButton variant="primary" size="sm" @click="openEditModal">
                 Edit profile
               </BaseButton>
+              <RouterLink
+                :to="{ name: 'settings' }"
+                class="text-xs text-slate-500 hover:text-slate-700 transition-colors"
+              >
+                Account settings
+              </RouterLink>
             </div>
           </div>
         </BaseCard>
@@ -250,22 +255,22 @@ function goToHome() {
             <p v-if="bookmarksCount === 0" class="text-xs text-slate-400 mt-0.5">None saved</p>
           </div>
 
-          <!-- Member Since -->
-          <div class="stat-card">
+          <!-- Member Since (de-emphasized) -->
+          <div class="stat-card stat-card--secondary">
             <div class="flex items-center gap-2 mb-1">
-              <BaseIcon name="CalendarIcon" class="w-4 h-4 text-slate-400" />
-              <span class="text-xs text-slate-500 font-medium">Member Since</span>
+              <BaseIcon name="CalendarIcon" class="w-4 h-4 text-slate-300" />
+              <span class="text-xs text-slate-400 font-medium">Member Since</span>
             </div>
-            <p class="text-base font-semibold text-slate-900">{{ formatMemberSince(user.createdAt) }}</p>
+            <p class="text-sm font-medium text-slate-600">{{ formatMemberSince(user.createdAt) }}</p>
           </div>
 
-          <!-- Last Active -->
-          <div class="stat-card">
+          <!-- Last Active (de-emphasized) -->
+          <div class="stat-card stat-card--secondary">
             <div class="flex items-center gap-2 mb-1">
-              <BaseIcon name="ClockIcon" class="w-4 h-4 text-slate-400" />
-              <span class="text-xs text-slate-500 font-medium">Last Active</span>
+              <BaseIcon name="ClockIcon" class="w-4 h-4 text-slate-300" />
+              <span class="text-xs text-slate-400 font-medium">Last Active</span>
             </div>
-            <p class="text-base font-semibold text-slate-900">
+            <p class="text-sm font-medium text-slate-600">
               {{ recentPosts.length > 0 ? formatRelativeTime(recentPosts[0].createdAt) : '–' }}
             </p>
             <p v-if="recentPosts.length === 0" class="text-xs text-slate-400 mt-0.5">No activity</p>
@@ -277,7 +282,7 @@ function goToHome() {
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-sm font-semibold text-slate-900">Recent Activity</h2>
             <span v-if="recentPosts.length > 0" class="text-xs text-slate-400">
-              Last {{ recentPosts.length }} {{ recentPosts.length === 1 ? 'post' : 'posts' }}
+              {{ recentPosts.length === 1 ? 'Latest post' : `Last ${recentPosts.length} posts` }}
             </span>
           </div>
 
@@ -383,6 +388,16 @@ function goToHome() {
 .stat-card:hover {
   background: rgba(255, 255, 255, 0.9);
   border-color: rgba(203, 213, 225, 0.9);
+}
+
+/* Secondary stat cards (de-emphasized) */
+.stat-card--secondary {
+  background: rgba(248, 250, 252, 0.6);
+  border-color: rgba(226, 232, 240, 0.5);
+}
+
+.stat-card--secondary:hover {
+  background: rgba(248, 250, 252, 0.8);
 }
 
 /* Ambient mode stat cards */

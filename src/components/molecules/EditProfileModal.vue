@@ -53,6 +53,7 @@ const form = ref({
   username: '',
   countryCode: '',
   profileImageUrl: '',
+  salutation: '',
   role: 'USER' as UserRole,
   active: true,
 })
@@ -73,6 +74,7 @@ const baseSchema = yup.object({
     .required('Username is required'),
   countryCode: yup.string().required('Country is required'),
   profileImageUrl: yup.string().notRequired(),
+  salutation: yup.string().max(48, 'Salutation cannot exceed 48 characters').notRequired(),
   role: yup.string().oneOf(['USER', 'ADMIN']).required(),
   active: yup.boolean().required(),
 })
@@ -96,6 +98,7 @@ function initForm(user: User | AdminUser) {
     username: user.username ?? '',
     countryCode: user.countryCode ?? '',
     profileImageUrl: user.profileImageUrl ?? '',
+    salutation: user.salutation ?? '',
     role: user.role ?? 'USER',
     active: 'active' in user ? user.active : true,
   }
@@ -161,6 +164,7 @@ async function handleSave() {
         username: form.value.username,
         countryCode: form.value.countryCode,
         profileImageUrl: form.value.profileImageUrl || undefined,
+        salutation: form.value.salutation || undefined,
       })
 
       // If credentials changed, force re-login
@@ -245,6 +249,15 @@ function handleCancel() {
               v-model="form.username"
               :invalid="!!errors.username"
               placeholder="Username"
+            />
+          </BaseFormfield>
+
+          <BaseFormfield label="Salutation" :error="errors.salutation" help="Optional title (e.g., Dr., Prof.)">
+            <BaseInput
+              v-model="form.salutation"
+              :invalid="!!errors.salutation"
+              placeholder="e.g., Dr., Prof., or leave empty"
+              maxlength="48"
             />
           </BaseFormfield>
 

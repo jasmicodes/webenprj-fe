@@ -166,7 +166,7 @@ async function handleCreatePost(payload: { subject: string; content: string; fil
     })
 
     // Add new post to the top of the feed
-    const mapped = mapApiPostToCard(newPost, { user: { name: newPost.username } })
+    const mapped = mapApiPostToCard(newPost)
     posts.value = [mapped, ...posts.value]
 
     // Show success message
@@ -202,7 +202,7 @@ async function handleSaveEdit(payload: { content: string; subject: string }) {
     // Update post in local state
     const idx = posts.value.findIndex((p) => p.id === editingPostId.value)
     if (idx !== -1) {
-      posts.value[idx] = mapApiPostToCard(updatedPost, { user: { name: updatedPost.username } })
+      posts.value[idx] = mapApiPostToCard(updatedPost)
     }
 
     showEditModal.value = false
