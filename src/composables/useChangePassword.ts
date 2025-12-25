@@ -4,13 +4,11 @@ import * as yup from 'yup'
 
 import { usersApi } from '@/services/api/users'
 import { useToastStore } from '@/stores/toastStore'
-import { useUserStore } from '@/stores/userStore'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { getErrorMessage } from '@/services/api/client'
 
 export function useChangePassword() {
   const toast = useToastStore()
-  const userStore = useUserStore()
 
   const showChangePassword = ref(false)
   const savingPassword = ref(false)
@@ -62,16 +60,14 @@ export function useChangePassword() {
         newPassword: passwordForm.value.newPassword,
       })
 
-      toast.showSuccess('Password changed successfully. Please log in again.')
+      toast.showSuccess('Password changed successfully')
+      showChangePassword.value = false
 
       passwordForm.value = {
         currentPassword: '',
         newPassword: '',
         repeatPassword: '',
       }
-
-      // for safety: end session
-      userStore.logout()
     } catch (err) {
       toast.showError(getErrorMessage(err))
     } finally {

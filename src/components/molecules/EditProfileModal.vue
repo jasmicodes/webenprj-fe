@@ -167,9 +167,8 @@ async function handleSave() {
     if (isEditingSelf.value) {
       // Self-edit: use regular user API (email comes from current user)
       const currentUser = userStore.user!
-      const usernameChanged = currentUser.username !== form.value.username
 
-      updatedUser = await usersApi.updateMyProfile({
+      const response = await usersApi.updateMyProfile({
         email: currentUser.email, // Keep current email
         username: form.value.username,
         countryCode: currentUser.countryCode, // Keep current country
@@ -177,11 +176,11 @@ async function handleSave() {
         salutation: form.value.salutation || undefined,
       })
 
-      // If username changed, force re-login
-      if (usernameChanged) {
-        toast.showSuccess('Username updated. Please log in again.')
-        userStore.logout()
-        return
+      updatedUser = response.user
+
+      // If credentials changed, update token (no logout needed!)
+      if (response.credentialsChanged && response.token) {
+        userStore.updateToken(response.token)
       }
 
       // Update local user store

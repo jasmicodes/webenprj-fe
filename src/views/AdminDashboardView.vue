@@ -10,8 +10,8 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
-import { TrashIcon, NoSymbolIcon, CheckCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { TrashIcon, NoSymbolIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
+import type { UserRole } from '@/services/api/types'
 
 const users = ref<AdminUser[]>([])
 const loading = ref(true)
@@ -33,20 +33,24 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 const userCount = computed(() => users.value.length)
 const activeCount = computed(() => users.value.filter(u => u.active).length)
 
-// Edit modal state
-const showEditModal = ref(false)
-const selectedUser = ref<AdminUser | null>(null)
+// Role update state
+const updatingRoleUserId = ref<string | null>(null)
 
-function openEditModal(user: AdminUser) {
-  selectedUser.value = user
-  showEditModal.value = true
-}
+async function updateRole(user: AdminUser, newRole: UserRole) {
+  if (newRole === user.role) return
 
-function onUserSaved(updatedUser: AdminUser) {
-  // Update user in the list
-  const index = users.value.findIndex(u => u.id === updatedUser.id)
-  if (index !== -1) {
-    users.value[index] = updatedUser
+  updatingRoleUserId.value = user.id
+  try {
+    const updated = await adminUsersApi.updateUser(user.id, { role: newRole })
+    user.role = updated.role
+    toast.showSuccess(
+      `${user.username}'s role changed to ${newRole}`,
+      'Role Updated'
+    )
+  } catch (err) {
+    toast.showError(`Failed to update role: ${getErrorMessage(err)}`, 'Error')
+  } finally {
+    updatingRoleUserId.value = null
   }
 }
 
@@ -203,7 +207,9 @@ async function deleteUser(user: AdminUser) {
                   {{ u.email }}
                 </td>
                 <td class="px-4 py-3">
+                  <!-- Current user: show static badge (can't change own role) -->
                   <span
+                    v-if="isCurrentUser(u.id)"
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
                     :class="u.role === 'ADMIN'
                       ? 'bg-purple-50 text-purple-700 border border-purple-100'
@@ -211,6 +217,20 @@ async function deleteUser(user: AdminUser) {
                   >
                     {{ u.role }}
                   </span>
+                  <!-- Other users: inline role dropdown -->
+                  <select
+                    v-else
+                    :value="u.role"
+                    :disabled="updatingRoleUserId === u.id"
+                    class="text-xs font-medium px-2 py-0.5 rounded border appearance-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-wait"
+                    :class="u.role === 'ADMIN'
+                      ? 'bg-purple-50 text-purple-700 border-purple-100 hover:border-purple-300'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'"
+                    @change="updateRole(u, ($event.target as HTMLSelectElement).value as UserRole)"
+                  >
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
                 </td>
                 <td class="px-4 py-3">
                   <span
@@ -224,15 +244,6 @@ async function deleteUser(user: AdminUser) {
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex items-center justify-end gap-1">
-                    <!-- Edit Button -->
-                    <button
-                      class="p-1.5 rounded-md transition-colors text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                      title="Edit user"
-                      @click="openEditModal(u)"
-                    >
-                      <PencilSquareIcon class="w-4 h-4" />
-                    </button>
-
                     <!-- Toggle Active Button -->
                     <button
                       class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -274,13 +285,6 @@ async function deleteUser(user: AdminUser) {
         </div>
       </BaseCard>
     </div>
-
-    <!-- Edit User Modal -->
-    <EditProfileModal
-      v-model="showEditModal"
-      :user="selectedUser"
-      @saved="onUserSaved"
-    />
   </div>
 </template>
 

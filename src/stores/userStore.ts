@@ -60,6 +60,12 @@ export const useUserStore = defineStore('user', {
       authApi.logout()
       router.push({ name: 'login' })
     },
+
+    /** Update token (e.g., after credential change) */
+    updateToken(newToken: string) {
+      this.token = newToken
+      setToken(newToken)
+    },
     async downloadProfileImage() {
       if (!this.user?.profileImageUrl) {
         return null

@@ -42,9 +42,20 @@ export interface UpdateProfileRequest {
   salutation?: string
 }
 
+export interface ProfileUpdateResponse {
+  user: User
+  token: string | null
+  credentialsChanged: boolean
+}
+
 export interface ChangePasswordRequest {
   currentPassword: string
   newPassword: string
+}
+
+export interface ChangeEmailRequest {
+  newEmail: string
+  currentPassword: string
 }
 
 export interface Post {

@@ -3,7 +3,9 @@ import type {
   User,
   AdminUser,
   UpdateProfileRequest,
+  ProfileUpdateResponse,
   ChangePasswordRequest,
+  ChangeEmailRequest,
   UserRole,
   Page,
 } from './types'
@@ -14,13 +16,18 @@ export const usersApi = {
     return res.data
   },
 
-  async updateMyProfile(payload: UpdateProfileRequest): Promise<User> {
-    const res = await api.put<User>('/users/me', payload)
+  async updateMyProfile(payload: UpdateProfileRequest): Promise<ProfileUpdateResponse> {
+    const res = await api.put<ProfileUpdateResponse>('/users/me', payload)
     return res.data
   },
 
   async changePassword(payload: ChangePasswordRequest): Promise<void> {
     await api.patch('/users/me/password', payload)
+  },
+
+  async changeEmail(payload: ChangeEmailRequest): Promise<ProfileUpdateResponse> {
+    const res = await api.patch<ProfileUpdateResponse>('/users/me/email', payload)
+    return res.data
   },
 }
 

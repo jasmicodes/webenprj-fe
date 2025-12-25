@@ -64,18 +64,20 @@ async function saveEmail() {
   savingEmail.value = true
 
   try {
-    const currentUser = userStore.user!
-    const updatedUser = await usersApi.updateMyProfile({
-      email: emailForm.value.newEmail,
-      username: currentUser.username,
-      countryCode: currentUser.countryCode,
-      profileImageUrl: currentUser.profileImageUrl || undefined,
-      salutation: currentUser.salutation || undefined,
+    const response = await usersApi.changeEmail({
+      newEmail: emailForm.value.newEmail,
+      currentPassword: emailForm.value.confirmPassword,
     })
 
-    // Email changed successfully - force re-login
-    toast.showSuccess('Email updated. Please log in again with your new email.')
-    userStore.logout()
+    // Update user and token (no logout needed!)
+    userStore.user = response.user
+    if (response.credentialsChanged && response.token) {
+      userStore.updateToken(response.token)
+    }
+
+    toast.showSuccess('Email updated successfully')
+    showChangeEmail.value = false
+    emailForm.value = { newEmail: '', confirmPassword: '' }
   } catch (err) {
     toast.showError(getErrorMessage(err))
   } finally {
