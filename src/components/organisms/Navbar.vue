@@ -32,23 +32,24 @@ function handleLogout() {
   <!-- Sidebar (Desktop) - Glass effect for chrome surfaces -->
   <nav
     :class="[
-      'hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between p-6 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
+      'hidden md:flex fixed left-0 top-0 h-screen flex-col py-5 px-4 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
       isCollapsed ? 'w-20' : 'w-64',
       { 'ambient-mode': isAmbientMode }
     ]"
   >
-    <!-- Logo + Titel -->
-    <div>
+    <!-- ========== ZONE 1: Primary Activity Navigation (top) ========== -->
+    <div class="flex-1 min-h-0 flex flex-col">
+      <!-- Logo + Title -->
       <div
         :class="[
-          'flex items-center mb-10 transition-all duration-300',
-          isCollapsed ? 'justify-center gap-0' : 'gap-1',
+          'flex items-center mb-6 transition-all duration-300',
+          isCollapsed ? 'justify-center gap-0 px-0' : 'gap-1 px-2',
         ]"
       >
         <img
           src="@/assets/Weben - Logo Motivise.svg"
           alt="Motivise Logo"
-          class="w-20 h-20 rounded-lg flex-shrink-0"
+          class="w-16 h-16 rounded-lg flex-shrink-0"
         />
         <h1
           :class="[
@@ -60,8 +61,8 @@ function handleLogout() {
         </h1>
       </div>
 
-      <!-- Hauptmenülinks -->
-      <div class="flex flex-col gap-1 w-full mt-2">
+      <!-- Primary nav links -->
+      <div class="flex flex-col gap-0.5">
         <RouterLink
           :to="{ name: 'home' }"
           :title="isCollapsed ? 'Home' : ''"
@@ -79,27 +80,6 @@ function handleLogout() {
             ]"
           >
             Home
-          </span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="isAdmin"
-          :to="{ name: 'admin' }"
-          :title="isCollapsed ? 'Admin' : ''"
-          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
-          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
-          active-class="nav-item-active bg-slate-100/60 text-slate-900"
-        >
-          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
-            <BaseIcon name="ShieldCheckIcon" class="w-5 h-5" />
-          </div>
-          <span
-            :class="[
-              'font-heading text-sm transition-opacity duration-200',
-              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
-            ]"
-          >
-            Admin
           </span>
         </RouterLink>
 
@@ -163,10 +143,33 @@ function handleLogout() {
           </span>
         </RouterLink>
       </div>
+
+      <!-- ========== ZONE 2: Admin / Power Navigation (middle, conditional) ========== -->
+      <div v-if="isAdmin" class="mt-4 pt-4 border-t border-slate-200/60">
+        <RouterLink
+          :to="{ name: 'admin' }"
+          :title="isCollapsed ? 'Admin' : ''"
+          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
+          :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
+          active-class="nav-item-active bg-slate-100/60 text-slate-900"
+        >
+          <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-700">
+            <BaseIcon name="ShieldCheckIcon" class="w-5 h-5" />
+          </div>
+          <span
+            :class="[
+              'font-heading text-sm transition-opacity duration-200',
+              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
+            ]"
+          >
+            Admin
+          </span>
+        </RouterLink>
+      </div>
     </div>
 
-    <!-- Bottom actions -->
-    <div class="flex flex-col gap-1">
+    <!-- ========== ZONE 3: Account & System Actions (bottom, anchored) ========== -->
+    <div class="mt-auto pt-3 border-t border-slate-200/60 flex flex-col gap-0.5">
       <!-- Settings -->
       <RouterLink
         :to="{ name: 'settings' }"
@@ -213,7 +216,7 @@ function handleLogout() {
       <button
         @click="handleLogout"
         :title="isCollapsed ? 'Logout' : ''"
-        class="group flex items-center rounded-lg text-sm text-slate-600 transition-all duration-200 hover:bg-red-50/80 hover:text-red-600"
+        class="group flex items-center rounded-lg text-sm text-slate-500 transition-all duration-200 hover:bg-red-50/80 hover:text-red-600"
         :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
       >
         <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-red-500">
@@ -233,7 +236,7 @@ function handleLogout() {
       <button
         @click="toggleCollapse"
         :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-        class="group flex items-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all mt-2 border-t border-slate-200/60 pt-3"
+        class="group flex items-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all mt-2"
         :class="isCollapsed ? 'justify-center py-1.5' : 'gap-3 px-3 py-1.5'"
       >
         <div class="h-9 w-9 shrink-0 grid place-items-center rounded-lg transition-colors group-hover:text-slate-500">
