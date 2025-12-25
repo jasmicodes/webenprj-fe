@@ -101,7 +101,7 @@
           >
             <div
               v-if="showManageActions"
-              class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
+              class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-50"
             >
               <button
                 v-if="props.isOwnPost"

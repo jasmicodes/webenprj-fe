@@ -22,7 +22,7 @@
       <!-- Tag on second line for cleaner alignment -->
       <div v-if="tag" class="mt-0.5">
         <span
-          class="inline-block text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded"
+          class="inline-block text-xs text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full"
           :title="`Subject: ${formatTagDisplay(tag)}`"
         >
           {{ formatTagDisplay(tag) }}

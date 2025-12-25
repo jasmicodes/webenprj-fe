@@ -1,7 +1,7 @@
 <template>
   <BaseModal v-model="open" :closable="false" :close-on-backdrop="true">
     <div
-      class="relative flex items-center justify-between gap-6 p-6 rounded-2xl shadow-lg w-full max-w-lg"
+      class="relative flex items-center justify-between gap-6 p-6 rounded-2xl shadow-xl w-full max-w-lg"
       :style="{ backgroundColor: bgColor }"
     >
       <!-- Schließen-Button (X) oben rechts -->

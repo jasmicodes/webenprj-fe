@@ -12,7 +12,7 @@
 -->
 <template>
   <div
-    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition-shadow relative bookmark-card"
+    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow relative bookmark-card"
   >
     <!-- Reuse PostHeader for consistency with main feed -->
     <PostHeader
@@ -46,7 +46,7 @@
       >
         <div
           v-if="showMenu"
-          class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50"
+          class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-50"
         >
           <button
             class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors text-left"
