@@ -35,13 +35,10 @@ async function loadProfileImage() {
     const objectUrl = await userStore.downloadProfileImage()
     if (objectUrl) {
       imageUrl.value = objectUrl
-      console.log('✅ Bild-URL erhalten:', objectUrl)
     } else {
-      console.warn('⚠️ Keine Bild-URL zurückgegeben.')
       imageUrl.value = avatarPlaceholder
     }
-  } catch (err) {
-    console.error('❌ Fehler beim Laden des Profilbilds:', err)
+  } catch {
     imageUrl.value = avatarPlaceholder
   }
 }

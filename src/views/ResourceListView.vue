@@ -59,13 +59,13 @@ function toggleLike(postId: PostCardData['id']) {
 }
 
 // Handle edit (placeholder - ResourceListView uses static demo data)
-function handleEdit(postId: PostCardData['id']) {
-  console.log('Edit post:', postId, '(not implemented for demo data)')
+function handleEdit(_postId: PostCardData['id']) {
+  // Not implemented for demo data
 }
 
 // Handle delete (placeholder - ResourceListView uses static demo data)
-function handleDelete(postId: PostCardData['id']) {
-  console.log('Delete post:', postId, '(not implemented for demo data)')
+function handleDelete(_postId: PostCardData['id']) {
+  // Not implemented for demo data
 }
 </script>
 

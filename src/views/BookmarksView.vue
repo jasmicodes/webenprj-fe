@@ -59,14 +59,10 @@ const uncategorizedCount = computed(() => {
 
 // Load data on mount
 onMounted(async () => {
-  try {
-    await Promise.all([
-      bookmarkStore.fetchCollections(),
-      bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId),
-    ])
-  } catch (error) {
-    console.error('Failed to load bookmarks:', error)
-  }
+  await Promise.all([
+    bookmarkStore.fetchCollections(),
+    bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId),
+  ])
 })
 
 // Cleanup debounce timer on unmount
@@ -123,20 +119,16 @@ function openCreateModal() {
 }
 
 // Placeholder for collection creation (will be implemented with CreateCollectionModal)
-function handleCreateCollection(data: any) {
-  console.log('Create collection:', data)
+function handleCreateCollection(_data: unknown) {
+  // TODO: Implement with CreateCollectionModal component
   showCreateModal.value = false
 }
 
 // Handle bookmark removal
 async function handleRemoveBookmark(postId: string) {
-  try {
-    await bookmarkStore.removeBookmark(postId)
-    // Refresh the bookmarks list
-    await bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId)
-  } catch (error) {
-    console.error('Failed to remove bookmark:', error)
-  }
+  await bookmarkStore.removeBookmark(postId)
+  // Refresh the bookmarks list
+  await bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId)
 }
 
 // ========== Bulk Select Functions ==========
@@ -221,8 +213,6 @@ async function confirmBulkRemove() {
     // Refresh and exit select mode
     await bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId)
     cancelSelectMode()
-  } catch (error) {
-    console.error('Failed to remove bookmarks:', error)
   } finally {
     bulkActionLoading.value = false
     showBulkRemoveModal.value = false
@@ -241,8 +231,6 @@ async function bulkMoveToCollection(collectionId: string | null) {
     await bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId)
     showMoveDropdown.value = false
     cancelSelectMode()
-  } catch (error) {
-    console.error('Failed to move bookmarks:', error)
   } finally {
     bulkActionLoading.value = false
   }
