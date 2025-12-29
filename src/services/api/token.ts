@@ -22,6 +22,7 @@ type JwtPayload = {
   exp?: number
 }
 
+// Decodes JWT for client-side use only (expiry check). Signature is verified server-side.
 function decodeJwt(token: string): JwtPayload | null {
   const parts = token.split('.')
   if (parts.length !== 3) return null

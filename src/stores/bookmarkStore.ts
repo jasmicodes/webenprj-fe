@@ -100,6 +100,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
     // ========== Collections ==========
 
     async fetchCollections() {
+      if (this.loading) return // Prevent duplicate requests
       try {
         this.loading = true
         this.error = null

@@ -244,8 +244,14 @@ async function submitReply(parentComment: PostCardData) {
       subject: props.post.tag || 'general',
       content: replyText.value.trim(),
     })
-    // Update the parent comment's reply count
-    parentComment.comments++
+    // Update the parent comment's reply count (immutable update)
+    const index = comments.value.findIndex(c => c.id === parentComment.id)
+    if (index !== -1) {
+      comments.value[index] = {
+        ...comments.value[index],
+        comments: comments.value[index].comments + 1
+      }
+    }
     replyingTo.value = null
     replyText.value = ''
   } catch (error) {
@@ -255,15 +261,24 @@ async function submitReply(parentComment: PostCardData) {
 
 // Handle like on a comment
 async function handleCommentLike(comment: PostCardData) {
+  const index = comments.value.findIndex(c => c.id === comment.id)
+  if (index === -1) return
+
   try {
     if (comment.liked) {
       await postsApi.unlikePost(String(comment.id))
-      comment.liked = false
-      comment.likes--
+      comments.value[index] = {
+        ...comments.value[index],
+        liked: false,
+        likes: comments.value[index].likes - 1
+      }
     } else {
       await postsApi.likePost(String(comment.id))
-      comment.liked = true
-      comment.likes++
+      comments.value[index] = {
+        ...comments.value[index],
+        liked: true,
+        likes: comments.value[index].likes + 1
+      }
     }
   } catch (error) {
     console.error('Failed to toggle comment like:', error)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import * as yup from 'yup'
-import { AxiosError } from 'axios'
+import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
@@ -58,7 +58,7 @@ async function onSubmit() {
     router.push({ name: 'home' })
   } catch (err: unknown) {
     // Login failed (API error)
-    const status = (err as AxiosError)?.response?.status
+    const status = isAxiosError(err) ? err.response?.status : undefined
     const errorMsg = getErrorMessage(err)
 
     if (status === 401 || status === 403) {

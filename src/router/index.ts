@@ -1,6 +1,7 @@
 // router/index.ts
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useToastStore } from '@/stores/toastStore'
 
 // Extend Vue Router types for custom meta fields
 declare module 'vue-router' {
@@ -86,6 +87,10 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const store = useUserStore()
+  const toastStore = useToastStore()
+
+  // Clear any active toast on navigation
+  toastStore.clear()
 
   const redirectFromAuthPages = () => {
     if (store.isAuthenticated && to.meta.authPage) {

@@ -64,7 +64,7 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
-import { useNavbar } from '@/composables/useNavbar'
+import { useNavbarStore } from '@/stores/navbarStore'
 import AppBackground from '@/components/organisms/AppBackground.vue'
 import Navbar from '@/components/organisms/Navbar.vue'
 import AppFooter from '@/components/organisms/AppFooter.vue'
@@ -74,5 +74,6 @@ const route = useRoute()
 const userStore = useUserStore()
 const toast = useToastStore()
 const { isAuthenticated } = storeToRefs(userStore)
-const { isCollapsed } = useNavbar()
+const navbarStore = useNavbarStore()
+const { isCollapsed } = navbarStore
 </script>

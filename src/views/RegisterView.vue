@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
-import { AxiosError } from 'axios'
+import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
 import { authApi } from '@/services/api/'
 import { useToastStore } from '@/stores/toastStore'
@@ -105,11 +105,10 @@ async function submit() {
     router.push({ name: 'login' })
   } catch (err: unknown) {
     // Backend-/Axios-Fehler
-    const axiosErr = err as AxiosError<{ message?: string }>
     let message = 'Registration failed'
-    if (axiosErr?.response?.data?.message) {
+    if (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) {
       // aus Backend: { message: "Email is already in use." }
-      message = axiosErr.response.data.message
+      message = err.response.data.message
     } else if (err instanceof Error && err.message) {
       message = err.message
     }

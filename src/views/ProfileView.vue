@@ -4,6 +4,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { followApi, postsApi, bookmarksApi } from '@/services/api'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
@@ -19,6 +20,7 @@ import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
 // -------------------- STORES & STATES --------------------
 const userStore = useUserStore()
 const appearanceStore = useAppearanceStore()
+const toastStore = useToastStore()
 const router = useRouter()
 
 const loading = ref(true)
@@ -37,8 +39,8 @@ const user = computed(() => userStore.user)
 const isAdmin = computed(() => user.value?.role === 'ADMIN')
 const countryName = computed(() => {
   if (!user.value?.countryCode) return 'Unknown'
-  const c = COUNTRIES_DACH_FIRST.find((x) => x.code === user.value.countryCode)
-  return c?.label ?? user.value.countryCode
+  const c = COUNTRIES_DACH_FIRST.find((x) => x.code === user.value!.countryCode)
+  return c?.label ?? user.value!.countryCode
 })
 
 // Ambient mode detection
@@ -92,7 +94,7 @@ async function loadFollowData() {
     followers.value = followersPage.totalElements
     following.value = followingPage.totalElements
   } catch {
-    // Silent fail - show 0
+    toastStore.showError('Failed to load follow data')
   }
 }
 
@@ -105,7 +107,7 @@ async function loadPostsData() {
     postsCount.value = userPosts.length
     recentPosts.value = userPosts.slice(0, 5)
   } catch {
-    // Silent fail
+    toastStore.showError('Failed to load posts')
   }
 }
 
@@ -114,7 +116,7 @@ async function loadBookmarksData() {
     const bookmarksPage = await bookmarksApi.getUserBookmarks(0, 1)
     bookmarksCount.value = bookmarksPage.totalElements
   } catch {
-    // Silent fail
+    toastStore.showError('Failed to load bookmarks')
   }
 }
 
@@ -265,7 +267,7 @@ function goToHome() {
               <span class="text-xs text-slate-400 font-medium">Last Active</span>
             </div>
             <p class="text-sm font-medium text-slate-600">
-              {{ recentPosts.length > 0 ? formatRelativeTime(recentPosts[0].createdAt) : '–' }}
+              {{ recentPosts[0]?.createdAt ? formatRelativeTime(recentPosts[0].createdAt) : '–' }}
             </p>
             <p v-if="recentPosts.length === 0" class="text-xs text-slate-400 mt-0.5">No activity</p>
           </div>

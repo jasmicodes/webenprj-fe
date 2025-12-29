@@ -4,7 +4,7 @@ import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
-import { useNavbar } from '@/composables/useNavbar'
+import { useNavbarStore } from '@/stores/navbarStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { computed } from 'vue'
@@ -13,7 +13,8 @@ defineOptions({ name: 'AppNavbar' })
 
 const userStore = useUserStore()
 const router = useRouter()
-const { isCollapsed, toggleCollapse } = useNavbar()
+const navbarStore = useNavbarStore()
+const { isCollapsed, toggleCollapse } = navbarStore
 
 const isAdmin = computed(() => userStore.user?.role === 'ADMIN')
 

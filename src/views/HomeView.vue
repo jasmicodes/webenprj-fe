@@ -94,12 +94,16 @@ async function loadPosts(reset = false) {
 function loadMore() {
   if (page.value + 1 >= totalPages.value) return
   page.value += 1
-  void loadPosts()
+  loadPosts().catch(() => {
+    // Error already handled in loadPosts, but explicit catch avoids unhandled rejection
+  })
 }
 
 function retry() {
   error.value = null
-  void loadPosts(true)
+  loadPosts(true).catch(() => {
+    // Error already handled in loadPosts
+  })
 }
 
 async function toggleLike(postId: PostCardData['id']) {
@@ -241,7 +245,9 @@ async function handleConfirmDelete() {
 }
 
 onMounted(() => {
-  void loadPosts(true)
+  loadPosts(true).catch(() => {
+    // Error already handled in loadPosts
+  })
 })
 </script>
 
