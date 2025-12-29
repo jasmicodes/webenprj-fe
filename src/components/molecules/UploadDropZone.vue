@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'UploadDropZone' })
+
 import { ref, computed } from 'vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
 import BaseLabel from '@/components/atoms/BaseLabel.vue'

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ImprintView' })
+
 import BaseDivider from '@/components/atoms/BaseDivider.vue'
 </script>
 

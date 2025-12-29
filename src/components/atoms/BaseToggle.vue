@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseToggle' })
+
 const props = defineProps<{
   modelValue: boolean
   label?: string

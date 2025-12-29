@@ -6,6 +6,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseToast' })
+
 interface Props {
   type?: 'success' | 'warning' | 'error'
 }

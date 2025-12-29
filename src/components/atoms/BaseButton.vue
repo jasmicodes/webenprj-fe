@@ -4,12 +4,16 @@
     :type="as === 'button' ? type : undefined"
     :class="[base, variantClass, sizeClass]"
     :disabled="disabled"
+    :aria-disabled="as !== 'button' && disabled ? 'true' : undefined"
+    :tabindex="as !== 'button' && disabled ? -1 : undefined"
   >
     <slot />
   </component>
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseButton' })
+
 interface Props {
   variant?: 'primary' | 'outline' | 'ghost' | 'danger'
   size?: 'sm' | 'md' | 'lg'

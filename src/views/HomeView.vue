@@ -1,5 +1,8 @@
 <script setup lang="ts">
+defineOptions({ name: 'HomeView' })
+
 import { ref, onMounted, computed } from 'vue'
+import { isAxiosError } from 'axios'
 import PostCard from '@/components/organisms/PostCard.vue'
 import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import PostEditModal from '@/components/molecules/PostEditModal.vue'
@@ -10,6 +13,7 @@ import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
 import { bookmarksApi } from '@/services/api/bookmarks'
 import { useToastStore } from '@/stores/toastStore'
+import { getErrorMessage } from '@/services/api/client'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
@@ -83,8 +87,12 @@ async function loadPosts(reset = false) {
     posts.value = reset ? mapped : [...posts.value, ...mapped]
     totalPages.value = result.totalPages
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : 'Failed to load posts'
-    toastStore.showError(error.value, 'Feed')
+    if (isAxiosError(err) && err.response?.data?.message) {
+      error.value = err.response.data.message
+    } else {
+      error.value = getErrorMessage(err)
+    }
+    toastStore.showError(error.value ?? 'Failed to load posts', 'Feed')
   } finally {
     loading.value = false
     loadingMore.value = false
@@ -108,8 +116,8 @@ function retry() {
 
 async function toggleLike(postId: PostCardData['id']) {
   const idx = posts.value.findIndex((p) => p.id === postId)
-  if (idx === -1) return
   const original = posts.value[idx]
+  if (idx === -1 || !original) return
   const optimisticLiked = !original.liked
   const optimisticLikes = original.likes + (optimisticLiked ? 1 : -1)
   posts.value[idx] = { ...original, liked: optimisticLiked, likes: Math.max(0, optimisticLikes) }
@@ -129,8 +137,8 @@ async function toggleLike(postId: PostCardData['id']) {
 
 async function toggleBookmark(postId: PostCardData['id']) {
   const idx = posts.value.findIndex((p) => p.id === postId)
-  if (idx === -1) return
   const original = posts.value[idx]
+  if (idx === -1 || !original) return
   const optimisticBookmarked = !original.bookmarked
   const optimisticBookmarkCount = original.bookmarkCount + (optimisticBookmarked ? 1 : -1)
   posts.value[idx] = {

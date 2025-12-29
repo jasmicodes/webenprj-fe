@@ -14,8 +14,12 @@ app.use(router)
 // Bootstrap user session if token exists
 const userStore = useUserStore()
 if (userStore.token) {
-  // Fetch user data before mounting app
-  await userStore.fetchCurrentUser()
+  try {
+    await userStore.fetchCurrentUser()
+  } catch {
+    // Token invalid or network error - logout handled in fetchCurrentUser
+    // App continues to mount normally
+  }
 }
 
 app.mount('#app')

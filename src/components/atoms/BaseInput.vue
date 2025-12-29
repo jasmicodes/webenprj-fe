@@ -1,5 +1,6 @@
 <template>
   <input
+    :id="id"
     :type="type || 'text'"
     :class="[
       'input',
@@ -14,7 +15,10 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseInput' })
+
 defineProps<{
+  id?: string
   modelValue?: string
   invalid?: boolean
   placeholder?: string

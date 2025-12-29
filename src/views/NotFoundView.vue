@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'NotFoundView' })
+
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 

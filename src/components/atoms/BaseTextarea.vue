@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseTextarea' })
+
 defineProps<{
   modelValue?: string
   invalid?: boolean

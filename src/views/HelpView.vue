@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'HelpView' })
+
 import { computed } from 'vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import { useAppearanceStore } from '@/stores/appearanceStore'

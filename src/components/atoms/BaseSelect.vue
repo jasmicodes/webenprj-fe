@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseSelect' })
+
 defineProps<{
   modelValue?: string
   invalid?: boolean

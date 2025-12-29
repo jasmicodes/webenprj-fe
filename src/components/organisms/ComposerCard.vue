@@ -8,6 +8,8 @@
   - Respects prefers-reduced-motion
 -->
 <script setup lang="ts">
+defineOptions({ name: 'ComposerCard' })
+
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'

@@ -173,6 +173,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BookmarkListItem' })
+
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
@@ -209,7 +211,7 @@ const { imageUrl: avatarSrc } = useMediaImage(
 // Content preview: first line or truncated content
 const contentPreview = computed(() => {
   const content = props.bookmark.post.content || ''
-  const firstLine = content.split('\n')[0]
+  const firstLine = content.split('\n')[0] ?? ''
   return firstLine.length > 100 ? firstLine.substring(0, 100) + '...' : firstLine
 })
 

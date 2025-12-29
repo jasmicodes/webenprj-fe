@@ -1,5 +1,7 @@
 <!-- src/views/AdminDashboardView.vue -->
 <script setup lang="ts">
+defineOptions({ name: 'AdminDashboardView' })
+
 import { ref, computed, onMounted } from 'vue'
 import { adminUsersApi } from '@/services/api/users'
 import type { AdminUser } from '@/services/api/types'

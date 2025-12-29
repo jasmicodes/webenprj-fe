@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ModalAlert' })
+
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 

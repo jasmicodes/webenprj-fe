@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'PostDetailView' })
+
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseButton from '@/components/atoms/BaseButton.vue'
@@ -55,7 +57,7 @@ const { imageUrl: resolvedAvatarSrc } = useMediaImage(avatarSrc, fallbackAvatar)
 
 // Check if current user owns this post
 const isOwnPost = computed(() =>
-  userStore.user?.id && post.value?.userId === userStore.user.id
+  Boolean(userStore.user?.id && post.value?.userId === userStore.user.id)
 )
 
 // Fetch the post
@@ -303,7 +305,7 @@ onMounted(() => {
 
       <!-- Loading state -->
       <div v-if="loading" class="flex justify-center py-12">
-        <BaseProgressRing size="lg" />
+        <BaseProgressRing :size="48" :progress="0" />
       </div>
 
       <!-- Error state -->
@@ -386,7 +388,7 @@ onMounted(() => {
 
           <!-- Comments loading -->
           <div v-if="commentsLoading && comments.length === 0" class="flex justify-center py-6">
-            <BaseProgressRing size="sm" />
+            <BaseProgressRing :size="24" :progress="0" />
           </div>
 
           <!-- Comments list -->

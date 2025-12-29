@@ -10,6 +10,8 @@
   - Maintains calm, study-appropriate aesthetic throughout
 -->
 <script setup lang="ts">
+defineOptions({ name: 'BookmarksView' })
+
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
 import { useAppearanceStore } from '@/stores/appearanceStore'
@@ -656,7 +658,7 @@ async function bulkMoveToCollection(collectionId: string | null) {
           <p class="text-sm text-slate-600 mb-4">
             Collection creation modal will be implemented with CreateCollectionModal component.
           </p>
-          <BaseButton @click="showCreateModal = false" variant="secondary" class="w-full">
+          <BaseButton @click="showCreateModal = false" variant="outline" class="w-full">
             Close
           </BaseButton>
         </div>

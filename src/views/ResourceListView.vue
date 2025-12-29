@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ResourceListView' })
+
 import { ref, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import SearchBar from '@/components/molecules/SearchBar.vue'
@@ -23,7 +25,7 @@ const isMobile = useMediaQuery('(max-width: 768px)')
 const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.value)
 
 const tagOptions = computed(() => {
-  const uniqueTags = Array.from(new Set(posts.value.map((p) => p.tag))).sort()
+  const uniqueTags = Array.from(new Set(posts.value.map((p) => p.tag).filter((t): t is string => Boolean(t)))).sort()
   return [{ label: 'All tags', value: '' }, ...uniqueTags.map((t) => ({ label: t, value: t }))]
 })
 
@@ -38,9 +40,9 @@ const filtered = computed<PostCardData[]>(() => {
     const byTagFilter = tag.value ? p.tag === tag.value : true
 
     const byText = term
-      ? p.text.toLowerCase().includes(term) ||
+      ? (p.text?.toLowerCase().includes(term) ?? false) ||
         p.user.name.toLowerCase().includes(term) ||
-        p.tag.toLowerCase().includes(term)
+        (p.tag?.toLowerCase().includes(term) ?? false)
       : true
     return byTagFilter && byText
   })
@@ -49,9 +51,9 @@ const filtered = computed<PostCardData[]>(() => {
 // Handle like toggle
 function toggleLike(postId: PostCardData['id']) {
   const idx = posts.value.findIndex((p) => p.id === postId)
-  if (idx === -1) return
-
   const post = posts.value[idx]
+  if (idx === -1 || !post) return
+
   const newLiked = !post.liked
   const newLikes = post.likes + (newLiked ? 1 : -1)
 

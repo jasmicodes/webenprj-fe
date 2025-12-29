@@ -27,7 +27,7 @@
       >
         <img
           :src="post.image"
-          :alt="post.imageAlt || 'Image by ' + post.user.name"
+          :alt="'Image by ' + post.user.name"
           class="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
         />
@@ -72,7 +72,7 @@
 
         <!-- Loading indicator -->
         <div v-if="loading" class="flex justify-center py-4">
-          <BaseProgressRing size="sm" />
+          <BaseProgressRing :size="24" :progress="0" />
         </div>
 
         <!-- Comments List -->
@@ -113,6 +113,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'PostCard' })
+
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseCard from '@/components/atoms/BaseCard.vue'
@@ -148,7 +150,7 @@ const emit = defineEmits<{
 const { imageUrl: avatarSrc } = useMediaImage(() => props.post.user.avatar, fallbackAvatar)
 const userStore = useUserStore()
 const router = useRouter()
-const isOwnPost = computed(() => props.currentUserId && props.post.userId === props.currentUserId)
+const isOwnPost = computed(() => Boolean(props.currentUserId && props.post.userId === props.currentUserId))
 
 // Navigate to post detail view (ignores text selection)
 function handlePostClick() {
@@ -246,10 +248,11 @@ async function submitReply(parentComment: PostCardData) {
     })
     // Update the parent comment's reply count (immutable update)
     const index = comments.value.findIndex(c => c.id === parentComment.id)
-    if (index !== -1) {
+    const comment = comments.value[index]
+    if (index !== -1 && comment) {
       comments.value[index] = {
-        ...comments.value[index],
-        comments: comments.value[index].comments + 1
+        ...comment,
+        comments: comment.comments + 1
       }
     }
     replyingTo.value = null
@@ -262,22 +265,23 @@ async function submitReply(parentComment: PostCardData) {
 // Handle like on a comment
 async function handleCommentLike(comment: PostCardData) {
   const index = comments.value.findIndex(c => c.id === comment.id)
-  if (index === -1) return
+  const existing = comments.value[index]
+  if (index === -1 || !existing) return
 
   try {
     if (comment.liked) {
       await postsApi.unlikePost(String(comment.id))
       comments.value[index] = {
-        ...comments.value[index],
+        ...existing,
         liked: false,
-        likes: comments.value[index].likes - 1
+        likes: existing.likes - 1
       }
     } else {
       await postsApi.likePost(String(comment.id))
       comments.value[index] = {
-        ...comments.value[index],
+        ...existing,
         liked: true,
-        likes: comments.value[index].likes + 1
+        likes: existing.likes + 1
       }
     }
   } catch (error) {

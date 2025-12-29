@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseAvatar' })
+
 interface Props {
   src?: string
   size?: 'sm' | 'md' | 'lg'

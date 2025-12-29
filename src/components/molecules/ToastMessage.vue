@@ -28,6 +28,8 @@
 </style>
 
 <script setup lang="ts">
+defineOptions({ name: 'ToastMessage' })
+
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 type Variant = 'success' | 'warning' | 'error'

@@ -90,6 +90,12 @@
     white-space: nowrap;
     border: 0;
   }
+
+  /* Keyboard focus indicator (only shows for keyboard nav, not mouse) */
+  :focus-visible {
+    outline: 2px solid var(--color-primary-400);
+    outline-offset: 2px;
+  }
 }
 
 /* 4) Wiederverwendbare Utility-/Komponenten-Klassen (Atoms-Level) */

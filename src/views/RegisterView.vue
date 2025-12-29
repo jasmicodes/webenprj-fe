@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'RegisterView' })
+
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { isAxiosError } from 'axios'

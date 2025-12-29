@@ -8,6 +8,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'FilePicker' })
+
 import BaseLabel from '@/components/atoms/BaseLabel.vue'
 import BaseError from '@/components/atoms/BaseError.vue'
 

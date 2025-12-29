@@ -1,5 +1,7 @@
 <!-- src/views/ProfileView.vue -->
 <script setup lang="ts">
+defineOptions({ name: 'ProfileView' })
+
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'

@@ -3,4 +3,6 @@
   <div class="divider"></div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineOptions({ name: 'BaseDivider' })
+</script>

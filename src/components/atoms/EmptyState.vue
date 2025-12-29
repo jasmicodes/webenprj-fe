@@ -12,6 +12,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'EmptyState' })
+
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 defineProps<{

@@ -221,6 +221,7 @@ function handleLogout() {
       <button
         @click="handleLogout"
         :title="isCollapsed ? 'Logout' : ''"
+        aria-label="Logout"
         class="group flex items-center rounded-lg text-sm text-slate-500 transition-all duration-200 hover:bg-red-50/80 hover:text-red-600"
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
       >
@@ -241,6 +242,8 @@ function handleLogout() {
       <button
         @click="toggleCollapse"
         :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        :aria-label="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        :aria-expanded="!isCollapsed"
         class="group flex items-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all mt-1"
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
       >

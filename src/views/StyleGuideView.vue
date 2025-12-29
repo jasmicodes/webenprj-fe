@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineOptions({ name: 'StyleGuideView' })
+</script>
 
 <template>
   <main class="container-app space-y-10 py-10">

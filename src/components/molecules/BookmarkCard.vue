@@ -176,6 +176,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BookmarkCard' })
+
 import { ref, onMounted, onUnmounted } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'

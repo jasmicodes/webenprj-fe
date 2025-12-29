@@ -1,10 +1,14 @@
 <!-- für Formularbeschriftungen -->
 <template>
-  <label class="label">
+  <label :for="htmlFor" class="label">
     <slot />
   </label>
 </template>
 
 <script setup lang="ts">
-// Keine Props nötig, Label ist rein visuell
+defineOptions({ name: 'BaseLabel' })
+
+defineProps<{
+  htmlFor?: string
+}>()
 </script>

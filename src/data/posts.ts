@@ -9,6 +9,8 @@ import sampleImg from '@/assets/PostPicture1.png'
 export const POSTS: PostCardData[] = [
   {
     id: 1,
+    userId: 'demo-user-1',
+    parentDeleted: false,
     user: { name: 'mariasantos', avatar: avatar1 },
     tag: 'webengineering',
     time: '2d',
@@ -18,9 +20,13 @@ export const POSTS: PostCardData[] = [
     liked: false,
     comments: 3,
     streak: 25,
+    bookmarkCount: 2,
+    bookmarked: false,
   },
   {
     id: 2,
+    userId: 'demo-user-2',
+    parentDeleted: false,
     user: { name: 'linus', avatar: avatar2 },
     tag: 'statistics',
     time: '1d',
@@ -30,9 +36,13 @@ export const POSTS: PostCardData[] = [
     liked: false,
     comments: 2,
     streak: 9,
+    bookmarkCount: 1,
+    bookmarked: false,
   },
   {
     id: 3,
+    userId: 'demo-user-3',
+    parentDeleted: false,
     user: { name: 'stefan', avatar: avatar3 },
     tag: 'bwl',
     time: '3h',
@@ -42,5 +52,7 @@ export const POSTS: PostCardData[] = [
     liked: false,
     comments: 0,
     streak: 4,
+    bookmarkCount: 0,
+    bookmarked: false,
   },
 ]

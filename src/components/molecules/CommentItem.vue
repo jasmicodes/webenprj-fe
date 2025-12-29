@@ -90,6 +90,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'CommentItem' })
+
 import { ref, computed } from 'vue'
 import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 import { useMediaImage } from '@/composables/useMediaImage'

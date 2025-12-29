@@ -72,9 +72,14 @@ export const useUserStore = defineStore('user', {
       }
 
       try {
-        // Extract ID from URL, e.g. "/medias/1234" → "1234"
-        const id = this.user.profileImageUrl.split('/').pop()
-        if (!id) throw new Error('Invalid profile image URL')
+        // Validate URL format and extract ID, e.g. "/medias/abc-123" → "abc-123"
+        const url = this.user.profileImageUrl
+        const match = url.match(/\/medias\/([a-f0-9-]+)/i)
+        if (!match?.[1]) {
+          console.error('Invalid profile image URL format:', url)
+          return null
+        }
+        const id = match[1]
 
         const blob = await mediaApi.retrieve(id)
         const objectUrl = URL.createObjectURL(blob)

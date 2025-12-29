@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'CharCounterTextarea' })
+
 import { computed } from 'vue'
 import BaseTextarea from '@/components/atoms/BaseTextarea.vue'
 

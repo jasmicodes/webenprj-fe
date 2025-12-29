@@ -1,5 +1,7 @@
 <!-- TagInput - Free-form tag input with suggestions -->
 <script setup lang="ts">
+defineOptions({ name: 'TagInput' })
+
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import { normalizeTagName, formatTagDisplay, isValidTag } from '@/utils/tagUtils'

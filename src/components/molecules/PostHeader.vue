@@ -33,6 +33,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'PostHeader' })
+
 import { computed } from 'vue'
 import { formatTagDisplay } from '@/utils/tagUtils'
 import { formatTimeAgo } from '@/utils/timeUtils'

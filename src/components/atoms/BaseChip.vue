@@ -6,6 +6,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseChip' })
+
 interface Props {
   variant?: 'muted' | 'tag'
 }

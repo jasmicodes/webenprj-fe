@@ -34,6 +34,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ProgressRow' })
+
 import { computed } from 'vue'
 import BaseProgressRing from '@/components/atoms/BaseProgressRing.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'

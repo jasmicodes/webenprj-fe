@@ -1,5 +1,7 @@
 <!-- src/components/molecules/EditProfileModal.vue -->
 <script setup lang="ts">
+defineOptions({ name: 'EditProfileModal' })
+
 import { ref, computed, watch } from 'vue'
 import * as yup from 'yup'
 import { usersApi, adminUsersApi } from '@/services/api/users'
@@ -107,7 +109,7 @@ const { errors, validate, clearErrors } = useFormValidation(schema)
 
 // -------------------- INIT FORM ON OPEN --------------------
 watch(
-  () => [open.value, props.user],
+  () => [open.value, props.user] as const,
   ([isOpen, user]) => {
     if (isOpen && user) {
       initForm(user)

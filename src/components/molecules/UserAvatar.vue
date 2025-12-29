@@ -4,6 +4,7 @@ import { useUserStore } from '@/stores/userStore'
 import avatarPlaceholder from '@/assets/avatar-placeholder.svg'
 
 defineOptions({
+  name: 'UserAvatar',
   inheritAttrs: false,
 })
 

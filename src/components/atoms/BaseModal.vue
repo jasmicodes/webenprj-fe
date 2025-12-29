@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseModal' })
+
 const model = defineModel<boolean>({ required: true })
 const props = withDefaults(
   defineProps<{

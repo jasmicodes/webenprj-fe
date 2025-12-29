@@ -132,6 +132,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'PostFooter' })
+
 import { ref, onMounted, onUnmounted } from 'vue'
 import { HeartIcon, ChatBubbleOvalLeftIcon, BookmarkIcon } from '@heroicons/vue/24/outline'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'

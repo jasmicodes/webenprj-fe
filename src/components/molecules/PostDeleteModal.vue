@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'PostDeleteModal' })
+
 import { computed } from 'vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'

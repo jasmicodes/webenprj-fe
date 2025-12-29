@@ -19,6 +19,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'CommentBox' })
+
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 withDefaults(defineProps<{ modelValue?: string; placeholder?: string }>(), {

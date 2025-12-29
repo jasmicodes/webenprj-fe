@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'FormInput' })
+
 defineProps<{
   modelValue?: string
   label?: string

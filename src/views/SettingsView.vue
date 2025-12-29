@@ -1,5 +1,7 @@
 <!-- src/views/SettingsView.vue -->
 <script setup lang="ts">
+defineOptions({ name: 'SettingsView' })
+
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { useUserStore } from '@/stores/userStore'

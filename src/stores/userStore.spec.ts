@@ -124,7 +124,7 @@ describe('userStore', () => {
           id: '123',
           email: 'test@example.com',
           username: 'testuser',
-          role: 'USER',
+          role: 'USER' as const,
           countryCode: 'AT',
           profileImageUrl: 'https://example.com/profile.png',
           createdAt: '2024-01-01T00:00:00Z',
@@ -196,7 +196,7 @@ describe('userStore', () => {
         profileImageUrl: 'https://example.com/profile.png',
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
-      }
+      } as const
 
       vi.mocked(getToken).mockReturnValue('valid-token')
       vi.mocked(isTokenExpired).mockReturnValue(false)

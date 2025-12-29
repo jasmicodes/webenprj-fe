@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseCard' })
+
 // Card design tokens:
 // - bg-white, rounded-2xl, border-slate-200, shadow-sm
 // - Tighter padding (px-5, pt-4/pb-3) for modern density

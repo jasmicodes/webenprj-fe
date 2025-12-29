@@ -1,5 +1,7 @@
 <!-- AppBackground - Curated blurred backgrounds with smooth crossfade transitions -->
 <script setup lang="ts">
+defineOptions({ name: 'AppBackground' })
+
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'

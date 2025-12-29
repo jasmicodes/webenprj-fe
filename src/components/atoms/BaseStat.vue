@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseStat' })
+
 defineProps<{
   value: number | string | null
   label: string

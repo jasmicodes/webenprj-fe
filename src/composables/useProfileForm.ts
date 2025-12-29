@@ -95,7 +95,7 @@ export function useProfileForm() {
 
       toast.showSuccess('Profile updated successfully')
       if (onSuccess) {
-        onSuccess(updated)
+        onSuccess(updated.user)
       }
     } catch (err) {
       toast.showError(getErrorMessage(err))

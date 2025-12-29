@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseIcon' })
+
 import { computed, type Component } from 'vue'
 import * as SolidIcons from '@heroicons/vue/24/solid'
 import * as OutlineIcons from '@heroicons/vue/24/outline'

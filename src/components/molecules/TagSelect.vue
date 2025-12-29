@@ -9,6 +9,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'TagSelect' })
+
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 
 type Option = { label: string; value: string }

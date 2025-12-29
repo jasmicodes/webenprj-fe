@@ -60,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'App' })
+
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore'

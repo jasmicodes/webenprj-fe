@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'LoginView' })
+
 import { ref } from 'vue'
 import * as yup from 'yup'
 import { isAxiosError } from 'axios'

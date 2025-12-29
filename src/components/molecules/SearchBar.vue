@@ -7,6 +7,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'SearchBar' })
+
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import { ref } from 'vue'

@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'UserBadge' })
+
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 withDefaults(
   defineProps<{ src?: string; name: string; subtitle?: string; size?: 'sm' | 'md' | 'lg' }>(),

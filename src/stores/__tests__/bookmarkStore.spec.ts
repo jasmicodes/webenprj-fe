@@ -71,8 +71,8 @@ describe('bookmarkStore', () => {
     it('selectedCollection should return the selected collection', () => {
       const store = useBookmarkStore()
       store.collections = [
-        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
-        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', color: '#00FF00', icon: 'star' },
+        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
+        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', updatedAt: '2024-01-02', color: '#00FF00', iconName: 'star' },
       ]
       store.viewState.selectedCollectionId = 'col-2'
 
@@ -82,9 +82,9 @@ describe('bookmarkStore', () => {
     it('totalBookmarkCount should sum all collection counts', () => {
       const store = useBookmarkStore()
       store.collections = [
-        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
-        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', color: '#00FF00', icon: 'star' },
-        { id: 'col-3', name: 'Collection 3', bookmarkCount: 7, createdAt: '2024-01-03', color: '#0000FF', icon: 'heart' },
+        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
+        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', updatedAt: '2024-01-02', color: '#00FF00', iconName: 'star' },
+        { id: 'col-3', name: 'Collection 3', bookmarkCount: 7, createdAt: '2024-01-03', updatedAt: '2024-01-03', color: '#0000FF', iconName: 'heart' },
       ]
 
       expect(store.totalBookmarkCount).toBe(15)
@@ -115,9 +115,9 @@ describe('bookmarkStore', () => {
 
       store.viewState.sortBy = 'newest'
 
-      expect(store.filteredBookmarks[0].id).toBe('b2')
-      expect(store.filteredBookmarks[1].id).toBe('b3')
-      expect(store.filteredBookmarks[2].id).toBe('b1')
+      expect(store.filteredBookmarks[0]!.id).toBe('b2')
+      expect(store.filteredBookmarks[1]!.id).toBe('b3')
+      expect(store.filteredBookmarks[2]!.id).toBe('b1')
     })
 
     it('filteredBookmarks should sort by oldest first', () => {
@@ -130,16 +130,16 @@ describe('bookmarkStore', () => {
 
       store.viewState.sortBy = 'oldest'
 
-      expect(store.filteredBookmarks[0].id).toBe('b1')
-      expect(store.filteredBookmarks[1].id).toBe('b3')
-      expect(store.filteredBookmarks[2].id).toBe('b2')
+      expect(store.filteredBookmarks[0]!.id).toBe('b1')
+      expect(store.filteredBookmarks[1]!.id).toBe('b3')
+      expect(store.filteredBookmarks[2]!.id).toBe('b2')
     })
   })
 
   describe('collection actions', () => {
     it('fetchCollections should load collections from API', async () => {
       const mockCollections = [
-        { id: 'col-1', name: 'My Collection', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
+        { id: 'col-1', name: 'My Collection', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
       ]
       vi.mocked(bookmarksApi.getUserCollections).mockResolvedValue(mockCollections)
 
@@ -163,13 +163,13 @@ describe('bookmarkStore', () => {
     })
 
     it('createCollection should add new collection', async () => {
-      const newCollection = { id: 'new-col', name: 'New Collection', bookmarkCount: 0, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' }
+      const newCollection = { id: 'new-col', name: 'New Collection', bookmarkCount: 0, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' }
       vi.mocked(bookmarksApi.createCollection).mockResolvedValue(newCollection)
 
       const store = useBookmarkStore()
-      const result = await store.createCollection({ name: 'New Collection', color: '#FF0000', icon: 'bookmark' })
+      const result = await store.createCollection({ name: 'New Collection', color: '#FF0000', iconName: 'bookmark' })
 
-      expect(bookmarksApi.createCollection).toHaveBeenCalledWith({ name: 'New Collection', color: '#FF0000', icon: 'bookmark' })
+      expect(bookmarksApi.createCollection).toHaveBeenCalledWith({ name: 'New Collection', color: '#FF0000', iconName: 'bookmark' })
       expect(store.collections).toContainEqual(newCollection)
       expect(result).toEqual(newCollection)
     })
@@ -177,26 +177,26 @@ describe('bookmarkStore', () => {
     it('updateCollection should update existing collection', async () => {
       const store = useBookmarkStore()
       store.collections = [
-        { id: 'col-1', name: 'Old Name', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
+        { id: 'col-1', name: 'Old Name', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
       ]
 
-      const updatedCollection = { id: 'col-1', name: 'New Name', bookmarkCount: 5, createdAt: '2024-01-01', color: '#00FF00', icon: 'star' }
+      const updatedCollection = { id: 'col-1', name: 'New Name', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#00FF00', iconName: 'star' }
       vi.mocked(bookmarksApi.updateCollection).mockResolvedValue(updatedCollection)
 
-      await store.updateCollection('col-1', { name: 'New Name', color: '#00FF00', icon: 'star' })
+      await store.updateCollection('col-1', { name: 'New Name', color: '#00FF00', iconName: 'star' })
 
-      expect(store.collections[0].name).toBe('New Name')
-      expect(store.collections[0].color).toBe('#00FF00')
+      expect(store.collections[0]!.name).toBe('New Name')
+      expect(store.collections[0]!.color).toBe('#00FF00')
     })
 
     it('deleteCollection should remove collection and reset selection', async () => {
       vi.mocked(bookmarksApi.deleteCollection).mockResolvedValue(undefined)
-      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue({ content: [], totalPages: 0, totalElements: 0 })
+      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue({ content: [], totalPages: 0, totalElements: 0, size: 20, number: 0 })
 
       const store = useBookmarkStore()
       store.collections = [
-        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
-        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', color: '#00FF00', icon: 'star' },
+        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
+        { id: 'col-2', name: 'Collection 2', bookmarkCount: 3, createdAt: '2024-01-02', updatedAt: '2024-01-02', color: '#00FF00', iconName: 'star' },
       ]
       store.viewState.selectedCollectionId = 'col-1'
 
@@ -204,15 +204,15 @@ describe('bookmarkStore', () => {
 
       expect(bookmarksApi.deleteCollection).toHaveBeenCalledWith('col-1')
       expect(store.collections.length).toBe(1)
-      expect(store.collections[0].id).toBe('col-2')
+      expect(store.collections[0]!.id).toBe('col-2')
       expect(store.viewState.selectedCollectionId).toBeNull()
     })
   })
 
   describe('bookmark actions', () => {
     it('fetchBookmarks should load all bookmarks when no collection specified', async () => {
-      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1 }
-      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue(mockBookmarks)
+      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
+      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue(mockBookmarks as any)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks(null)
@@ -222,8 +222,8 @@ describe('bookmarkStore', () => {
     })
 
     it('fetchBookmarks should load collection bookmarks when collection specified', async () => {
-      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1 }
-      vi.mocked(bookmarksApi.getCollectionBookmarks).mockResolvedValue(mockBookmarks)
+      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
+      vi.mocked(bookmarksApi.getCollectionBookmarks).mockResolvedValue(mockBookmarks as any)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks('col-123')
@@ -232,8 +232,8 @@ describe('bookmarkStore', () => {
     })
 
     it('fetchBookmarks should load uncategorized when specified', async () => {
-      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1 }
-      vi.mocked(bookmarksApi.getUncategorizedBookmarks).mockResolvedValue(mockBookmarks)
+      const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
+      vi.mocked(bookmarksApi.getUncategorizedBookmarks).mockResolvedValue(mockBookmarks as any)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks('uncategorized')
@@ -252,13 +252,13 @@ describe('bookmarkStore', () => {
 
       const store = useBookmarkStore()
       store.collections = [
-        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
+        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
       ]
 
       await store.addBookmark('post-123', { collectionId: 'col-1' })
 
       expect(store.bookmarks[0]).toEqual(newBookmark)
-      expect(store.collections[0].bookmarkCount).toBe(6)
+      expect(store.collections[0]!.bookmarkCount).toBe(6)
     })
 
     it('removeBookmark should remove bookmark and update collection count', async () => {
@@ -270,15 +270,15 @@ describe('bookmarkStore', () => {
         { id: 'b2', post: { id: 'p2' }, collection: null, createdAt: '2024-01-02' },
       ] as any
       store.collections = [
-        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', color: '#FF0000', icon: 'bookmark' },
+        { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
       ]
 
       await store.removeBookmark('p1')
 
       expect(bookmarksApi.deleteBookmark).toHaveBeenCalledWith('p1')
       expect(store.bookmarks.length).toBe(1)
-      expect(store.bookmarks[0].id).toBe('b2')
-      expect(store.collections[0].bookmarkCount).toBe(4)
+      expect(store.bookmarks[0]!.id).toBe('b2')
+      expect(store.collections[0]!.bookmarkCount).toBe(4)
     })
 
     it('moveToCollection should update bookmark collection', async () => {
@@ -293,7 +293,7 @@ describe('bookmarkStore', () => {
       await store.moveToCollection('p1', 'col-2')
 
       expect(bookmarksApi.updateBookmark).toHaveBeenCalledWith('p1', { collectionId: 'col-2' })
-      expect(store.bookmarks[0].collection?.id).toBe('col-2')
+      expect(store.bookmarks[0]!.collection?.id).toBe('col-2')
     })
 
     it('updateBookmarkNotes should update bookmark notes', async () => {
@@ -307,7 +307,7 @@ describe('bookmarkStore', () => {
 
       await store.updateBookmarkNotes('p1', 'Updated notes')
 
-      expect(store.bookmarks[0].notes).toBe('Updated notes')
+      expect(store.bookmarks[0]!.notes).toBe('Updated notes')
     })
 
     it('updateBookmarkNotes should throw error when bookmark not found', async () => {
@@ -320,7 +320,7 @@ describe('bookmarkStore', () => {
 
   describe('view state actions', () => {
     it('setSelectedCollection should update selection and persist', async () => {
-      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue({ content: [], totalPages: 0, totalElements: 0 })
+      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue({ content: [], totalPages: 0, totalElements: 0, size: 20, number: 0 })
 
       const store = useBookmarkStore()
       store.setSelectedCollection('col-123')

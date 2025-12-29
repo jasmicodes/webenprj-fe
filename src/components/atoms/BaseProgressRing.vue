@@ -26,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'BaseProgressRing' })
+
 const props = withDefaults(defineProps<{ progress: number; size?: number }>(), {
   progress: 0,
   size: 48,
