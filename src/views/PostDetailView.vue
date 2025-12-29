@@ -40,10 +40,6 @@ const commentPage = ref(0)
 const hasMoreComments = ref(false)
 const newCommentText = ref('')
 
-// Reply state
-const replyingTo = ref<string | number | null>(null)
-const replyText = ref('')
-
 // Edit/Delete modals
 const showEditModal = ref(false)
 const editModalData = ref({ content: '', subject: '' })
@@ -129,35 +125,6 @@ async function submitComment() {
   } catch (err) {
     console.error('Failed to create comment:', err)
     toastStore.showError('Failed to post comment', 'Comment')
-  }
-}
-
-// Toggle reply input
-function toggleReply(comment: PostCardData) {
-  if (replyingTo.value === comment.id) {
-    replyingTo.value = null
-    replyText.value = ''
-  } else {
-    replyingTo.value = comment.id
-    replyText.value = ''
-  }
-}
-
-// Submit reply
-async function submitReply(parentComment: PostCardData) {
-  if (!replyText.value.trim()) return
-
-  try {
-    await postsApi.createComment(String(parentComment.id), {
-      subject: post.value?.tag || 'general',
-      content: replyText.value.trim(),
-    })
-    parentComment.comments++
-    replyingTo.value = null
-    replyText.value = ''
-  } catch (err) {
-    console.error('Failed to create reply:', err)
-    toastStore.showError('Failed to post reply', 'Reply')
   }
 }
 
@@ -398,18 +365,7 @@ onMounted(() => {
               :key="comment.id"
               :comment="comment"
               @like="handleCommentLike(comment)"
-              @reply="toggleReply(comment)"
-            >
-              <template #reply-input>
-                <div v-if="replyingTo === comment.id" class="mt-2 pl-4 border-l-2 border-slate-200">
-                  <CommentBox
-                    v-model="replyText"
-                    placeholder="Write a reply..."
-                    @send="submitReply(comment)"
-                  />
-                </div>
-              </template>
-            </CommentItem>
+            />
 
             <!-- Load more -->
             <div v-if="hasMoreComments" class="flex justify-center pt-2">

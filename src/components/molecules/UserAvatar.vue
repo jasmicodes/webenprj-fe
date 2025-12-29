@@ -55,6 +55,10 @@ watch(() => userStore.user?.profileImageUrl, () => {
 watch(() => props.src, () => {
   loadProfileImage()
 })
+
+function handleImageError() {
+  imageUrl.value = avatarPlaceholder
+}
 </script>
 
 <template>
@@ -63,6 +67,7 @@ watch(() => props.src, () => {
       :src="imageUrl"
       :alt="props.alt ?? (userStore.user?.username ? `${userStore.user.username}'s avatar` : 'User avatar')"
       class="avatar-img object-cover rounded-full"
+      @error="handleImageError"
     />
   </div>
 </template>

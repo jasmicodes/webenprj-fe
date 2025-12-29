@@ -9,6 +9,7 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { followApi, postsApi, bookmarksApi } from '@/services/api'
+import { usersApi } from '@/services/api/users'
 import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import type { User, Post } from '@/services/api/types'
@@ -103,11 +104,12 @@ async function loadFollowData() {
 async function loadPostsData() {
   if (!userStore.user) return
   try {
-    // Get all posts and filter by current user
-    const postsPage = await postsApi.getAllPosts(undefined, 0, 50)
-    const userPosts = postsPage.content.filter(p => p.userId === userStore.user!.id && !p.parentId)
-    postsCount.value = userPosts.length
-    recentPosts.value = userPosts.slice(0, 5)
+    // Get user's posts and comments via dedicated endpoint
+    const activityPage = await usersApi.getMyPosts(0, 10)
+    // Count only top-level posts (not comments)
+    postsCount.value = activityPage.content.filter(p => !p.parentId).length
+    // Show all activity (posts + comments) in recent activity
+    recentPosts.value = activityPage.content.slice(0, 5)
   } catch {
     toastStore.showError('Failed to load posts')
   }
@@ -151,6 +153,12 @@ function formatMemberSince(dateStr: string): string {
 
 function goToHome() {
   router.push({ name: 'home' })
+}
+
+function goToPost(post: Post) {
+  // For comments, navigate to the parent post; for top-level posts, navigate directly
+  const targetId = post.parentId ?? post.id
+  router.push({ name: 'post', params: { id: targetId } })
 }
 </script>
 
@@ -289,7 +297,8 @@ function goToHome() {
             <div
               v-for="post in recentPosts"
               :key="post.id"
-              class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/60 hover:bg-slate-100/60 transition-colors"
+              class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/60 hover:bg-slate-100/60 transition-colors cursor-pointer"
+              @click="goToPost(post)"
             >
               <UserAvatar
                 v-if="profileImageSrc"

@@ -8,6 +8,7 @@ import type {
   ChangeEmailRequest,
   UserRole,
   Page,
+  Post,
 } from './types'
 
 export const usersApi = {
@@ -36,6 +37,22 @@ export const usersApi = {
 
   async changeEmail(payload: ChangeEmailRequest): Promise<ProfileUpdateResponse> {
     const res = await api.patch<ProfileUpdateResponse>('/users/me/email', payload)
+    return res.data
+  },
+
+  /**
+   * Get user activity status (includes whether they posted today)
+   */
+  async getActivity(): Promise<{ hasPostedToday: boolean }> {
+    const res = await api.get<{ hasPostedToday: boolean }>('/users/me/activity')
+    return res.data
+  },
+
+  /**
+   * Get current user's posts and comments (all activity)
+   */
+  async getMyPosts(page = 0, size = 10): Promise<Page<Post>> {
+    const res = await api.get<Page<Post>>('/users/me/posts', { params: { page, size } })
     return res.data
   },
 }

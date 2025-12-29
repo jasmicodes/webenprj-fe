@@ -12,6 +12,7 @@ import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
 import { bookmarksApi } from '@/services/api/bookmarks'
+import { usersApi } from '@/services/api/users'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { useUserStore } from '@/stores/userStore'
@@ -45,22 +46,22 @@ const deletingPostId = ref<string | null>(null)
 const showDeleteModal = ref(false)
 const isDeleting = ref(false)
 
-// Gentle progress presence: Check if current user posted today
-const hasPostedToday = computed(() => {
-  if (!userStore.user?.id) return false
+// Gentle progress presence: Check if current user posted today (server-side)
+const hasPostedToday = ref(false)
 
-  const today = new Date()
-  const todayStr = today.toDateString() // e.g., "Mon Dec 15 2025"
-
-  return posts.value.some(post => {
-    // Only count posts by the current user
-    if (post.userId !== userStore.user?.id) return false
-    if (!post.time) return false
-
-    const postDate = new Date(post.time)
-    return postDate.toDateString() === todayStr
-  })
-})
+async function checkHasPostedToday() {
+  if (!userStore.user?.id) {
+    hasPostedToday.value = false
+    return
+  }
+  try {
+    const activity = await usersApi.getActivity()
+    hasPostedToday.value = activity.hasPostedToday
+  } catch {
+    // Silently fail - just show as not posted
+    hasPostedToday.value = false
+  }
+}
 
 const dailyStatusMessage = computed(() => {
   return hasPostedToday.value
@@ -181,6 +182,9 @@ async function handleCreatePost(payload: { subject: string; content: string; fil
     const mapped = mapApiPostToCard(newPost)
     posts.value = [mapped, ...posts.value]
 
+    // Update "posted today" status
+    hasPostedToday.value = true
+
     // Show success message
     toastStore.showSuccess('Reflection shared', 'Success')
   } catch (err: unknown) {
@@ -256,6 +260,7 @@ onMounted(() => {
   loadPosts(true).catch(() => {
     // Error already handled in loadPosts
   })
+  checkHasPostedToday()
 })
 </script>
 
