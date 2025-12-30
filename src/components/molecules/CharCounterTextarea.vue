@@ -1,13 +1,14 @@
 <!--Textarea mit Live-Counter (Default 30 Zeichen)-->
 <template>
   <div class="space-y-1">
-    <BaseTextarea
-      :modelValue="modelValue"
+    <textarea
+      :value="modelValue"
       :placeholder="placeholder"
-      :invalid="invalid || over"
       :maxlength="maxLength"
       :rows="rows"
-      @update:modelValue="(v) => emit('update:modelValue', v)"
+      class="input w-full resize-none"
+      :class="{ 'border-danger-500': invalid || over }"
+      @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
     />
     <div class="flex justify-end">
       <small :class="over ? 'text-danger-600' : 'text-neutral-600'"> {{ count }}/{{ max }} </small>
@@ -19,7 +20,6 @@
 defineOptions({ name: 'CharCounterTextarea' })
 
 import { computed } from 'vue'
-import BaseTextarea from '@/components/atoms/BaseTextarea.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +30,7 @@ const props = withDefaults(
     invalid?: boolean
     rows?: number
   }>(),
-  { max: 30, placeholder: 'Text…' },
+  { max: 30, placeholder: 'Text…', rows: 3 },
 )
 
 const emit = defineEmits<{ 'update:modelValue': [string] }>()

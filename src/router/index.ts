@@ -43,9 +43,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PostDetailView.vue'),
   },
   {
-    path: '/resources',
-    name: 'resources',
-    component: () => import('@/views/ResourceListView.vue'),
+    path: '/admin/demo',
+    name: 'admin-demo',
+    component: () => import('@/views/AdminDemoView.vue'),
+    meta: { requiresAdmin: true },
   },
   {
     path: '/bookmarks',

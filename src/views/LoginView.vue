@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'LoginView' })
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as yup from 'yup'
 import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { useFormValidation } from '@/composables/useFormValidation'
+import { getUserCount } from '@/services/api/users'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
@@ -22,6 +23,18 @@ const toast = useToastStore()
 const identifier = ref('') //username or email
 const password = ref('')
 const loading = ref(false)
+
+// User count for community display
+const userCount = ref<number | null>(null)
+
+onMounted(async () => {
+  try {
+    const { count } = await getUserCount()
+    userCount.value = count
+  } catch {
+    // Silently fail - not critical for login functionality
+  }
+})
 
 // Yup-Schema für Login (Frontend-Validation)
 const loginSchema = yup.object({
@@ -127,13 +140,18 @@ async function onSubmit() {
 
         <!-- Link zur Registrierung -->
         <p class="text-center text-sm text-neutral-700">
-          Don’t have an account yet?
+          Don't have an account yet?
           <RouterLink
             :to="{ name: 'register' }"
             class="underline text-primary-400 hover:text-primary-900"
           >
             Sign up
           </RouterLink>
+        </p>
+
+        <!-- Community count -->
+        <p v-if="userCount !== null" class="text-center text-xs text-neutral-500 mt-2">
+          Join {{ userCount.toLocaleString() }} students already on Motivise!
         </p>
       </form>
     </div>

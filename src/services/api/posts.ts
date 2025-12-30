@@ -26,14 +26,6 @@ export const postsApi = {
     return res.data
   },
 
-  /**
-   * @deprecated Use getAllPosts(search) instead for RESTful design
-   * Kept for backward compatibility
-   */
-  async searchPosts(keyword: string, page = 0, size = 20): Promise<Page<Post>> {
-    return this.getAllPosts(keyword)
-  },
-
   async createPost(data: PostCreateRequest): Promise<Post> {
     const res = await api.post<Post>('/posts', data)
     return res.data

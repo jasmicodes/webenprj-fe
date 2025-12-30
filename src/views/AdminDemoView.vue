@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineOptions({ name: 'ResourceListView' })
+defineOptions({ name: 'AdminDemoView' })
 
 import { ref, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
@@ -60,12 +60,12 @@ function toggleLike(postId: PostCardData['id']) {
   posts.value[idx] = { ...post, liked: newLiked, likes: Math.max(0, newLikes) }
 }
 
-// Handle edit (placeholder - ResourceListView uses static demo data)
+// Handle edit (placeholder - AdminDemoView uses static demo data)
 function handleEdit(_postId: PostCardData['id']) {
   // Not implemented for demo data
 }
 
-// Handle delete (placeholder - ResourceListView uses static demo data)
+// Handle delete (placeholder - AdminDemoView uses static demo data)
 function handleDelete(_postId: PostCardData['id']) {
   // Not implemented for demo data
 }

@@ -57,6 +57,15 @@ export const usersApi = {
   },
 }
 
+/**
+ * Get total registered user count (public endpoint, no auth required).
+ * Used for displaying community size on login page.
+ */
+export async function getUserCount(): Promise<{ count: number }> {
+  const res = await api.get<{ count: number }>('/users/count')
+  return res.data
+}
+
 export const adminUsersApi = {
   /**
    * Get all users or search users by email, username, or country code.

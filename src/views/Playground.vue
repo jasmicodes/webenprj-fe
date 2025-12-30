@@ -2,7 +2,6 @@
 import PostCard from '@/components/organisms/PostCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
-import BaseTextarea from '@/components/atoms/BaseTextarea.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
@@ -10,7 +9,6 @@ import BaseProgressRing from '@/components/atoms/BaseProgressRing.vue'
 import BaseToast from '@/components/atoms/BaseToast.vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
-import BaseChip from '@/components/atoms/BaseChip.vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
 import BaseLabel from '@/components/atoms/BaseLabel.vue'
 import TagSelect from '@/components/molecules/TagSelect.vue'
@@ -60,10 +58,9 @@ const posts = POSTS
     <!-- Inputs -->
     <section>
       <h1>Atoms</h1>
-      <h2>BaseInput / BaseTextarea / BaseSelect</h2>
+      <h2>BaseInput / BaseSelect</h2>
       <div class="grid gap-4 max-w-md">
         <BaseInput placeholder="Type something..." />
-        <BaseTextarea placeholder="Write a longer text..." />
         <BaseSelect>
           <option>Select Option</option>
           <option>Option A</option>
@@ -115,32 +112,11 @@ const posts = POSTS
       </div>
     </section>
 
-    <!-- Chips -->
-    <section class="mt-8">
-      <h2>BaseChip</h2>
-
-      <div class="flex flex-wrap gap-2">
-        <!-- Default (muted) -->
-        <BaseChip>#general</BaseChip>
-
-        <!-- explizit muted -->
-        <BaseChip variant="muted">#draft</BaseChip>
-
-        <!-- Tag-Variante -->
-        <BaseChip variant="tag">#motivation</BaseChip>
-        <BaseChip variant="tag">#webengineering</BaseChip>
-      </div>
-    </section>
-
     <section class="mt-12 max-w-md">
       <h2>BaseFormfield</h2>
 
       <BaseFormfield label="Username" help="Your public display name">
         <BaseInput placeholder="Enter username..." />
-      </BaseFormfield>
-
-      <BaseFormfield label="Bio (Textarea)">
-        <BaseTextarea placeholder="Type something..." />
       </BaseFormfield>
 
       <BaseFormfield label="Select a country">

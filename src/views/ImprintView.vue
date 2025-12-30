@@ -1,7 +1,5 @@
 <script setup lang="ts">
 defineOptions({ name: 'ImprintView' })
-
-import BaseDivider from '@/components/atoms/BaseDivider.vue'
 </script>
 
 <!-- views/ImprintView.vue -->
@@ -19,7 +17,7 @@ import BaseDivider from '@/components/atoms/BaseDivider.vue'
         </p>
       </div>
 
-      <BaseDivider />
+      <hr class="my-6 border-neutral-200" />
 
       <div class="mb-6 mt-6">
         <p>
@@ -30,7 +28,7 @@ import BaseDivider from '@/components/atoms/BaseDivider.vue'
         </p>
       </div>
 
-      <BaseDivider />
+      <hr class="my-6 border-neutral-200" />
 
       <div class="mb-6 mt-6">
         <p>
