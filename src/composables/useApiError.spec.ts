@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useApiError } from '../useApiError'
+import { useApiError } from './useApiError'
 
 // Mock the toast store
 vi.mock('@/stores/toastStore', () => ({

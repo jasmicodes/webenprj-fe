@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useBookmarkStore } from '../bookmarkStore'
+import { useBookmarkStore } from './bookmarkStore'
 
 // Mock the API module
 vi.mock('@/services/api/bookmarks', () => ({

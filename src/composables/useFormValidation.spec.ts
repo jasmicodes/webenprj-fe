@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { useFormValidation } from '../useFormValidation'
+import { useFormValidation } from './useFormValidation'
 import * as yup from 'yup'
 
 describe('useFormValidation', () => {

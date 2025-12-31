@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useToastStore } from '../toastStore'
+import { useToastStore } from './toastStore'
 
 describe('toastStore', () => {
   beforeEach(() => {

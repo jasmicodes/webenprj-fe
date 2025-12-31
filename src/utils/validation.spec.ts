@@ -11,7 +11,7 @@ import {
   createPostSubjectSchema,
   createPostContentSchema,
   createPasswordConfirmSchema,
-} from '../validation'
+} from './validation'
 
 describe('validation utilities', () => {
   describe('PASSWORD_REGEX', () => {
