@@ -7,7 +7,6 @@ import { useToastStore } from '@/stores/toastStore'
 declare module 'vue-router' {
   interface RouteMeta {
     authPage?: boolean
-    devOnly?: boolean
     requiresAdmin?: boolean
   }
 }
@@ -43,12 +42,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PostDetailView.vue'),
   },
   {
-    path: '/admin/demo',
-    name: 'admin-demo',
-    component: () => import('@/views/AdminDemoView.vue'),
-    meta: { requiresAdmin: true },
-  },
-  {
     path: '/bookmarks',
     name: 'bookmarks',
     component: () => import('@/views/BookmarksView.vue'),
@@ -68,11 +61,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/UserProfileView.vue'),
     props: true,
   },
-  {
-    path: '/styleguide',
-    name: 'styleguide',
-    component: () => import('@/views/StyleGuideView.vue'),
-  },
 
   // 404 Catch-All Route (must be last)
   {
@@ -82,14 +70,6 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-if (import.meta.env.DEV) {
-  routes.push({
-    path: '/dev/playground',
-    name: 'dev-playground',
-    component: () => import('@/views/Playground.vue'),
-    meta: { devOnly: true },
-  })
-}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -116,19 +96,13 @@ router.beforeEach((to) => {
     }
   }
 
-  const blockDevOnlyInProd = () => {
-    if (to.meta.devOnly && !import.meta.env.DEV) {
-      return { name: 'not-found' }
-    }
-  }
-
   const requireAuth = () => {
     if (!store.isAuthenticated && !to.meta.authPage) {
       return { name: 'login' }
     }
   }
 
-  return redirectFromAuthPages() ?? blockDevOnlyInProd() ?? requireAuth() ?? requireAdmin() ?? true
+  return redirectFromAuthPages() ?? requireAuth() ?? requireAdmin() ?? true
 })
 
 export default router
