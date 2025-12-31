@@ -4,7 +4,7 @@ defineOptions({ name: 'HelpView' })
 import { computed } from 'vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 
 // Ambient mode detection

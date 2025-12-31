@@ -13,7 +13,7 @@ defineOptions({ name: 'ComposerCard' })
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import TagInput from '@/components/molecules/TagInput.vue'
 import { useUserStore } from '@/stores/userStore'
 import { isValidTag, prepareTagForBackend } from '@/utils/tagUtils'
@@ -290,7 +290,7 @@ watch(content, () => {
       :class="isExpanded ? '' : 'cursor-text'"
       @click="handleHeaderClick"
     >
-      <UserAvatar class="w-9 h-9 rounded-full flex-shrink-0" :class="isExpanded ? '' : 'opacity-80'" />
+      <BaseAvatar use-current-user class="w-9 h-9 rounded-full flex-shrink-0" :class="isExpanded ? '' : 'opacity-80'" />
       <span v-if="!isExpanded" class="text-sm text-slate-500">Share a learning moment...</span>
       <span v-else class="text-sm font-medium text-slate-700">{{ userStore.user?.username || 'You' }}</span>
     </div>

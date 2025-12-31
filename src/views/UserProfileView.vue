@@ -5,13 +5,13 @@ defineOptions({ name: 'UserProfileView' })
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { usersApi, followApi } from '@/services/api/users'
 import { postsApi } from '@/services/api/posts'
 import { bookmarksApi } from '@/services/api/bookmarks'
-import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
+import { COUNTRIES_DACH_FIRST } from '@/data/countries'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import type { User, Post } from '@/services/api/types'
@@ -20,7 +20,7 @@ import type { PostCardData } from '@/utils/postMapper'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
 
@@ -248,12 +248,12 @@ onMounted(() => {
           <div class="flex flex-col sm:flex-row gap-4">
             <!-- Left: Avatar -->
             <div class="flex-shrink-0 flex justify-center sm:justify-start">
-              <UserAvatar
+              <BaseAvatar
                 v-if="user.profileImageUrl"
                 :src="user.profileImageUrl"
                 class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm"
               />
-              <UserAvatar v-else class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm" />
+              <BaseAvatar v-else class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm" />
             </div>
 
             <!-- Center: Identity -->

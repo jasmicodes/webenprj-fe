@@ -3,7 +3,7 @@
 defineOptions({ name: 'AppBackground' })
 
 import { ref, computed, onMounted, watch } from 'vue'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 
 const appearanceStore = useAppearanceStore()

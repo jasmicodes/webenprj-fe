@@ -5,7 +5,7 @@ import type { User } from '@/services/api/types'
 import { useUserStore } from '@/stores/userStore'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 
 defineOptions({ name: 'UserCard' })
 
@@ -47,7 +47,7 @@ function handleCardClick() {
   >
     <div class="flex items-center gap-3">
       <!-- Avatar -->
-      <UserAvatar
+      <BaseAvatar
         :src="avatarSrc"
         :alt="`${user.username}'s avatar`"
         class="w-12 h-12 flex-shrink-0"

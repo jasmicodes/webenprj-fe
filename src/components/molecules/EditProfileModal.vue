@@ -8,7 +8,7 @@ import { usersApi, adminUsersApi } from '@/services/api/users'
 import { mediaApi } from '@/services/api'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
-import { useFormValidation } from '@/composables/useFormValidation'
+import { useFormValidation } from '@/composables/useForm'
 import { getErrorMessage } from '@/services/api/client'
 import type { User, AdminUser, UserRole } from '@/services/api/types'
 
@@ -17,7 +17,7 @@ import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 
 // -------------------- PROPS & EMITS --------------------
 const props = defineProps<{
@@ -277,13 +277,13 @@ function handleCancel() {
           <div class="flex flex-col items-center md:items-start gap-2.5">
             <!-- Avatar with ring and subtle shadow -->
             <div class="relative">
-              <UserAvatar
+              <BaseAvatar
                 v-if="avatarPreview && !avatarMarkedForRemoval"
                 :src="avatarPreview"
                 :alt="avatarAltText"
                 class="w-20 h-20 rounded-full object-cover ring-2 ring-slate-100 shadow-sm"
               />
-              <UserAvatar
+              <BaseAvatar
                 v-else
                 :alt="avatarAltText"
                 class="w-20 h-20 rounded-full object-cover ring-2 ring-slate-100 shadow-sm"

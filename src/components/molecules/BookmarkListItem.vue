@@ -44,7 +44,7 @@
       </div>
 
       <!-- Avatar -->
-      <UserAvatar
+      <BaseAvatar
         :src="avatarSrc"
         :alt="`${bookmark.post.username}'s avatar`"
         class="w-8 h-8 rounded-full flex-shrink-0"
@@ -178,7 +178,7 @@ defineOptions({ name: 'BookmarkListItem' })
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import { useMediaImage } from '@/composables/useMediaImage'
 import fallbackAvatar from '@/assets/user1.avif'
 import type { Bookmark } from '@/services/api/types'

@@ -1,9 +1,9 @@
-<!--Kleine Dropzone + Preview; nutzt deinen FilePicker-Atom-->
+<!-- Dropzone with preview, uses FilePicker atom -->
 <template>
   <div class="space-y-2">
-    <BaseLabel v-if="label">{{ label }}</BaseLabel>
+    <label v-if="label" class="label">{{ label }}</label>
 
-    <!-- Dropzone-Container -->
+    <!-- Dropzone container -->
     <div
       class="rounded-2xl border border-neutral-200 bg-neutral-100 p-4 text-center cursor-pointer"
       @drop="onDrop"
@@ -15,7 +15,7 @@
           <div class="text-xs text-neutral-600">({{ accept }})</div>
         </div>
 
-        <!-- Preview (klein) -->
+        <!-- Preview (small) -->
         <div v-if="isImage && previewUrl" class="w-16 h-16 rounded-xl overflow-hidden shadow">
           <img :src="previewUrl" alt="Preview" class="w-full h-full object-cover" />
         </div>
@@ -25,7 +25,10 @@
     <!-- Fallback/Picker -->
     <FilePicker :accept="accept" @selected="onSelected" />
 
-    <BaseError v-if="error">{{ error }}</BaseError>
+    <p v-if="error" class="help text-danger-600 flex items-center gap-1">
+      <BaseIcon name="ExclamationCircleIcon" size="w-4 h-4" class="flex-shrink-0" />
+      {{ error }}
+    </p>
   </div>
 </template>
 
@@ -34,8 +37,7 @@ defineOptions({ name: 'UploadDropZone' })
 
 import { ref, computed } from 'vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
-import BaseLabel from '@/components/atoms/BaseLabel.vue'
-import BaseError from '@/components/atoms/BaseError.vue'
+import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 withDefaults(
   defineProps<{

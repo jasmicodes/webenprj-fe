@@ -10,21 +10,9 @@ import BaseToast from '@/components/atoms/BaseToast.vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
-import BaseLabel from '@/components/atoms/BaseLabel.vue'
-import TagSelect from '@/components/molecules/TagSelect.vue'
-
 import { ref } from 'vue'
 import { POSTS } from '@/data/posts'
 defineOptions({ name: 'PlaygroundView' })
-
-const selectedTag = ref('')
-const demoTagOptions = [
-  { label: 'All subjects', value: '' },
-  { label: 'Math', value: 'math' },
-  { label: 'Web Engineering', value: 'weben' },
-  { label: 'Vue.js', value: 'vue' },
-  { label: 'Fitness', value: 'fitness' },
-]
 
 const showModal = ref(false)
 const pickedFile = ref<string | null>(null)
@@ -160,36 +148,21 @@ const posts = POSTS
       </BaseModal>
     </section>
 
-    <section class="mt-12">
-      <h2 class="text-xl font-semibold mb-2">TagSelect</h2>
-
-      <div class="max-w-xs">
-        <TagSelect v-model="selectedTag" :options="demoTagOptions" placeholder="Select a tag…" />
-      </div>
-
-      <p class="mt-3 text-neutral-700">
-        Selected: <strong>{{ selectedTag || 'None' }}</strong>
-      </p>
-    </section>
-
     <section class="mt-12 max-w-md">
-      <h2 class="text-xl font-semibold mb-2">BaseLabel</h2>
+      <h2 class="text-xl font-semibold mb-2">BaseFormfield (with label)</h2>
 
       <div class="flex flex-col gap-4">
-        <div>
-          <BaseLabel>Standard Label</BaseLabel>
+        <BaseFormfield label="Standard Label">
           <BaseInput placeholder="Example Input…" />
-        </div>
+        </BaseFormfield>
 
-        <div>
-          <BaseLabel>Email Address</BaseLabel>
+        <BaseFormfield label="Email Address">
           <BaseInput type="email" placeholder="email@example.com" />
-        </div>
+        </BaseFormfield>
 
-        <div>
-          <BaseLabel>Password</BaseLabel>
+        <BaseFormfield label="Password">
           <BaseInput type="password" placeholder="••••••" />
-        </div>
+        </BaseFormfield>
       </div>
     </section>
   </main>

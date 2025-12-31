@@ -5,16 +5,16 @@ import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
-import { authApi } from '@/services/api/'
+import { api } from '@/services/api/client'
 import { useToastStore } from '@/stores/toastStore'
-import type { RegisterRequest } from '@/services/api/types'
+import type { RegisterRequest, User } from '@/services/api/types'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 
-import { COUNTRIES_DACH_FIRST } from '@/utils/countries.ts' // siehe Datei unten
+import { COUNTRIES_DACH_FIRST } from '@/data/countries'
 import {
   PASSWORD_REQUIREMENTS,
   createEmailSchema,
@@ -23,7 +23,7 @@ import {
   createUsernameSchema,
 } from '@/utils/validation'
 
-import { useFormValidation } from '@/composables/useFormValidation'
+import { useFormValidation } from '@/composables/useForm'
 
 const router = useRouter()
 
@@ -99,7 +99,7 @@ async function submit() {
       // profileImageUrl omitted - optional field, not needed during registration
     }
 
-    await authApi.register(apiPayload)
+    await api.post<User>('/users', apiPayload)
 
     // 3) Erfolg: Toast + Redirect zum Login
     toastStore.showSuccess('Account created successfully. You can now log in.')

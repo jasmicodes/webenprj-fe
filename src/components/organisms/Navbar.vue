@@ -1,11 +1,10 @@
 <!-- src/components/organisms/Navbar.vue -->
 <script setup lang="ts">
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useRouter } from 'vue-router'
-import { useNavbarStore } from '@/stores/navbarStore'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useNavbarStore, useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { computed } from 'vue'
 
@@ -132,7 +131,7 @@ function handleLogout() {
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
           <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
-            <UserAvatar size="xs" />
+            <BaseAvatar size="xs" use-current-user />
           </div>
           <span
             :class="[
@@ -307,7 +306,7 @@ function handleLogout() {
       </li>
       <li>
         <RouterLink :to="{ name: 'profile' }" class="tab-link">
-          <UserAvatar size="xs" />
+          <BaseAvatar size="xs" use-current-user />
           <small>Profile</small>
         </RouterLink>
       </li>

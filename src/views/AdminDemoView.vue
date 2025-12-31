@@ -4,10 +4,10 @@ defineOptions({ name: 'AdminDemoView' })
 import { ref, computed } from 'vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import SearchBar from '@/components/molecules/SearchBar.vue'
-import TagSelect from '@/components/molecules/TagSelect.vue'
+import BaseSelect from '@/components/atoms/BaseSelect.vue'
 import { POSTS } from '@/data/posts'
 import type { PostCardData } from '@/utils/postMapper'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useUserStore } from '@/stores/userStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 
@@ -87,12 +87,11 @@ function handleDelete(_postId: PostCardData['id']) {
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6 space-y-4">
         <SearchBar @search="onSearch" />
 
-        <TagSelect
-          v-model="tag"
-          :options="tagOptions"
-          placeholder="Filter by tag…"
-          class="w-full md:w-72"
-        />
+        <BaseSelect v-model="tag" class="w-full md:w-72">
+          <option v-for="opt in tagOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
+        </BaseSelect>
       </div>
 
       <!-- Empty State -->

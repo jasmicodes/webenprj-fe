@@ -8,7 +8,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
-import { useFormValidation } from '@/composables/useFormValidation'
+import { useFormValidation } from '@/composables/useForm'
 import { getUserCount } from '@/services/api/users'
 
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'

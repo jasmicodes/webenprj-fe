@@ -1,17 +1,19 @@
-<!--für Datei-Uploads-->
+<!-- File picker input -->
 <template>
   <div>
-    <BaseLabel v-if="label">{{ label }}</BaseLabel>
+    <label v-if="label" class="label">{{ label }}</label>
     <input type="file" class="input" :accept="accept" @change="onChange" />
-    <BaseError v-if="error">{{ error }}</BaseError>
+    <p v-if="error" class="help text-danger-600 flex items-center gap-1">
+      <BaseIcon name="ExclamationCircleIcon" size="w-4 h-4" class="flex-shrink-0" />
+      {{ error }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 defineOptions({ name: 'FilePicker' })
 
-import BaseLabel from '@/components/atoms/BaseLabel.vue'
-import BaseError from '@/components/atoms/BaseError.vue'
+import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 defineProps<{ label?: string; accept?: string; error?: string }>()
 const emit = defineEmits<{ (e: 'selected', file: File): void }>()

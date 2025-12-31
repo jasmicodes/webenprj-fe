@@ -5,19 +5,19 @@ defineOptions({ name: 'ProfileView' })
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { followApi, postsApi, bookmarksApi } from '@/services/api'
 import { usersApi } from '@/services/api/users'
-import { COUNTRIES_DACH_FIRST } from '@/utils/countries'
+import { COUNTRIES_DACH_FIRST } from '@/data/countries'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import type { User, Post } from '@/services/api/types'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
-import UserAvatar from '@/components/molecules/UserAvatar.vue'
+import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
 
@@ -190,12 +190,12 @@ function goToPost(post: Post) {
           <div class="flex flex-col sm:flex-row gap-4">
             <!-- Left: Avatar -->
             <div class="flex-shrink-0 flex justify-center sm:justify-start">
-              <UserAvatar
+              <BaseAvatar
                 v-if="profileImageSrc"
                 :src="profileImageSrc"
                 class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm"
               />
-              <UserAvatar v-else class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm" />
+              <BaseAvatar v-else use-current-user class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm" />
             </div>
 
             <!-- Center: Identity -->
@@ -304,12 +304,12 @@ function goToPost(post: Post) {
               class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/60 hover:bg-slate-100/60 transition-colors cursor-pointer"
               @click="goToPost(post)"
             >
-              <UserAvatar
+              <BaseAvatar
                 v-if="profileImageSrc"
                 :src="profileImageSrc"
                 class="w-8 h-8 rounded-full object-cover flex-shrink-0"
               />
-              <UserAvatar v-else class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+              <BaseAvatar v-else use-current-user class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-slate-800 truncate">{{ post.subject }}</p>
                 <p class="text-xs text-slate-500 line-clamp-1">{{ post.content }}</p>

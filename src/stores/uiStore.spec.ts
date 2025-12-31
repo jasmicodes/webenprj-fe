@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from './appearanceStore'
+import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from './uiStore'
 
 describe('appearanceStore', () => {
   beforeEach(() => {

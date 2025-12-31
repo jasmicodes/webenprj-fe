@@ -41,16 +41,16 @@ vi.mock('@/components/atoms/BaseIcon.vue', () => ({
   },
 }))
 
-vi.mock('@/components/molecules/UserAvatar.vue', () => ({
+vi.mock('@/components/atoms/BaseAvatar.vue', () => ({
   default: {
-    name: 'UserAvatar',
-    template: '<div class="user-avatar"></div>',
+    name: 'BaseAvatar',
+    template: '<div class="base-avatar"></div>',
   },
 }))
 
 // Import stores after mocking
 import { useUserStore } from '@/stores/userStore'
-import { useNavbarStore } from '@/stores/navbarStore'
+import { useNavbarStore } from '@/stores/uiStore'
 
 describe('Navbar', () => {
   beforeEach(() => {

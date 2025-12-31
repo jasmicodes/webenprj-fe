@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { authApi } from '@/services/api/auth'
+import { api } from '@/services/api/client'
 import { usersApi } from '@/services/api/users'
 import { mediaApi } from '@/services/api/media'
-import type { User } from '@/services/api/types'
+import type { LoginResponse, User } from '@/services/api/types'
 import router from '@/router'
 import { clearToken, getToken, isTokenExpired, setToken } from '@/services/api/token'
 
@@ -24,7 +24,11 @@ export const useUserStore = defineStore('user', {
   actions: {
     /** Login with username OR email via backend API */
     async login(payload: { identifier: string; password: string }) {
-      const response = await authApi.login(payload.identifier, payload.password)
+      const res = await api.post<LoginResponse>('/auth/login', {
+        login: payload.identifier,
+        password: payload.password,
+      })
+      const response = res.data
 
       // Set state from API response
       this.token = response.token
@@ -57,7 +61,6 @@ export const useUserStore = defineStore('user', {
       this.token = null
       this.user = null
       clearToken()
-      authApi.logout()
       router.push({ name: 'login' })
     },
 

@@ -14,7 +14,7 @@ defineOptions({ name: 'BookmarksView' })
 
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'

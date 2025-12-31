@@ -1,12 +1,24 @@
-<!-- kombiniert Label + Control + Help/Error zu einem Paket, für später z. B. im Post-Formular)-->
+<!-- Combines Label + Control + Help/Error into a single form field wrapper -->
 <template>
   <div :class="compact ? 'mb-2' : 'mb-4'">
-    <BaseLabel v-if="label" :html-for="inputId" :class="{ 'text-xs': compact }">{{ label }}</BaseLabel>
+    <!-- Label -->
+    <label v-if="label" :for="inputId" class="label" :class="{ 'text-xs': compact }">
+      {{ label }}
+    </label>
+
+    <!-- Input slot -->
     <slot :id="inputId" />
+
+    <!-- Help text -->
     <slot name="help">
-      <BaseHelp v-if="help">{{ help }}</BaseHelp>
+      <p v-if="help" class="help">{{ help }}</p>
     </slot>
-    <BaseError v-if="error" :class="{ 'text-xs': compact }">{{ error }}</BaseError>
+
+    <!-- Error message -->
+    <p v-if="error" class="help text-danger-600 flex items-center gap-1" :class="{ 'text-xs': compact }">
+      <BaseIcon name="ExclamationCircleIcon" size="w-4 h-4" class="flex-shrink-0" />
+      {{ error }}
+    </p>
   </div>
 </template>
 
@@ -14,9 +26,7 @@
 defineOptions({ name: 'BaseFormfield' })
 
 import { useId } from 'vue'
-import BaseLabel from '@/components/atoms/BaseLabel.vue'
-import BaseHelp from '@/components/atoms/BaseHelp.vue'
-import BaseError from '@/components/atoms/BaseError.vue'
+import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 interface Props {
   label?: string

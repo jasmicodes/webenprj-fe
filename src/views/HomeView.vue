@@ -17,7 +17,7 @@ import { usersApi } from '@/services/api/users'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
 import { useUserStore } from '@/stores/userStore'
-import { useAppearanceStore } from '@/stores/appearanceStore'
+import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { prepareTagForBackend } from '@/utils/tagUtils'
 

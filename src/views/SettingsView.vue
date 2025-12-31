@@ -5,9 +5,9 @@ defineOptions({ name: 'SettingsView' })
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
 import { useUserStore } from '@/stores/userStore'
-import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from '@/stores/appearanceStore'
-import { useChangePassword } from '@/composables/useChangePassword'
+import { useAppearanceStore, AVAILABLE_BACKGROUNDS } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useFormValidation } from '@/composables/useForm'
 import { useToastStore } from '@/stores/toastStore'
 import { usersApi } from '@/services/api/users'
 import { getErrorMessage } from '@/services/api/client'
@@ -95,7 +95,66 @@ function cancelEmailChange() {
 }
 
 // -------------------- PASSWORD FORM --------------------
-const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePassword } = useChangePassword()
+const showChangePassword = ref(false)
+const savingPassword = ref(false)
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  repeatPassword: '',
+})
+
+const passwordSchema = yup.object({
+  currentPassword: yup.string().required('Current password is required'),
+  newPassword: yup
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
+      'Password must contain uppercase, lowercase and a number',
+    )
+    .required('New password is required'),
+  repeatPassword: yup
+    .string()
+    .oneOf([yup.ref('newPassword')], 'Passwords do not match')
+    .required('Please repeat the new password'),
+})
+
+const {
+  errors: passwordErrors,
+  validate: validatePassword,
+  clearErrors: clearPasswordErrors,
+} = useFormValidation(passwordSchema)
+
+async function savePassword() {
+  clearPasswordErrors()
+  toast.clear()
+
+  const ok = await validatePassword(passwordForm.value)
+  if (!ok) {
+    toast.showError('Please fix the highlighted fields')
+    return
+  }
+
+  savingPassword.value = true
+  try {
+    await usersApi.changePassword({
+      currentPassword: passwordForm.value.currentPassword,
+      newPassword: passwordForm.value.newPassword,
+    })
+
+    toast.showSuccess('Password changed successfully')
+    showChangePassword.value = false
+    passwordForm.value = {
+      currentPassword: '',
+      newPassword: '',
+      repeatPassword: '',
+    }
+  } catch (err) {
+    toast.showError(getErrorMessage(err))
+  } finally {
+    savingPassword.value = false
+  }
+}
 </script>
 
 <template>

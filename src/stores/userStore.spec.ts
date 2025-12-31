@@ -3,10 +3,9 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useUserStore } from './userStore'
 
 // Mock the API modules
-vi.mock('@/services/api/auth', () => ({
-  authApi: {
-    login: vi.fn(),
-    logout: vi.fn(),
+vi.mock('@/services/api/client', () => ({
+  api: {
+    post: vi.fn(),
   },
 }))
 
@@ -35,7 +34,7 @@ vi.mock('@/router', () => ({
   },
 }))
 
-import { authApi } from '@/services/api/auth'
+import { api } from '@/services/api/client'
 import { usersApi } from '@/services/api/users'
 import { mediaApi } from '@/services/api/media'
 import { getToken, setToken, clearToken, isTokenExpired } from '@/services/api/token'
@@ -132,20 +131,23 @@ describe('userStore', () => {
         },
       }
 
-      vi.mocked(authApi.login).mockResolvedValue(mockResponse)
+      vi.mocked(api.post).mockResolvedValue({ data: mockResponse })
       vi.mocked(getToken).mockReturnValue(null)
 
       const store = useUserStore()
       await store.login({ identifier: 'test@example.com', password: 'password123' })
 
-      expect(authApi.login).toHaveBeenCalledWith('test@example.com', 'password123')
+      expect(api.post).toHaveBeenCalledWith('/auth/login', {
+        login: 'test@example.com',
+        password: 'password123',
+      })
       expect(store.token).toBe('new-jwt-token')
       expect(store.user).toEqual(mockResponse.user)
       expect(setToken).toHaveBeenCalledWith('new-jwt-token')
     })
 
     it('should throw error on failed login', async () => {
-      vi.mocked(authApi.login).mockRejectedValue(new Error('Invalid credentials'))
+      vi.mocked(api.post).mockRejectedValue(new Error('Invalid credentials'))
       vi.mocked(getToken).mockReturnValue(null)
 
       const store = useUserStore()
@@ -180,7 +182,6 @@ describe('userStore', () => {
       expect(store.token).toBeNull()
       expect(store.user).toBeNull()
       expect(clearToken).toHaveBeenCalled()
-      expect(authApi.logout).toHaveBeenCalled()
       expect(router.push).toHaveBeenCalledWith({ name: 'login' })
     })
   })

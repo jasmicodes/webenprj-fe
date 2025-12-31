@@ -20,10 +20,10 @@ vi.mock('@/components/atoms/BaseIcon.vue', () => ({
   },
 }))
 
-vi.mock('@/components/molecules/UserAvatar.vue', () => ({
+vi.mock('@/components/atoms/BaseAvatar.vue', () => ({
   default: {
-    name: 'UserAvatar',
-    template: '<div class="user-avatar"></div>',
+    name: 'BaseAvatar',
+    template: '<div class="base-avatar"></div>',
   },
 }))
 
@@ -72,7 +72,7 @@ describe('ComposerCard', () => {
     it('should show user avatar in collapsed state', () => {
       const wrapper = mount(ComposerCard)
 
-      expect(wrapper.find('.user-avatar').exists()).toBe(true)
+      expect(wrapper.find('.base-avatar').exists()).toBe(true)
     })
   })
 

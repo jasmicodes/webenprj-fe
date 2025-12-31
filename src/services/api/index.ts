@@ -1,4 +1,3 @@
-export { authApi } from './auth'
 export { usersApi, adminUsersApi } from './users'
 export { postsApi } from './posts'
 export { bookmarksApi } from './bookmarks'

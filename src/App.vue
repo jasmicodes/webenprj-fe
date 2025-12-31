@@ -42,7 +42,16 @@
       'md:ml-16': isAuthenticated && !route.meta.authPage && isCollapsed,
     }"
   >
-    <AppFooter class="fixed bottom-0 right-0 left-0 md:relative" />
+    <footer class="footer-glass py-4 px-6 mt-auto fixed bottom-0 right-0 left-0 md:relative">
+      <div class="max-w-5xl mx-auto flex justify-center items-center">
+        <RouterLink
+          :to="{ name: 'imprint' }"
+          class="text-xs text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          Imprint
+        </RouterLink>
+      </div>
+    </footer>
   </div>
 
   <div
@@ -66,10 +75,9 @@ import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
-import { useNavbarStore } from '@/stores/navbarStore'
+import { useNavbarStore } from '@/stores/uiStore'
 import AppBackground from '@/components/organisms/AppBackground.vue'
 import Navbar from '@/components/organisms/Navbar.vue'
-import AppFooter from '@/components/organisms/AppFooter.vue'
 import ToastMessage from '@/components/molecules/ToastMessage.vue'
 
 const route = useRoute()
@@ -79,3 +87,18 @@ const { isAuthenticated } = storeToRefs(userStore)
 const navbarStore = useNavbarStore()
 const { isCollapsed } = navbarStore
 </script>
+
+<style scoped>
+.footer-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@supports not (backdrop-filter: blur(20px)) {
+  .footer-glass {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+</style>
