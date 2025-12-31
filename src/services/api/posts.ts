@@ -8,17 +8,36 @@ export const postsApi = {
    * @param search Optional search keyword to filter posts
    * @param page   Zero-based page index
    * @param size   Page size
+   * @param filter Filter by 'all' or 'following'
+   * @param subject Optional subject/tag to filter by
+   * @param authorId Optional author ID to filter by
    */
-  async getAllPosts(search?: string, page = 0, size = 20, filter: 'all' | 'following' = 'all'): Promise<Page<Post>> {
+  async getAllPosts(
+    search?: string,
+    page = 0,
+    size = 20,
+    filter: 'all' | 'following' = 'all',
+    subject?: string,
+    authorId?: string,
+  ): Promise<Page<Post>> {
     const res = await api.get<Page<Post>>('/posts', {
       params: {
         page,
         size,
         filter,
         ...(search ? { search } : {}),
+        ...(subject ? { subject } : {}),
+        ...(authorId ? { authorId } : {}),
       },
     })
     return res.data
+  },
+
+  /**
+   * Get posts by a specific author
+   */
+  async getPostsByAuthor(authorId: string, page = 0, size = 20): Promise<Page<Post>> {
+    return this.getAllPosts(undefined, page, size, 'all', undefined, authorId)
   },
 
   async getPostById(id: string): Promise<Post> {
@@ -71,6 +90,15 @@ export const postsApi = {
       ...data,
       parentId: postId,
     })
+    return res.data
+  },
+
+  /**
+   * Get all unique subjects/tags used in posts.
+   * Returns tags with '#' prefix.
+   */
+  async getSubjects(): Promise<string[]> {
+    const res = await api.get<string[]>('/posts/subjects')
     return res.data
   },
 }

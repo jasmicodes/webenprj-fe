@@ -2,12 +2,23 @@
   <div class="bg-slate-50 rounded-lg p-3 space-y-2">
     <!-- Comment header -->
     <div class="flex items-center gap-2">
-      <img
-        :src="avatarSrc"
-        :alt="comment.user.name"
-        class="w-6 h-6 rounded-full object-cover"
-      />
-      <span class="text-sm font-medium text-slate-900">{{ comment.user.name }}</span>
+      <RouterLink
+        :to="{ name: 'user-profile', params: { id: comment.userId } }"
+        @click.stop
+      >
+        <img
+          :src="avatarSrc"
+          :alt="comment.user.name"
+          class="w-6 h-6 rounded-full object-cover hover:ring-2 hover:ring-blue-200 transition-shadow"
+        />
+      </RouterLink>
+      <RouterLink
+        :to="{ name: 'user-profile', params: { id: comment.userId } }"
+        class="text-sm font-medium text-slate-900 hover:text-blue-600 hover:underline transition-colors"
+        @click.stop
+      >
+        {{ comment.user.name }}
+      </RouterLink>
       <span class="text-xs text-slate-500">{{ formatTimeAgo(comment.time) }}</span>
     </div>
 
@@ -44,6 +55,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'CommentItem' })
 
+import { RouterLink } from 'vue-router'
 import { HeartIcon } from '@heroicons/vue/24/outline'
 import { useMediaImage } from '@/composables/useMediaImage'
 import { formatTimeAgo } from '@/utils/timeUtils'

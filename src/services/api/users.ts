@@ -17,6 +17,37 @@ export const usersApi = {
     return res.data
   },
 
+  /**
+   * Get public user profile by ID
+   */
+  async getUserById(userId: string): Promise<User> {
+    const res = await api.get<User>(`/users/${userId}`)
+    return res.data
+  },
+
+  /**
+   * Search users by username, email, or country code
+   */
+  async searchUsers(query: string, page = 0, size = 20): Promise<Page<User>> {
+    const res = await api.get<Page<User>>('/users', {
+      params: { search: query, page, size },
+    })
+    return res.data
+  },
+
+  /**
+   * Check if current user is following the specified user
+   */
+  async isFollowing(userId: string): Promise<boolean> {
+    try {
+      const res = await api.get<{ following: boolean }>(`/users/${userId}/following-status`)
+      return res.data.following
+    } catch {
+      // If endpoint doesn't exist, fall back to checking followers list
+      return false
+    }
+  },
+
   async updateMyProfile(payload: UpdateProfileRequest): Promise<ProfileUpdateResponse> {
     const res = await api.put<ProfileUpdateResponse>('/users/me', payload)
     return res.data

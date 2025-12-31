@@ -4,6 +4,7 @@
     <template #header>
       <PostHeader
         :username="post.user.name"
+        :user-id="post.userId"
         :avatar-src="avatarSrc"
         :tag="post.tag"
         :time="post.time"

@@ -30,7 +30,7 @@ const totalPages = ref(1)
 const pageSize = 10
 const toastStore = useToastStore()
 const userStore = useUserStore()
-const filter = ref<'all' | 'following'>('all')
+const filter = ref<'all' | 'following'>('following')
 
 // Ambient mode detection
 const appearanceStore = useAppearanceStore()

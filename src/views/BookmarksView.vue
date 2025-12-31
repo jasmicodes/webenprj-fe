@@ -19,6 +19,8 @@ import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
+import CreateCollectionModal from '@/components/molecules/CreateCollectionModal.vue'
+import type { CollectionCreateRequest } from '@/services/api/types'
 
 const bookmarkStore = useBookmarkStore()
 const appearanceStore = useAppearanceStore()
@@ -117,14 +119,20 @@ function selectCollection(collectionId: string | null) {
 }
 
 // Handle creating new collection
+const isCreatingCollection = ref(false)
+
 function openCreateModal() {
   showCreateModal.value = true
 }
 
-// Placeholder for collection creation (will be implemented with CreateCollectionModal)
-function handleCreateCollection(_data: unknown) {
-  // TODO: Implement with CreateCollectionModal component
-  showCreateModal.value = false
+async function handleCreateCollection(data: CollectionCreateRequest) {
+  isCreatingCollection.value = true
+  try {
+    await bookmarkStore.createCollection(data)
+    showCreateModal.value = false
+  } finally {
+    isCreatingCollection.value = false
+  }
 }
 
 // Handle bookmark removal
@@ -651,22 +659,13 @@ async function bulkMoveToCollection(collectionId: string | null) {
         </div>
       </div>
 
-      <!-- CreateCollectionModal (Placeholder) -->
-      <div
-        v-if="showCreateModal"
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-        @click.self="showCreateModal = false"
-      >
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full">
-          <h2 class="text-xl font-semibold text-slate-900 mb-4">New Collection</h2>
-          <p class="text-sm text-slate-600 mb-4">
-            Collection creation modal will be implemented with CreateCollectionModal component.
-          </p>
-          <BaseButton @click="showCreateModal = false" variant="outline" class="w-full">
-            Close
-          </BaseButton>
-        </div>
-      </div>
+      <!-- CreateCollectionModal -->
+      <CreateCollectionModal
+        :show="showCreateModal"
+        :is-saving="isCreatingCollection"
+        @close="showCreateModal = false"
+        @create="handleCreateCollection"
+      />
 
       <!-- Bulk Remove Confirmation Modal -->
       <Teleport to="body">
