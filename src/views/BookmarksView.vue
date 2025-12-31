@@ -18,6 +18,7 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 
 const bookmarkStore = useBookmarkStore()
 const appearanceStore = useAppearanceStore()
@@ -245,6 +246,9 @@ async function bulkMoveToCollection(collectionId: string | null) {
       class="w-full max-w-7xl mx-auto py-3 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
+      <!-- Page Header -->
+      <PageHeader title="Saved Posts" subtitle="Your curated collection of study insights" />
+
       <!-- Two-column layout -->
       <div class="flex gap-4">
         <!-- Left: Collections Sidebar (desktop only) -->

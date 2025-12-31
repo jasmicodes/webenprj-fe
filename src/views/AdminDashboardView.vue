@@ -2,7 +2,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'AdminDashboardView' })
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { adminUsersApi } from '@/services/api/users'
 import type { AdminUser } from '@/services/api/types'
 import { getErrorMessage } from '@/services/api/client'
@@ -12,6 +12,7 @@ import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 import { TrashIcon, NoSymbolIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
 import type { UserRole } from '@/services/api/types'
 
@@ -21,6 +22,18 @@ const error = ref<string | null>(null)
 const togglingUserId = ref<string | null>(null)
 const toast = useToastStore()
 const userStore = useUserStore()
+
+// Pagination state
+const page = ref(0)
+const pageSize = 20
+const totalPages = ref(1)
+const totalElements = ref(0)
+const loadingMore = ref(false)
+
+// Search state
+const searchInput = ref('')
+const searchQuery = ref('')
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
 // Current user check (to prevent self-modification)
 const currentUserId = computed(() => userStore.user?.id)
@@ -56,15 +69,60 @@ async function updateRole(user: AdminUser, newRole: UserRole) {
   }
 }
 
-onMounted(async () => {
+// Load users with pagination and search
+async function loadUsers(reset = false) {
+  if (reset) {
+    page.value = 0
+    users.value = []
+  }
+
+  const isFirstPage = page.value === 0 && users.value.length === 0
+  if (isFirstPage) {
+    loading.value = true
+  } else {
+    loadingMore.value = true
+  }
+  error.value = null
+
   try {
-    const page = await adminUsersApi.getAllUsers()
-    users.value = page.content as AdminUser[]
+    const result = await adminUsersApi.getAllUsers(
+      searchQuery.value || undefined,
+      page.value,
+      pageSize
+    )
+    users.value = reset ? (result.content as AdminUser[]) : [...users.value, ...(result.content as AdminUser[])]
+    totalPages.value = result.totalPages
+    totalElements.value = result.totalElements
   } catch (err) {
     error.value = getErrorMessage(err)
   } finally {
     loading.value = false
+    loadingMore.value = false
   }
+}
+
+function loadMore() {
+  if (page.value + 1 >= totalPages.value) return
+  page.value += 1
+  loadUsers()
+}
+
+// Debounced search
+watch(searchInput, (newValue) => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  searchDebounceTimer = setTimeout(() => {
+    searchQuery.value = newValue
+    loadUsers(true)
+  }, 300)
+})
+
+// Cleanup debounce timer
+onUnmounted(() => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+})
+
+onMounted(() => {
+  loadUsers(true)
 })
 
 async function toggleActive(user: AdminUser) {
@@ -110,21 +168,50 @@ async function deleteUser(user: AdminUser) {
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Page Header -->
-      <header class="mb-6 pb-3 border-b border-slate-100">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-lg font-medium text-slate-800 tracking-tight">Admin Dashboard</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Manage users and system settings</p>
+      <PageHeader title="Admin Dashboard" subtitle="Manage users and system settings">
+        <div class="flex items-center gap-3">
+          <!-- Search input -->
+          <div class="relative">
+            <svg
+              class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              v-model="searchInput"
+              type="text"
+              placeholder="Search users..."
+              class="w-48 pl-8 pr-8 py-1.5 text-sm border border-slate-200 rounded-lg bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+            />
+            <button
+              v-if="searchInput"
+              type="button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              @click="searchInput = ''"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
           <!-- User count badge -->
           <div
             v-if="!loading && !error"
             class="text-xs font-medium px-2.5 py-1 rounded-md flex-shrink-0 text-slate-500 bg-slate-50/80 border border-slate-100"
           >
-            {{ userCount }} {{ userCount === 1 ? 'user' : 'users' }} · {{ activeCount }} active
+            <template v-if="searchQuery">
+              {{ userCount }} of {{ totalElements }}
+            </template>
+            <template v-else>
+              {{ totalElements }} {{ totalElements === 1 ? 'user' : 'users' }} · {{ activeCount }} active
+            </template>
           </div>
         </div>
-      </header>
+      </PageHeader>
 
       <!-- Loading skeleton -->
       <div v-if="loading" class="space-y-4">
@@ -149,7 +236,7 @@ async function deleteUser(user: AdminUser) {
         class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center"
       >
         <p class="text-sm text-red-600">{{ error }}</p>
-        <BaseButton class="mt-4" variant="outline" @click="loading = true; error = null; $forceUpdate()">
+        <BaseButton class="mt-4" variant="outline" @click="loadUsers(true)">
           Retry
         </BaseButton>
       </div>
@@ -159,8 +246,11 @@ async function deleteUser(user: AdminUser) {
         v-else-if="users.length === 0"
         class="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center"
       >
-        <p class="text-sm text-slate-600 mb-1">No users found</p>
-        <p class="text-xs text-slate-500">Users will appear here once they register</p>
+        <p class="text-sm text-slate-600 mb-1">
+          {{ searchQuery ? 'No users match your search' : 'No users found' }}
+        </p>
+        <p v-if="!searchQuery" class="text-xs text-slate-500">Users will appear here once they register</p>
+        <p v-else class="text-xs text-slate-500">Try a different search term</p>
       </div>
 
       <!-- Users Table -->
@@ -286,6 +376,14 @@ async function deleteUser(user: AdminUser) {
           </table>
         </div>
       </BaseCard>
+
+      <!-- Load more button -->
+      <div v-if="!loading && !error && users.length > 0 && page + 1 < totalPages" class="flex justify-center pt-4">
+        <BaseButton :disabled="loadingMore" variant="outline" @click="loadMore">
+          <span v-if="loadingMore">Loading...</span>
+          <span v-else>Load more</span>
+        </BaseButton>
+      </div>
     </div>
   </div>
 </template>

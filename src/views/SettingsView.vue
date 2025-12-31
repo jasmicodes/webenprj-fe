@@ -17,6 +17,7 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseFormfield from '@/components/atoms/BaseFormfield.vue'
 import BaseInput from '@/components/atoms/BaseInput.vue'
 import BaseToggle from '@/components/atoms/BaseToggle.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 
 // -------------------- STORES --------------------
 const userStore = useUserStore()
@@ -104,10 +105,7 @@ const { showChangePassword, passwordForm, passwordErrors, savingPassword, savePa
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Page Header -->
-      <header class="mb-6 pb-3 border-b border-slate-100">
-        <h1 class="text-lg font-medium text-slate-800 tracking-tight">Settings</h1>
-        <p class="text-sm text-slate-500 mt-0.5">Account security and preferences</p>
-      </header>
+      <PageHeader title="Settings" subtitle="Account security and preferences" />
 
       <div class="space-y-6">
         <!-- ACCOUNT SECTION -->

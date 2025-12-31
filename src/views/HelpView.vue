@@ -3,6 +3,7 @@ defineOptions({ name: 'HelpView' })
 
 import { computed } from 'vue'
 import BaseCard from '@/components/atoms/BaseCard.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 import { useAppearanceStore } from '@/stores/appearanceStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 
@@ -19,12 +20,10 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Page Header -->
-      <header class="mb-6 pb-3 border-b border-slate-100">
-        <h1 class="text-lg font-medium text-slate-800 tracking-tight">Help & Support</h1>
-        <p class="text-sm text-slate-500 mt-0.5">
-          Answers to common questions and ways to get assistance
-        </p>
-      </header>
+      <PageHeader
+        title="Help & Support"
+        subtitle="Answers to common questions and ways to get assistance"
+      />
 
       <!-- FAQ Items -->
       <div class="space-y-6">

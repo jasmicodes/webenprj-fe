@@ -19,6 +19,7 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import UserAvatar from '@/components/molecules/UserAvatar.vue'
 import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 
 // -------------------- STORES & STATES --------------------
 const userStore = useUserStore()
@@ -168,6 +169,9 @@ function goToPost(post: Post) {
       class="w-full max-w-3xl py-6 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
     >
+      <!-- Page Header -->
+      <PageHeader title="Your Profile" subtitle="Your study journey at a glance" />
+
       <!-- LOADING -->
       <div v-if="loading" class="flex justify-center items-center min-h-[300px]">
         <p class="text-sm text-slate-500">Loading profile...</p>

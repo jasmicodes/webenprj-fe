@@ -8,6 +8,7 @@ import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import PostEditModal from '@/components/molecules/PostEditModal.vue'
 import PostDeleteModal from '@/components/molecules/PostDeleteModal.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
+import PageHeader from '@/components/atoms/PageHeader.vue'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { postsApi, mediaApi } from '@/services/api'
@@ -271,26 +272,20 @@ onMounted(() => {
       :class="{ 'ambient-mode': isAmbientMode }"
     >
       <!-- Feed Header -->
-      <header class="mb-6 pb-3 border-b border-slate-100">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex-1 min-w-0">
-            <h1 class="text-lg font-medium text-slate-800 tracking-tight">Today's Workbench</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Your daily study reflections</p>
-          </div>
-          <!-- Gentle progress presence (non-gamified, calm) -->
-          <div
-            v-if="!loading"
-            class="text-xs font-medium px-2.5 py-1 rounded-md flex-shrink-0 transition-colors"
-            :class="
-              hasPostedToday
-                ? 'text-emerald-600 bg-emerald-50/80 border border-emerald-100'
-                : 'text-slate-400 bg-slate-50/60 border border-slate-100'
-            "
-          >
-            {{ dailyStatusMessage }}
-          </div>
+      <PageHeader title="Today's Workbench" subtitle="Your daily study reflections">
+        <!-- Gentle progress presence (non-gamified, calm) -->
+        <div
+          v-if="!loading"
+          class="text-xs font-medium px-2.5 py-1 rounded-md flex-shrink-0 transition-colors"
+          :class="
+            hasPostedToday
+              ? 'text-emerald-600 bg-emerald-50/80 border border-emerald-100'
+              : 'text-slate-400 bg-slate-50/60 border border-slate-100'
+          "
+        >
+          {{ dailyStatusMessage }}
         </div>
-      </header>
+      </PageHeader>
 
       <!-- Composer Card -->
       <div class="mb-6">
