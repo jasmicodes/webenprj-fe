@@ -167,25 +167,6 @@ function handleLogout() {
             Admin
           </span>
         </RouterLink>
-        <RouterLink
-          :to="{ name: 'admin-demo' }"
-          :title="isCollapsed ? 'Demo' : ''"
-          class="nav-item group relative flex items-center rounded-lg font-heading text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100/80 hover:text-slate-900"
-          :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
-          active-class="nav-item-active bg-slate-100/60 text-slate-900"
-        >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
-            <BaseIcon name="FolderIcon" class="w-4 h-4" />
-          </div>
-          <span
-            :class="[
-              'font-heading text-sm transition-opacity duration-200',
-              isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 delay-150',
-            ]"
-          >
-            Demo
-          </span>
-        </RouterLink>
       </div>
     </div>
 
