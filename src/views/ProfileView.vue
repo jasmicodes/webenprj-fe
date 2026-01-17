@@ -108,7 +108,7 @@ async function loadPostsData() {
     // Get user's posts and comments via dedicated endpoint
     const activityPage = await usersApi.getMyPosts(0, 10)
     // Count only top-level posts (not comments)
-    postsCount.value = activityPage.content.filter(p => !p.parentId).length
+    postsCount.value = activityPage.content.filter((p) => !p.parentId).length
     // Show all activity (posts + comments) in recent activity
     recentPosts.value = activityPage.content.slice(0, 5)
   } catch {
@@ -178,13 +178,15 @@ function goToPost(post: Post) {
       </div>
 
       <!-- ERROR -->
-      <div v-else-if="error" class="bg-white rounded-2xl border border-red-200 shadow-sm p-5 text-center">
+      <div
+        v-else-if="error"
+        class="bg-white rounded-2xl border border-red-200 shadow-sm p-5 text-center"
+      >
         <p class="text-sm text-red-600">{{ error }}</p>
       </div>
 
       <!-- CONTENT -->
       <div v-else-if="user" class="space-y-5">
-
         <!-- ==================== PROFILE HEADER CARD ==================== -->
         <BaseCard class="!p-4">
           <div class="flex flex-col sm:flex-row gap-4">
@@ -195,7 +197,11 @@ function goToPost(post: Post) {
                 :src="profileImageSrc"
                 class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm"
               />
-              <BaseAvatar v-else use-current-user class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm" />
+              <BaseAvatar
+                v-else
+                use-current-user
+                class="w-20 h-20 rounded-full object-cover ring-2 ring-white shadow-sm"
+              />
             </div>
 
             <!-- Center: Identity -->
@@ -205,11 +211,15 @@ function goToPost(post: Post) {
                 {{ user.username }}
               </h1>
               <!-- Salutation below username (replaces redundant @handle) -->
-              <p v-if="user.salutation" class="text-sm text-slate-600 mt-0.5">{{ user.salutation }}</p>
+              <p v-if="user.salutation" class="text-sm text-slate-600 mt-0.5">
+                {{ user.salutation }}
+              </p>
 
               <!-- Meta row: country + demoted admin badge -->
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1.5">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs"
+                >
                   {{ countryName }}
                 </span>
                 <span
@@ -223,12 +233,26 @@ function goToPost(post: Post) {
               <!-- Stats row: followers / following (always show, mute zeros) -->
               <div class="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm">
                 <div class="flex items-baseline gap-1">
-                  <span :class="followers === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ followers }}</span>
+                  <span
+                    :class="
+                      followers === 0
+                        ? 'font-medium text-slate-400'
+                        : 'font-semibold text-slate-900'
+                    "
+                    >{{ followers }}</span
+                  >
                   <span class="text-slate-400">Followers</span>
                 </div>
                 <div class="w-px h-3.5 bg-slate-200"></div>
                 <div class="flex items-baseline gap-1">
-                  <span :class="following === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ following }}</span>
+                  <span
+                    :class="
+                      following === 0
+                        ? 'font-medium text-slate-400'
+                        : 'font-semibold text-slate-900'
+                    "
+                    >{{ following }}</span
+                  >
                   <span class="text-slate-400">Following</span>
                 </div>
               </div>
@@ -271,7 +295,9 @@ function goToPost(post: Post) {
               <BaseIcon name="CalendarIcon" class="w-4 h-4 text-slate-300" />
               <span class="text-xs text-slate-400 font-medium">Member Since</span>
             </div>
-            <p class="text-sm font-medium text-slate-600">{{ formatMemberSince(user.createdAt) }}</p>
+            <p class="text-sm font-medium text-slate-600">
+              {{ formatMemberSince(user.createdAt) }}
+            </p>
           </div>
 
           <!-- Last Active (de-emphasized) -->
@@ -298,21 +324,32 @@ function goToPost(post: Post) {
 
           <!-- Posts list -->
           <div v-if="recentPosts.length > 0" class="space-y-2">
-            <div
+            <button
               v-for="post in recentPosts"
               :key="post.id"
-              class="flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/60 hover:bg-slate-100/60 transition-colors cursor-pointer"
+              type="button"
+              class="w-full flex items-start gap-3 p-2.5 rounded-lg bg-slate-50/60 hover:bg-slate-100/60 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-primary-300"
               @click="goToPost(post)"
+              :aria-label="`Open post ${post.subject}`"
             >
               <BaseAvatar
                 v-if="profileImageSrc"
                 :src="profileImageSrc"
                 class="w-8 h-8 rounded-full object-cover flex-shrink-0"
               />
-              <BaseAvatar v-else use-current-user class="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+              <BaseAvatar
+                v-else
+                use-current-user
+                class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+              />
+
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-slate-800 truncate">{{ post.subject }}</p>
-                <p class="text-xs text-slate-500 line-clamp-1">{{ post.content }}</p>
+                <p class="text-sm font-medium text-slate-800 truncate">
+                  {{ post.subject }}
+                </p>
+                <p class="text-xs text-slate-500 line-clamp-1">
+                  {{ post.content }}
+                </p>
                 <div class="flex items-center gap-3 mt-1 text-xs text-slate-400">
                   <span>{{ formatRelativeTime(post.createdAt) }}</span>
                   <span class="flex items-center gap-1">
@@ -325,12 +362,14 @@ function goToPost(post: Post) {
                   </span>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
           <!-- Empty state -->
           <div v-else class="text-center py-6">
-            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+            <div
+              class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"
+            >
               <BaseIcon name="PencilSquareIcon" class="w-6 h-6 text-slate-400" />
             </div>
             <p class="text-sm text-slate-600 mb-1">No activity yet</p>
@@ -340,7 +379,6 @@ function goToPost(post: Post) {
             </BaseButton>
           </div>
         </BaseCard>
-
       </div>
 
       <!-- NO USER -->
@@ -350,11 +388,7 @@ function goToPost(post: Post) {
     </div>
 
     <!-- Edit Profile Modal -->
-    <EditProfileModal
-      v-model="showEditModal"
-      :user="user"
-      @saved="onProfileSaved"
-    />
+    <EditProfileModal v-model="showEditModal" :user="user" @saved="onProfileSaved" />
   </div>
 </template>
 
@@ -377,7 +411,9 @@ function goToPost(post: Post) {
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 /* Fallback for browsers without backdrop-filter support */

@@ -1,12 +1,9 @@
 <template>
   <input
+    v-bind="$attrs"
     :id="id"
     :type="type || 'text'"
-    :class="[
-      'input',
-      { invalid },
-      size === 'sm' ? 'text-sm py-1.5 px-2.5' : ''
-    ]"
+    :class="['input', { invalid }, size === 'sm' ? 'text-sm py-1.5 px-2.5' : '']"
     :value="modelValue"
     :placeholder="placeholder"
     :maxlength="maxlength"

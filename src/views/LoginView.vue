@@ -78,7 +78,10 @@ async function onSubmit() {
 
     if (status === 401 || status === 403) {
       // Check if it's a disabled account error
-      if (errorMsg.toLowerCase().includes('deactivated') || errorMsg.toLowerCase().includes('disabled')) {
+      if (
+        errorMsg.toLowerCase().includes('deactivated') ||
+        errorMsg.toLowerCase().includes('disabled')
+      ) {
         toast.showError(errorMsg)
       } else {
         toast.showError('Invalid username/email or password.')
@@ -115,21 +118,31 @@ async function onSubmit() {
       >
         <h2>Login</h2>
 
-        <BaseFormfield label="Username or email" :error="errors.identifier">
+        <BaseFormfield label="Username or email" :error="errors.identifier" v-slot="{ id }">
           <BaseInput
+            :id="id"
             v-model="identifier"
             placeholder="Enter your username or email"
             :invalid="!!errors.identifier"
+            autocomplete="username"
           />
         </BaseFormfield>
 
         <!-- Passwort -->
-        <BaseFormfield label="Password" :error="errors.password">
+        <BaseFormfield
+          label="Password"
+          :error="errors.password"
+          v-slot="{ id, describedBy, invalid }"
+        >
           <BaseInput
+            :id="id"
             v-model="password"
             type="password"
             placeholder="Enter your password"
-            :invalid="!!errors.password"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
+            autocomplete="current-password"
           />
         </BaseFormfield>
 

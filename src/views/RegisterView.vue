@@ -88,8 +88,7 @@ async function submit() {
     //    Backend erwartet:
     //    { email, username, password, countryCode, profileImageUrl?, salutation? }
     //    Note: profileImageUrl is optional - omit it entirely if not provided
-    const finalSalutation =
-      salutation.value === 'other' ? otherText.value.trim() : salutation.value
+    const finalSalutation = salutation.value === 'other' ? otherText.value.trim() : salutation.value
     const apiPayload: RegisterRequest = {
       email: email.value.trim(),
       username: username.value.trim(),
@@ -142,8 +141,19 @@ async function submit() {
         <h2>Create account</h2>
 
         <!-- Salutation -->
-        <BaseFormfield label="Salutation" :error="errors.salutation">
-          <BaseSelect v-model="salutation" :invalid="!!errors.salutation">
+        <BaseFormfield
+          label="Salutation"
+          :error="errors.salutation"
+          v-slot="{ id, describedBy, invalid }"
+        >
+          <BaseSelect
+            :id="id"
+            v-model="salutation"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
+            autocomplete="honorific-prefix"
+          >
             <option value="" disabled selected>Select…</option>
             <option value="Mr.">Mr.</option>
             <option value="Mrs.">Mrs.</option>
@@ -161,48 +171,104 @@ async function submit() {
           label="Please specify"
           :error="errors.otherText"
           help="Max. 30 characters"
+          v-slot="{ id, describedBy, invalid }"
         >
           <BaseInput
+            :id="id"
             v-model="otherText"
-            :invalid="!!errors.otherText"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
             placeholder="e.g., Rev., Sir, Capt."
+            maxlength="30"
+            autocomplete="honorific-prefix"
           />
         </BaseFormfield>
 
         <!-- Email -->
-        <BaseFormfield label="Email" :error="errors.email">
-          <BaseInput v-model="email" :invalid="!!errors.email" placeholder="Email address" />
+        <BaseFormfield label="Email" :error="errors.email" v-slot="{ id, describedBy, invalid }">
+          <BaseInput
+            :id="id"
+            v-model="email"
+            type="email"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
+            placeholder="Email address"
+            autocomplete="email"
+            inputmode="email"
+          />
         </BaseFormfield>
 
         <!-- Username -->
-        <BaseFormfield label="Username" :error="errors.username">
-          <BaseInput v-model="username" :invalid="!!errors.username" placeholder="Username" />
+        <BaseFormfield
+          label="Username"
+          :error="errors.username"
+          v-slot="{ id, describedBy, invalid }"
+        >
+          <BaseInput
+            :id="id"
+            v-model="username"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
+            placeholder="Username"
+            autocomplete="username"
+          />
         </BaseFormfield>
 
         <!-- Password -->
-        <BaseFormfield label="Password" :error="errors.password" :help="PASSWORD_REQUIREMENTS">
+        <BaseFormfield
+          label="Password"
+          :error="errors.password"
+          :help="PASSWORD_REQUIREMENTS"
+          v-slot="{ id, describedBy, invalid }"
+        >
           <!-- Falls BaseInput bereits type unterstützt; sonst deinen FormInput nutzen -->
           <BaseInput
+            :id="id"
             v-model="password"
-            :invalid="!!errors.password"
             type="password"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
             placeholder="Password"
+            autocomplete="new-password"
           />
         </BaseFormfield>
 
         <!-- Repeat Password -->
-        <BaseFormfield label="Repeat password" :error="errors.repeatPw">
+        <BaseFormfield
+          label="Repeat password"
+          :error="errors.repeatPw"
+          v-slot="{ id, describedBy, invalid }"
+        >
           <BaseInput
+            :id="id"
             v-model="repeatPw"
-            :invalid="!!errors.repeatPw"
             type="password"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
             placeholder="Confirm Password"
+            autocomplete="new-password"
           />
         </BaseFormfield>
 
         <!-- Country -->
-        <BaseFormfield label="Country" :error="errors.country">
-          <BaseSelect v-model="country" :invalid="!!errors.country">
+        <BaseFormfield
+          label="Country"
+          :error="errors.country"
+          v-slot="{ id, describedBy, invalid }"
+        >
+          <BaseSelect
+            :id="id"
+            v-model="country"
+            :invalid="invalid"
+            :aria-invalid="invalid"
+            :aria-describedby="describedBy"
+            autocomplete="country"
+          >
             <option value="" disabled>Select country…</option>
             <option v-for="c in COUNTRIES_DACH_FIRST" :key="c.code" :value="c.code">
               {{ c.label }}

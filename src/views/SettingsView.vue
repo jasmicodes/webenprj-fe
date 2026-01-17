@@ -190,37 +190,50 @@ async function savePassword() {
                 >
                   Change email
                 </BaseButton>
-                <BaseButton
-                  v-else
-                  variant="ghost"
-                  size="sm"
-                  @click="cancelEmailChange"
-                >
+                <BaseButton v-else variant="ghost" size="sm" @click="cancelEmailChange">
                   Cancel
                 </BaseButton>
               </div>
 
               <!-- Email Change Form (expandable) -->
-              <div v-if="showChangeEmail" class="mt-4 pt-4 border-t border-slate-100 space-y-4 max-w-md">
+              <div
+                v-if="showChangeEmail"
+                class="mt-4 pt-4 border-t border-slate-100 space-y-4 max-w-md"
+              >
                 <p class="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
                   Changing your email affects how you sign in.
                 </p>
 
-                <BaseFormfield label="New email address" :error="emailErrors.newEmail">
+                <BaseFormfield
+                  label="New email address"
+                  :error="emailErrors.newEmail"
+                  v-slot="{ id, describedBy, invalid }"
+                >
                   <BaseInput
+                    :id="id"
                     v-model="emailForm.newEmail"
                     type="email"
-                    placeholder="Enter new email address"
-                    :invalid="!!emailErrors.newEmail"
+                    :invalid="invalid"
+                    :aria-invalid="invalid"
+                    :aria-describedby="describedBy"
+                    autocomplete="email"
+                    inputmode="email"
                   />
                 </BaseFormfield>
 
-                <BaseFormfield label="Confirm with password" :error="emailErrors.confirmPassword">
+                <BaseFormfield
+                  label="Confirm with password"
+                  :error="emailErrors.confirmPassword"
+                  v-slot="{ id, describedBy, invalid }"
+                >
                   <BaseInput
+                    :id="id"
                     v-model="emailForm.confirmPassword"
                     type="password"
-                    placeholder="Enter your current password"
-                    :invalid="!!emailErrors.confirmPassword"
+                    :invalid="invalid"
+                    :aria-invalid="invalid"
+                    :aria-describedby="describedBy"
+                    autocomplete="current-password"
                   />
                 </BaseFormfield>
 
@@ -247,20 +260,67 @@ async function savePassword() {
               </div>
 
               <!-- Password Form (expandable) -->
-              <div v-if="showChangePassword" class="mt-4 pt-4 border-t border-slate-100 space-y-4 max-w-md">
-                <BaseFormfield label="Current password" :error="passwordErrors.currentPassword">
-                  <BaseInput v-model="passwordForm.currentPassword" type="password" placeholder="Current password" />
+              <div
+                v-if="showChangePassword"
+                class="mt-4 pt-4 border-t border-slate-100 space-y-4 max-w-md"
+              >
+                <BaseFormfield
+                  label="Current password"
+                  :error="passwordErrors.currentPassword"
+                  v-slot="{ id, describedBy, invalid }"
+                >
+                  <BaseInput
+                    :id="id"
+                    v-model="passwordForm.currentPassword"
+                    type="password"
+                    :invalid="invalid"
+                    :aria-invalid="invalid"
+                    :aria-describedby="describedBy"
+                    autocomplete="current-password"
+                    placeholder="Current password"
+                  />
                 </BaseFormfield>
 
-                <BaseFormfield label="New password" :error="passwordErrors.newPassword">
-                  <BaseInput v-model="passwordForm.newPassword" type="password" placeholder="New password" />
+                <BaseFormfield
+                  label="New password"
+                  :error="passwordErrors.newPassword"
+                  v-slot="{ id, describedBy, invalid }"
+                >
+                  <BaseInput
+                    :id="id"
+                    v-model="passwordForm.newPassword"
+                    type="password"
+                    placeholder="New password"
+                    :invalid="invalid"
+                    :aria-invalid="invalid"
+                    :aria-describedby="describedBy"
+                    autocomplete="new-password"
+                  />
                 </BaseFormfield>
 
-                <BaseFormfield label="Repeat new password" :error="passwordErrors.repeatPassword">
-                  <BaseInput v-model="passwordForm.repeatPassword" type="password" placeholder="Repeat new password" />
+                <BaseFormfield
+                  label="Repeat new password"
+                  :error="passwordErrors.repeatPassword"
+                  v-slot="{ id, describedBy, invalid }"
+                >
+                  <BaseInput
+                    :id="id"
+                    v-model="passwordForm.repeatPassword"
+                    type="password"
+                    placeholder="Repeat new password"
+                    :invalid="invalid"
+                    :aria-invalid="invalid"
+                    :aria-describedby="describedBy"
+                    autocomplete="new-password"
+                  />
                 </BaseFormfield>
 
-                <BaseButton variant="primary" size="sm" :disabled="savingPassword" @click="savePassword">
+                <BaseButton
+                  variant="primary"
+                  size="sm"
+                  :disabled="savingPassword"
+                  @click="savePassword"
+                >
                   {{ savingPassword ? 'Saving...' : 'Update password' }}
                 </BaseButton>
               </div>
@@ -271,7 +331,9 @@ async function savePassword() {
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-slate-900">Sign out</p>
-                  <p class="text-xs text-slate-500 mt-0.5">Log out of your account on this device</p>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    Log out of your account on this device
+                  </p>
                 </div>
                 <BaseButton variant="ghost" size="sm" @click="userStore.logout()">
                   Logout
@@ -286,9 +348,7 @@ async function savePassword() {
           <div class="space-y-6">
             <div>
               <h2 class="text-base font-semibold text-slate-900">Appearance</h2>
-              <p class="text-sm text-slate-500 mt-0.5">
-                Customize your visual experience
-              </p>
+              <p class="text-sm text-slate-500 mt-0.5">Customize your visual experience</p>
             </div>
 
             <!-- Background Toggle -->
@@ -310,10 +370,7 @@ async function savePassword() {
             </div>
 
             <!-- Background Selector (only shown when enabled) -->
-            <div
-              v-if="appearanceStore.bgEnabled"
-              class="border-t border-slate-100 pt-6"
-            >
+            <div v-if="appearanceStore.bgEnabled" class="border-t border-slate-100 pt-6">
               <label class="text-sm font-medium text-slate-900 block mb-3">
                 Select background
               </label>
@@ -348,7 +405,7 @@ async function savePassword() {
                       :src="bg.path"
                       :alt="`${bg.name} background preview`"
                       class="w-full h-full object-cover"
-                      style="filter: blur(9px) saturate(1.15) brightness(1.0); transform: scale(1.06)"
+                      style="filter: blur(9px) saturate(1.15) brightness(1); transform: scale(1.06)"
                     />
                     <div
                       class="absolute inset-0 flex items-center justify-center"
@@ -413,7 +470,9 @@ async function savePassword() {
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 /* Glass effect for appearance card */

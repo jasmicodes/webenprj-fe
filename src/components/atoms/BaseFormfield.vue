@@ -6,16 +6,21 @@
       {{ label }}
     </label>
 
-    <!-- Input slot -->
-    <slot :id="inputId" />
+    <!-- Input slot bekommt jetzt id + describedBy + invalid -->
+    <slot :id="inputId" :describedBy="describedBy" :invalid="!!error" />
 
     <!-- Help text -->
     <slot name="help">
-      <p v-if="help" class="help">{{ help }}</p>
+      <p v-if="help" :id="helpId" class="help">{{ help }}</p>
     </slot>
 
     <!-- Error message -->
-    <p v-if="error" class="help text-danger-600 flex items-center gap-1" :class="{ 'text-xs': compact }">
+    <p
+      v-if="error"
+      :id="errorId"
+      class="help text-danger-600 flex items-center gap-1"
+      :class="{ 'text-xs': compact }"
+    >
       <BaseIcon name="ExclamationCircleIcon" size="w-4 h-4" class="flex-shrink-0" />
       {{ error }}
     </p>
@@ -23,18 +28,24 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'BaseFormfield' })
-
-import { useId } from 'vue'
+import { computed, useId } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
-interface Props {
+const props = defineProps<{
   label?: string
   help?: string
   error?: string
   compact?: boolean
-}
-defineProps<Props>()
+}>()
 
 const inputId = useId()
+const helpId = `${inputId}-help`
+const errorId = `${inputId}-error`
+
+const describedBy = computed(() => {
+  const ids: string[] = []
+  if (props.help) ids.push(helpId)
+  if (props.error) ids.push(errorId)
+  return ids.length ? ids.join(' ') : undefined
+})
 </script>

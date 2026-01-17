@@ -46,7 +46,7 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 
 // User count for header badge
 const userCount = computed(() => users.value.length)
-const activeCount = computed(() => users.value.filter(u => u.active).length)
+const activeCount = computed(() => users.value.filter((u) => u.active).length)
 
 // Role update state
 const updatingRoleUserId = ref<string | null>(null)
@@ -58,10 +58,7 @@ async function updateRole(user: AdminUser, newRole: UserRole) {
   try {
     const updated = await adminUsersApi.updateUser(user.id, { role: newRole })
     user.role = updated.role
-    toast.showSuccess(
-      `${user.username}'s role changed to ${newRole}`,
-      'Role Updated'
-    )
+    toast.showSuccess(`${user.username}'s role changed to ${newRole}`, 'Role Updated')
   } catch (err) {
     toast.showError(`Failed to update role: ${getErrorMessage(err)}`, 'Error')
   } finally {
@@ -88,9 +85,11 @@ async function loadUsers(reset = false) {
     const result = await adminUsersApi.getAllUsers(
       searchQuery.value || undefined,
       page.value,
-      pageSize
+      pageSize,
     )
-    users.value = reset ? (result.content as AdminUser[]) : [...users.value, ...(result.content as AdminUser[])]
+    users.value = reset
+      ? (result.content as AdminUser[])
+      : [...users.value, ...(result.content as AdminUser[])]
     totalPages.value = result.totalPages
     totalElements.value = result.totalElements
   } catch (err) {
@@ -137,7 +136,7 @@ async function toggleActive(user: AdminUser) {
     user.active = updated.active
     toast.showSuccess(
       `User ${user.username} ${newStatus ? 'activated' : 'deactivated'} successfully`,
-      'User Status'
+      'User Status',
     )
   } catch (err) {
     const errorMsg = getErrorMessage(err)
@@ -148,7 +147,8 @@ async function toggleActive(user: AdminUser) {
 }
 
 async function deleteUser(user: AdminUser) {
-  if (!confirm(`Are you sure you want to delete "${user.username}"? This action cannot be undone.`)) return
+  if (!confirm(`Are you sure you want to delete "${user.username}"? This action cannot be undone.`))
+    return
 
   try {
     await adminUsersApi.deleteUser(user.id)
@@ -162,7 +162,7 @@ async function deleteUser(user: AdminUser) {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-start justify-center px-8">
+  <div class="min-h-screen flex items-start justify-center px-4 md:px-8">
     <div
       class="w-full max-w-5xl py-8 content-glass-container"
       :class="{ 'ambient-mode': isAmbientMode }"
@@ -179,11 +179,19 @@ async function deleteUser(user: AdminUser) {
               stroke="currentColor"
               stroke-width="2"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
             </svg>
+            <label for="admin-search" class="sr-only">Search users</label>
             <input
+              id="admin-search"
               v-model="searchInput"
               type="text"
+              inputmode="search"
+              autocomplete="off"
               placeholder="Search users..."
               class="w-48 pl-8 pr-8 py-1.5 text-sm border border-slate-200 rounded-lg bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
             />
@@ -192,8 +200,15 @@ async function deleteUser(user: AdminUser) {
               type="button"
               class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               @click="searchInput = ''"
+              aria-label="Clear search"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -203,11 +218,10 @@ async function deleteUser(user: AdminUser) {
             v-if="!loading && !error"
             class="text-xs font-medium px-2.5 py-1 rounded-md flex-shrink-0 text-slate-500 bg-slate-50/80 border border-slate-100"
           >
-            <template v-if="searchQuery">
-              {{ userCount }} of {{ totalElements }}
-            </template>
+            <template v-if="searchQuery"> {{ userCount }} of {{ totalElements }} </template>
             <template v-else>
-              {{ totalElements }} {{ totalElements === 1 ? 'user' : 'users' }} · {{ activeCount }} active
+              {{ totalElements }} {{ totalElements === 1 ? 'user' : 'users' }} ·
+              {{ activeCount }} active
             </template>
           </div>
         </div>
@@ -231,14 +245,9 @@ async function deleteUser(user: AdminUser) {
       </div>
 
       <!-- Error state -->
-      <div
-        v-else-if="error"
-        class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center"
-      >
+      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
         <p class="text-sm text-red-600">{{ error }}</p>
-        <BaseButton class="mt-4" variant="outline" @click="loadUsers(true)">
-          Retry
-        </BaseButton>
+        <BaseButton class="mt-4" variant="outline" @click="loadUsers(true)"> Retry </BaseButton>
       </div>
 
       <!-- Empty state -->
@@ -249,7 +258,9 @@ async function deleteUser(user: AdminUser) {
         <p class="text-sm text-slate-600 mb-1">
           {{ searchQuery ? 'No users match your search' : 'No users found' }}
         </p>
-        <p v-if="!searchQuery" class="text-xs text-slate-500">Users will appear here once they register</p>
+        <p v-if="!searchQuery" class="text-xs text-slate-500">
+          Users will appear here once they register
+        </p>
         <p v-else class="text-xs text-slate-500">Try a different search term</p>
       </div>
 
@@ -259,19 +270,29 @@ async function deleteUser(user: AdminUser) {
           <table class="w-full text-sm">
             <thead>
               <tr class="bg-slate-50 border-b border-slate-100">
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                >
                   Username
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                >
                   Email
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                >
                   Role
                 </th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"
+                >
                   Status
                 </th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th
+                  class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider"
+                >
                   Actions
                 </th>
               </tr>
@@ -303,9 +324,11 @@ async function deleteUser(user: AdminUser) {
                   <span
                     v-if="isCurrentUser(u.id)"
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                    :class="u.role === 'ADMIN'
-                      ? 'bg-purple-50 text-purple-700 border border-purple-100'
-                      : 'bg-slate-50 text-slate-600 border border-slate-200'"
+                    :class="
+                      u.role === 'ADMIN'
+                        ? 'bg-purple-50 text-purple-700 border border-purple-100'
+                        : 'bg-slate-50 text-slate-600 border border-slate-200'
+                    "
                   >
                     {{ u.role }}
                   </span>
@@ -315,9 +338,11 @@ async function deleteUser(user: AdminUser) {
                     :value="u.role"
                     :disabled="updatingRoleUserId === u.id"
                     class="text-xs font-medium px-2 py-0.5 rounded border appearance-none cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-wait"
-                    :class="u.role === 'ADMIN'
-                      ? 'bg-purple-50 text-purple-700 border-purple-100 hover:border-purple-300'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'"
+                    :class="
+                      u.role === 'ADMIN'
+                        ? 'bg-purple-50 text-purple-700 border-purple-100 hover:border-purple-300'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'
+                    "
                     @change="updateRole(u, ($event.target as HTMLSelectElement).value as UserRole)"
                   >
                     <option value="USER">USER</option>
@@ -327,9 +352,11 @@ async function deleteUser(user: AdminUser) {
                 <td class="px-4 py-3">
                   <span
                     class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                    :class="u.active
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                      : 'bg-red-50 text-red-600 border border-red-100'"
+                    :class="
+                      u.active
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                        : 'bg-red-50 text-red-600 border border-red-100'
+                    "
                   >
                     {{ u.active ? 'Active' : 'Inactive' }}
                   </span>
@@ -339,15 +366,21 @@ async function deleteUser(user: AdminUser) {
                     <!-- Toggle Active Button -->
                     <button
                       class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      :class="isCurrentUser(u.id)
-                        ? 'text-slate-400'
-                        : u.active
-                          ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
-                          : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'"
+                      :class="
+                        isCurrentUser(u.id)
+                          ? 'text-slate-400'
+                          : u.active
+                            ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
+                            : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
+                      "
                       :disabled="togglingUserId === u.id || isCurrentUser(u.id)"
-                      :title="isCurrentUser(u.id)
-                        ? 'Cannot modify your own account'
-                        : u.active ? 'Deactivate user' : 'Activate user'"
+                      :aria-label="
+                        isCurrentUser(u.id)
+                          ? 'Cannot modify your own account'
+                          : u.active
+                            ? 'Deactivate user'
+                            : 'Activate user'
+                      "
                       @click="toggleActive(u)"
                     >
                       <component
@@ -360,11 +393,15 @@ async function deleteUser(user: AdminUser) {
                     <!-- Delete Button -->
                     <button
                       class="p-1.5 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                      :class="isCurrentUser(u.id)
-                        ? 'text-slate-400'
-                        : 'text-red-500 hover:bg-red-50 hover:text-red-600'"
+                      :class="
+                        isCurrentUser(u.id)
+                          ? 'text-slate-400'
+                          : 'text-red-500 hover:bg-red-50 hover:text-red-600'
+                      "
                       :disabled="isCurrentUser(u.id)"
-                      :title="isCurrentUser(u.id) ? 'Cannot delete your own account' : 'Delete user'"
+                      :aria-label="
+                        isCurrentUser(u.id) ? 'Cannot delete your own account' : 'Delete user'
+                      "
                       @click="deleteUser(u)"
                     >
                       <TrashIcon class="w-4 h-4" />
@@ -378,7 +415,10 @@ async function deleteUser(user: AdminUser) {
       </BaseCard>
 
       <!-- Load more button -->
-      <div v-if="!loading && !error && users.length > 0 && page + 1 < totalPages" class="flex justify-center pt-4">
+      <div
+        v-if="!loading && !error && users.length > 0 && page + 1 < totalPages"
+        class="flex justify-center pt-4"
+      >
         <BaseButton :disabled="loadingMore" variant="outline" @click="loadMore">
           <span v-if="loadingMore">Loading...</span>
           <span v-else>Load more</span>
@@ -410,7 +450,9 @@ async function deleteUser(user: AdminUser) {
   backdrop-filter: blur(10px) saturate(120%);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 /* Fallback for browsers without backdrop-filter support */
