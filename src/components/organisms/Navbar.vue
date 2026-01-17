@@ -7,13 +7,18 @@ import { useRouter } from 'vue-router'
 import { useNavbarStore, useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
+import { ref } from 'vue'
 
 defineOptions({ name: 'AppNavbar' })
 
 const userStore = useUserStore()
 const router = useRouter()
 const navbarStore = useNavbarStore()
-const { isCollapsed, toggleCollapse } = navbarStore
+const { isCollapsed } = storeToRefs(navbarStore)
+const { toggleCollapse, setCollapsed } = navbarStore
+const showMobileMore = ref(false)
 
 const isAdmin = computed(() => userStore.user?.role === 'ADMIN')
 
@@ -26,6 +31,14 @@ function handleLogout() {
   userStore.logout()
   router.push({ name: 'login' })
 }
+
+watch(isMobile, (mobile) => {
+  if (mobile) setCollapsed(false)
+})
+
+function closeMobileMore() {
+  showMobileMore.value = false
+}
 </script>
 
 <template>
@@ -34,7 +47,7 @@ function handleLogout() {
     :class="[
       'hidden md:flex fixed left-0 top-0 h-screen flex-col py-4 px-3 shadow-sm transition-all duration-300 navbar-glass navbar-separator',
       isCollapsed ? 'w-16' : 'w-52',
-      { 'ambient-mode': isAmbientMode }
+      { 'ambient-mode': isAmbientMode },
     ]"
   >
     <!-- ========== ZONE 1: Primary Activity Navigation (top) ========== -->
@@ -70,7 +83,9 @@ function handleLogout() {
           :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
+          <div
+            class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700"
+          >
             <BaseIcon name="HomeIcon" class="w-4 h-4" />
           </div>
           <span
@@ -90,7 +105,9 @@ function handleLogout() {
           :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
+          <div
+            class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700"
+          >
             <BaseIcon name="MagnifyingGlassIcon" class="w-4 h-4" />
           </div>
           <span
@@ -110,7 +127,9 @@ function handleLogout() {
           :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
+          <div
+            class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700"
+          >
             <BaseIcon name="BookmarkIcon" class="w-4 h-4" />
           </div>
           <span
@@ -130,7 +149,9 @@ function handleLogout() {
           :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
+          <div
+            class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700"
+          >
             <BaseAvatar size="xs" use-current-user />
           </div>
           <span
@@ -155,7 +176,9 @@ function handleLogout() {
           :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
           active-class="nav-item-active bg-slate-100/60 text-slate-900"
         >
-          <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700">
+          <div
+            class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-700"
+          >
             <BaseIcon name="ShieldCheckIcon" class="w-4 h-4" />
           </div>
           <span
@@ -182,7 +205,9 @@ function handleLogout() {
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
         active-class="nav-item-active bg-slate-100/60 text-slate-700"
       >
-        <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-600">
+        <div
+          class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-600"
+        >
           <BaseIcon name="Cog6ToothIcon" class="w-4 h-4" />
         </div>
         <span
@@ -203,7 +228,9 @@ function handleLogout() {
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
         active-class="nav-item-active bg-slate-100/60 text-slate-700"
       >
-        <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-600">
+        <div
+          class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-600"
+        >
           <BaseIcon name="QuestionMarkCircleIcon" class="w-4 h-4" />
         </div>
         <span
@@ -224,7 +251,9 @@ function handleLogout() {
         class="group flex items-center rounded-lg text-sm text-slate-500 transition-all duration-200 hover:bg-red-50/80 hover:text-red-600"
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
       >
-        <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-red-500">
+        <div
+          class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-red-500"
+        >
           <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-4 h-4" />
         </div>
         <span
@@ -246,11 +275,10 @@ function handleLogout() {
         class="group flex items-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-all mt-1"
         :class="isCollapsed ? 'justify-center py-1' : 'gap-2 px-2 py-1'"
       >
-        <div class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-500">
-          <BaseIcon
-            :name="isCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'"
-            class="w-4 h-4"
-          />
+        <div
+          class="h-7 w-7 shrink-0 grid place-items-center rounded-md transition-colors group-hover:text-slate-500"
+        >
+          <BaseIcon :name="isCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'" class="w-4 h-4" />
         </div>
         <span
           :class="[
@@ -265,34 +293,131 @@ function handleLogout() {
   </nav>
 
   <!-- Bottom Navigation (Mobile) -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-neutral-200 shadow-sm">
-    <ul class="grid grid-cols-4 text-sm text-neutral-700">
+  <nav
+    class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-neutral-200 shadow-sm pb-[env(safe-area-inset-bottom)]"
+    aria-label="Primary"
+  >
+    <ul class="grid grid-cols-5 text-xs text-neutral-700">
       <li>
-        <RouterLink :to="{ name: 'home' }" class="tab-link">
+        <RouterLink
+          :to="{ name: 'home' }"
+          class="flex flex-col items-center justify-center gap-1 py-2"
+          aria-label="Home"
+        >
           <BaseIcon name="HomeIcon" class="w-6 h-6" />
-          <small>Home</small>
+          <span>Home</span>
         </RouterLink>
       </li>
+
       <li>
-        <RouterLink :to="{ name: 'explore' }" class="tab-link">
+        <RouterLink
+          :to="{ name: 'explore' }"
+          class="flex flex-col items-center justify-center gap-1 py-2"
+          aria-label="Explore"
+        >
           <BaseIcon name="MagnifyingGlassIcon" class="w-6 h-6" />
-          <small>Explore</small>
+          <span>Explore</span>
         </RouterLink>
       </li>
+
       <li>
-        <RouterLink :to="{ name: 'bookmarks' }" class="tab-link">
+        <RouterLink
+          :to="{ name: 'bookmarks' }"
+          class="flex flex-col items-center justify-center gap-1 py-2"
+          aria-label="Bookmarks"
+        >
           <BaseIcon name="BookmarkIcon" class="w-6 h-6" />
-          <small>Bookmarks</small>
+          <span>Bookmarks</span>
         </RouterLink>
       </li>
+
       <li>
-        <RouterLink :to="{ name: 'profile' }" class="tab-link">
+        <RouterLink
+          :to="{ name: 'profile' }"
+          class="flex flex-col items-center justify-center gap-1 py-2"
+          aria-label="Profile"
+        >
           <BaseAvatar size="xs" use-current-user />
-          <small>Profile</small>
+          <span>Profile</span>
         </RouterLink>
+      </li>
+
+      <li>
+        <button
+          type="button"
+          class="flex flex-col items-center justify-center gap-1 py-2 w-full"
+          aria-label="More options"
+          aria-haspopup="dialog"
+          @click="showMobileMore = true"
+        >
+          <BaseIcon name="EllipsisHorizontalIcon" class="w-6 h-6" />
+          <span>More</span>
+        </button>
       </li>
     </ul>
   </nav>
+
+  <!-- Mobile More Sheet -->
+  <div
+    v-if="showMobileMore"
+    class="fixed inset-0 z-[60]"
+    role="dialog"
+    aria-modal="true"
+    aria-label="More options"
+  >
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/30" @click="closeMobileMore"></div>
+
+    <!-- Sheet -->
+    <div
+      class="absolute bottom-0 inset-x-0 bg-white rounded-t-2xl shadow-xl p-4 space-y-2 pb-[env(safe-area-inset-bottom)]"
+    >
+      <div class="h-1 w-10 bg-slate-300 rounded-full mx-auto mb-2"></div>
+
+      <!-- Settings -->
+      <RouterLink
+        :to="{ name: 'settings' }"
+        class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100"
+        @click="closeMobileMore"
+      >
+        <BaseIcon name="Cog6ToothIcon" class="w-5 h-5" />
+        <span>Settings</span>
+      </RouterLink>
+
+      <!-- Help -->
+      <RouterLink
+        :to="{ name: 'help' }"
+        class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100"
+        @click="closeMobileMore"
+      >
+        <BaseIcon name="QuestionMarkCircleIcon" class="w-5 h-5" />
+        <span>Help</span>
+      </RouterLink>
+
+      <!-- Admin (only if admin) -->
+      <RouterLink
+        v-if="isAdmin"
+        :to="{ name: 'admin' }"
+        class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100"
+        @click="closeMobileMore"
+      >
+        <BaseIcon name="ShieldCheckIcon" class="w-5 h-5" />
+        <span>Admin</span>
+      </RouterLink>
+
+      <!-- Divider -->
+      <div class="h-px bg-slate-200 my-2"></div>
+
+      <!-- Logout -->
+      <button
+        class="flex items-center gap-3 p-3 rounded-lg text-red-600 hover:bg-red-50 w-full"
+        @click="handleLogout"
+      >
+        <BaseIcon name="ArrowLeftEndOnRectangleIcon" class="w-5 h-5" />
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -313,7 +438,7 @@ function handleLogout() {
 
 /* Ambient mode: enhanced glass effect */
 .navbar-glass.ambient-mode {
-  background: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
@@ -325,7 +450,7 @@ function handleLogout() {
 
 /* Enhanced separation in ambient mode */
 .navbar-separator.ambient-mode {
-  border-right: 1px solid rgba(0, 0, 0, 0.10);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 3px 0 12px rgba(0, 0, 0, 0.04);
 }
 
