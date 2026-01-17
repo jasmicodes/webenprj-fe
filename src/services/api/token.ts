@@ -3,19 +3,19 @@ let inMemoryToken: string | null = null
 
 export const getToken = () => {
   if (inMemoryToken) return inMemoryToken
-  const stored = sessionStorage.getItem(TOKEN_KEY)
+  const stored = localStorage.getItem(TOKEN_KEY)
   inMemoryToken = stored
   return stored
 }
 
 export const setToken = (token: string) => {
   inMemoryToken = token
-  sessionStorage.setItem(TOKEN_KEY, token)
+  localStorage.setItem(TOKEN_KEY, token)
 }
 
 export const clearToken = () => {
   inMemoryToken = null
-  sessionStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(TOKEN_KEY)
 }
 
 type JwtPayload = {
