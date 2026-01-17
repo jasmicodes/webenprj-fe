@@ -94,11 +94,6 @@ function onFocus() {
   showSuggestions.value = true
 }
 
-function onInput(event: Event) {
-  const target = event.target as HTMLInputElement
-  inputValue.value = target.value
-}
-
 function selectTag(tag: string) {
   // Normalize and store the raw tag name (without '#')
   const normalized = normalizeTagName(tag)
@@ -166,11 +161,13 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
         :maxlength="maxLength"
         class="tag-input-field"
         :class="[
-          errorMessage ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' : 'border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100',
-          hasTag && 'pr-8'
+          errorMessage
+            ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+            : 'border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100',
+          hasTag && 'pr-8',
         ]"
         @focus="onFocus"
-        @input="onInput"
+        @blur="onEnter"
         @keydown.enter.prevent="onEnter"
         @keydown.esc="showSuggestions = false"
       />
@@ -226,7 +223,9 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
   border: 1px solid;
   border-radius: 0.5rem;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .tag-input-field::placeholder {
@@ -240,7 +239,9 @@ const hasTag = computed(() => props.modelValue && props.modelValue.trim().length
   background: white;
   border: 1px solid theme('colors.slate.200');
   border-radius: 0.75rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
   max-height: 12rem;
   overflow-y: auto;
 }
