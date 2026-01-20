@@ -18,6 +18,31 @@ Each post may contain:
 
 Administrators can manage users, roles and posts.
 
+## 👥 User Roles & Permissions
+
+The application distinguishes between three user roles:
+
+### 👤 Unregistered User
+
+- View public posts on the homepage
+- Register for a new account
+- Log in to the platform
+
+### 🙋 Registered User
+
+- Create, edit and delete own posts
+- Upload images or PDFs to posts
+- Like and comment on posts
+- Manage personal profile and profile image
+- Bookmark posts and organize them into collections
+
+### 🛠️ Administrator
+
+- View and manage all users
+- Change user roles
+- Lock or delete user accounts
+- View and moderate all posts
+
 ## 🧩 Tech Stack
 
 | Layer            | Technology                                            |
@@ -30,6 +55,23 @@ Administrators can manage users, roles and posts.
 | Architecture     | Atomic Design (Atoms → Molecules → Organisms → Views) |
 | Auth             | JWT-based via backend                                 |
 | Accessibility    | Checked with Google Lighthouse & validator.w3.org     |
+
+## 📦 Core Resources
+
+The frontend works with the following main resources provided by the backend API:
+
+- **User**
+  - id, username, email, role, profileImage
+- **Post**
+  - id, content, tags, imageUrl, createdAt, createdBy
+- **Comment**
+  - id, content, postId, createdBy
+- **Bookmark**
+  - id, postId, userId
+- **Collection**
+  - id, title, bookmarks
+
+Each resource supports CRUD operations depending on the user role.
 
 ## 🚀 Quick Setup
 
@@ -84,6 +126,30 @@ src/
 ├─ main.ts            # App bootstrap
 └─ App.vue            # Single Page Application
 ```
+
+## 🖥️ Screen / View Overview
+
+The application consists of the following main views:
+
+- **HomeView** – public feed of posts
+- **LoginView** – user authentication
+- **RegisterView** – account creation
+- **ExploreView** – search for posts and users
+- **PostDetailView** – detailed view of a single post
+- **ProfileView** – personal profile management
+- **UserProfileView** – public user profiles
+- **BookmarksView** – saved posts and collections
+- **AdminDashboardView** – user and content administration
+- **SettingsView** – account-related settings
+
+## 🔄 Basic User Flow
+
+1. Visitor opens the homepage and views public posts
+2. Visitor registers via the registration form
+3. User logs in and receives a JWT token
+4. Authenticated user creates a post with text, tags and optional media
+5. Other users can like, comment or bookmark the post
+6. Admin users can manage users and moderate content
 
 ## 📝 Registration Overview
 
