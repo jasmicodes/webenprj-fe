@@ -131,6 +131,8 @@ import { mapApiPostToCard } from '@/utils/postMapper'
 import { useMediaImage } from '@/composables/useMediaImage'
 import { postsApi } from '@/services/api/posts'
 import { useUserStore } from '@/stores/userStore'
+import { useToastStore } from '@/stores/toastStore'
+import { getErrorMessage } from '@/services/api/client'
 
 const props = defineProps<{
   post: PostCardData
@@ -150,6 +152,7 @@ const emit = defineEmits<{
 // Load avatar via media API (converts /medias/{uuid} to blob URL)
 const { imageUrl: avatarSrc } = useMediaImage(() => props.post.user.avatar, fallbackAvatar)
 const userStore = useUserStore()
+const toastStore = useToastStore()
 const router = useRouter()
 const isOwnPost = computed(() => Boolean(props.currentUserId && props.post.userId === props.currentUserId))
 
@@ -197,6 +200,7 @@ async function loadComments() {
     totalComments.value = result.totalElements
   } catch (error) {
     console.error('Failed to load comments:', error)
+    toastStore.showError(getErrorMessage(error), 'Comments')
   } finally {
     loading.value = false
   }
@@ -224,6 +228,7 @@ async function submitComment() {
     emit('commentAdded')
   } catch (error) {
     console.error('Failed to create comment:', error)
+    toastStore.showError(getErrorMessage(error), 'Comment')
   }
 }
 
@@ -260,6 +265,7 @@ async function submitReply(parentComment: PostCardData) {
     replyText.value = ''
   } catch (error) {
     console.error('Failed to create reply:', error)
+    toastStore.showError(getErrorMessage(error), 'Reply')
   }
 }
 
@@ -287,6 +293,7 @@ async function handleCommentLike(comment: PostCardData) {
     }
   } catch (error) {
     console.error('Failed to toggle comment like:', error)
+    toastStore.showError(getErrorMessage(error), 'Like')
   }
 }
 
