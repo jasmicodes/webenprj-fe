@@ -12,10 +12,11 @@
 <script setup lang="ts">
 defineOptions({ name: 'BookmarksView' })
 
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBookmarkStore } from '@/stores/bookmarkStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useDebounce } from '@/composables/useDebounce'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
@@ -27,8 +28,7 @@ const appearanceStore = useAppearanceStore()
 
 // Search state with debouncing
 const searchInput = ref('')
-const searchQuery = ref('')
-let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
+const searchQuery = useDebounce(searchInput, 300)
 
 const showCreateModal = ref(false)
 
@@ -68,23 +68,6 @@ onMounted(async () => {
     bookmarkStore.fetchCollections(),
     bookmarkStore.fetchBookmarks(bookmarkStore.viewState.selectedCollectionId),
   ])
-})
-
-// Cleanup debounce timer on unmount
-onUnmounted(() => {
-  if (searchDebounceTimer) {
-    clearTimeout(searchDebounceTimer)
-  }
-})
-
-// Debounced search: update searchQuery after 300ms of no typing
-watch(searchInput, (newValue) => {
-  if (searchDebounceTimer) {
-    clearTimeout(searchDebounceTimer)
-  }
-  searchDebounceTimer = setTimeout(() => {
-    searchQuery.value = newValue
-  }, 300)
 })
 
 // Filter bookmarks by search query (searches title/content, author, tags)

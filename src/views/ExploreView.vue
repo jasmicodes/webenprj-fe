@@ -2,7 +2,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExploreView' })
 
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { postsApi } from '@/services/api/posts'
 import { usersApi, followApi } from '@/services/api/users'
@@ -14,6 +14,7 @@ import { useToastStore } from '@/stores/toastStore'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useDebounce } from '@/composables/useDebounce'
 import { getErrorMessage } from '@/services/api/client'
 import PostCard from '@/components/organisms/PostCard.vue'
 import UserCard from '@/components/molecules/UserCard.vue'
@@ -32,8 +33,7 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 
 // Search state
 const searchInput = ref('')
-const searchQuery = ref('')
-let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
+const searchQuery = useDebounce(searchInput, 300)
 
 // Tab state: posts or users
 const searchMode = ref<'posts' | 'users'>('posts')
@@ -144,17 +144,13 @@ function loadMoreUsers() {
   loadUsers()
 }
 
-// Debounced search
-watch(searchInput, (newValue) => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-  searchDebounceTimer = setTimeout(() => {
-    searchQuery.value = newValue
-    if (searchMode.value === 'posts') {
-      loadPosts(true)
-    } else {
-      loadUsers(true)
-    }
-  }, 300)
+// React to debounced search query changes
+watch(searchQuery, () => {
+  if (searchMode.value === 'posts') {
+    loadPosts(true)
+  } else {
+    loadUsers(true)
+  }
 })
 
 // Watch subject filter
@@ -169,11 +165,6 @@ watch(searchMode, () => {
   } else if (searchQuery.value) {
     loadUsers(true)
   }
-})
-
-// Cleanup debounce timer
-onUnmounted(() => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
 })
 
 // Load available tags

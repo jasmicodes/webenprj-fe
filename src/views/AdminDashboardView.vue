@@ -2,7 +2,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'AdminDashboardView' })
 
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { adminUsersApi } from '@/services/api/users'
 import type { AdminUser } from '@/services/api/types'
 import { getErrorMessage } from '@/services/api/client'
@@ -10,6 +10,7 @@ import { useToastStore } from '@/stores/toastStore'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { useDebounce } from '@/composables/useDebounce'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
@@ -32,8 +33,7 @@ const loadingMore = ref(false)
 
 // Search state
 const searchInput = ref('')
-const searchQuery = ref('')
-let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
+const searchQuery = useDebounce(searchInput, 300)
 
 // Current user check (to prevent self-modification)
 const currentUserId = computed(() => userStore.user?.id)
@@ -106,18 +106,9 @@ function loadMore() {
   loadUsers()
 }
 
-// Debounced search
-watch(searchInput, (newValue) => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-  searchDebounceTimer = setTimeout(() => {
-    searchQuery.value = newValue
-    loadUsers(true)
-  }, 300)
-})
-
-// Cleanup debounce timer
-onUnmounted(() => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+// React to debounced search query changes
+watch(searchQuery, () => {
+  loadUsers(true)
 })
 
 onMounted(() => {
