@@ -96,7 +96,7 @@ describe('bookmarkStore', () => {
         { id: 'b1', post: { id: 'p1', subject: '#webdev #javascript' }, createdAt: '2024-01-01' },
         { id: 'b2', post: { id: 'p2', subject: '#webdev #python' }, createdAt: '2024-01-02' },
         { id: 'b3', post: { id: 'p3', subject: '#mobile #swift' }, createdAt: '2024-01-03' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
 
       store.viewState.selectedTags = ['webdev']
 
@@ -111,7 +111,7 @@ describe('bookmarkStore', () => {
         { id: 'b1', post: { id: 'p1', subject: '#test' }, createdAt: '2024-01-01T00:00:00Z' },
         { id: 'b2', post: { id: 'p2', subject: '#test' }, createdAt: '2024-01-03T00:00:00Z' },
         { id: 'b3', post: { id: 'p3', subject: '#test' }, createdAt: '2024-01-02T00:00:00Z' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
 
       store.viewState.sortBy = 'newest'
 
@@ -126,7 +126,7 @@ describe('bookmarkStore', () => {
         { id: 'b1', post: { id: 'p1', subject: '#test' }, createdAt: '2024-01-01T00:00:00Z' },
         { id: 'b2', post: { id: 'p2', subject: '#test' }, createdAt: '2024-01-03T00:00:00Z' },
         { id: 'b3', post: { id: 'p3', subject: '#test' }, createdAt: '2024-01-02T00:00:00Z' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
 
       store.viewState.sortBy = 'oldest'
 
@@ -212,7 +212,7 @@ describe('bookmarkStore', () => {
   describe('bookmark actions', () => {
     it('fetchBookmarks should load all bookmarks when no collection specified', async () => {
       const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
-      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue(mockBookmarks as any)
+      vi.mocked(bookmarksApi.getUserBookmarks).mockResolvedValue(mockBookmarks as unknown as Awaited<ReturnType<typeof bookmarksApi.getUserBookmarks>>)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks(null)
@@ -223,7 +223,7 @@ describe('bookmarkStore', () => {
 
     it('fetchBookmarks should load collection bookmarks when collection specified', async () => {
       const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
-      vi.mocked(bookmarksApi.getCollectionBookmarks).mockResolvedValue(mockBookmarks as any)
+      vi.mocked(bookmarksApi.getCollectionBookmarks).mockResolvedValue(mockBookmarks as unknown as Awaited<ReturnType<typeof bookmarksApi.getCollectionBookmarks>>)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks('col-123')
@@ -233,7 +233,7 @@ describe('bookmarkStore', () => {
 
     it('fetchBookmarks should load uncategorized when specified', async () => {
       const mockBookmarks = { content: [{ id: 'b1', post: { id: 'p1' } }], totalPages: 1, totalElements: 1, size: 20, number: 0 }
-      vi.mocked(bookmarksApi.getUncategorizedBookmarks).mockResolvedValue(mockBookmarks as any)
+      vi.mocked(bookmarksApi.getUncategorizedBookmarks).mockResolvedValue(mockBookmarks as unknown as Awaited<ReturnType<typeof bookmarksApi.getUncategorizedBookmarks>>)
 
       const store = useBookmarkStore()
       await store.fetchBookmarks('uncategorized')
@@ -248,7 +248,7 @@ describe('bookmarkStore', () => {
         collection: { id: 'col-1' },
         createdAt: '2024-01-01',
       }
-      vi.mocked(bookmarksApi.createBookmark).mockResolvedValue(newBookmark as any)
+      vi.mocked(bookmarksApi.createBookmark).mockResolvedValue(newBookmark as unknown as Awaited<ReturnType<typeof bookmarksApi.createBookmark>>)
 
       const store = useBookmarkStore()
       store.collections = [
@@ -268,7 +268,7 @@ describe('bookmarkStore', () => {
       store.bookmarks = [
         { id: 'b1', post: { id: 'p1' }, collection: { id: 'col-1' }, createdAt: '2024-01-01' },
         { id: 'b2', post: { id: 'p2' }, collection: null, createdAt: '2024-01-02' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
       store.collections = [
         { id: 'col-1', name: 'Collection 1', bookmarkCount: 5, createdAt: '2024-01-01', updatedAt: '2024-01-01', color: '#FF0000', iconName: 'bookmark' },
       ]
@@ -283,12 +283,12 @@ describe('bookmarkStore', () => {
 
     it('moveToCollection should update bookmark collection', async () => {
       const updatedBookmark = { id: 'b1', post: { id: 'p1' }, collection: { id: 'col-2' }, createdAt: '2024-01-01' }
-      vi.mocked(bookmarksApi.updateBookmark).mockResolvedValue(updatedBookmark as any)
+      vi.mocked(bookmarksApi.updateBookmark).mockResolvedValue(updatedBookmark as unknown as Awaited<ReturnType<typeof bookmarksApi.updateBookmark>>)
 
       const store = useBookmarkStore()
       store.bookmarks = [
         { id: 'b1', post: { id: 'p1' }, collection: { id: 'col-1' }, createdAt: '2024-01-01' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
 
       await store.moveToCollection('p1', 'col-2')
 
@@ -298,12 +298,12 @@ describe('bookmarkStore', () => {
 
     it('updateBookmarkNotes should update bookmark notes', async () => {
       const updatedBookmark = { id: 'b1', post: { id: 'p1' }, collection: { id: 'col-1' }, notes: 'Updated notes', createdAt: '2024-01-01' }
-      vi.mocked(bookmarksApi.updateBookmark).mockResolvedValue(updatedBookmark as any)
+      vi.mocked(bookmarksApi.updateBookmark).mockResolvedValue(updatedBookmark as unknown as Awaited<ReturnType<typeof bookmarksApi.updateBookmark>>)
 
       const store = useBookmarkStore()
       store.bookmarks = [
         { id: 'b1', post: { id: 'p1' }, collection: { id: 'col-1' }, notes: 'Old notes', createdAt: '2024-01-01' },
-      ] as any
+      ] as unknown as typeof store.bookmarks
 
       await store.updateBookmarkNotes('p1', 'Updated notes')
 

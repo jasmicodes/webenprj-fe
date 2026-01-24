@@ -159,7 +159,7 @@ async function toggleLike() {
     } else {
       await postsApi.unlikePost(String(post.value.id))
     }
-  } catch (err) {
+  } catch {
     post.value = original
     toastStore.showError('Failed to update like', 'Like')
   }
@@ -179,7 +179,7 @@ async function toggleBookmark() {
     } else {
       await bookmarksApi.deleteBookmark(String(post.value.id))
     }
-  } catch (err) {
+  } catch {
     post.value = original
     toastStore.showError('Failed to update bookmark', 'Bookmark')
   }
@@ -214,7 +214,7 @@ async function handleSaveEdit(payload: { content: string; subject: string }) {
     post.value = mapApiPostToCard(updated)
     showEditModal.value = false
     toastStore.showSuccess('Post updated', 'Success')
-  } catch (err) {
+  } catch {
     toastStore.showError('Failed to update post', 'Update')
   } finally {
     isSavingEdit.value = false
@@ -235,7 +235,7 @@ async function handleConfirmDelete() {
     showDeleteModal.value = false
     toastStore.showSuccess('Post deleted', 'Success')
     router.push({ name: 'home' })
-  } catch (err) {
+  } catch {
     toastStore.showError('Failed to delete post', 'Delete')
   } finally {
     isDeleting.value = false

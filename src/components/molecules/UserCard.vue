@@ -4,8 +4,8 @@ import { computed } from 'vue'
 import type { User } from '@/services/api/types'
 import { useUserStore } from '@/stores/userStore'
 import BaseCard from '@/components/atoms/BaseCard.vue'
-import BaseButton from '@/components/atoms/BaseButton.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
+import FollowButton from '@/components/molecules/FollowButton.vue'
 
 defineOptions({ name: 'UserCard' })
 
@@ -26,8 +26,7 @@ const userStore = useUserStore()
 
 const isOwnProfile = computed(() => userStore.user?.id === props.user.id)
 
-function handleFollowClick(event: Event) {
-  event.stopPropagation()
+function handleFollowToggle() {
   if (props.isFollowing) {
     emit('unfollow', props.user.id)
   } else {
@@ -65,15 +64,13 @@ function handleCardClick() {
       </div>
 
       <!-- Follow button (not shown for own profile) -->
-      <BaseButton
+      <FollowButton
         v-if="!isOwnProfile"
-        :variant="isFollowing ? 'outline' : 'primary'"
+        :is-following="isFollowing ?? false"
+        :loading="loading"
         size="sm"
-        :disabled="loading"
-        @click="handleFollowClick"
-      >
-        {{ isFollowing ? 'Following' : 'Follow' }}
-      </BaseButton>
+        @toggle="handleFollowToggle"
+      />
 
       <!-- "You" badge for own profile -->
       <span

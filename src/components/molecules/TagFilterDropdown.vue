@@ -2,7 +2,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'TagFilterDropdown' })
 
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
 const props = withDefaults(

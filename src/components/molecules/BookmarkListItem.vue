@@ -208,13 +208,6 @@ const { imageUrl: avatarSrc } = useMediaImage(
   fallbackAvatar,
 )
 
-// Content preview: first line or truncated content
-const contentPreview = computed(() => {
-  const content = props.bookmark.post.content || ''
-  const firstLine = content.split('\n')[0] ?? ''
-  return firstLine.length > 100 ? firstLine.substring(0, 100) + '...' : firstLine
-})
-
 // Parse tags from subject (assuming comma or space separated)
 const allTags = computed(() => {
   const subject = props.bookmark.post.subject || ''

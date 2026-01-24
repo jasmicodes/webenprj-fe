@@ -179,7 +179,7 @@ describe('useApiError', () => {
       const mockShowError = vi.fn()
       vi.mocked(useToastStore).mockReturnValue({
         showError: mockShowError,
-      } as any)
+      } as unknown as ReturnType<typeof useToastStore>)
 
       const { handleError } = useApiError({ showToast: true })
 

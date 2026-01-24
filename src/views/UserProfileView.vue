@@ -14,7 +14,7 @@ import { bookmarksApi } from '@/services/api/bookmarks'
 import { COUNTRIES_DACH_FIRST } from '@/data/countries'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { mapApiPostToCard } from '@/utils/postMapper'
-import type { User, Post } from '@/services/api/types'
+import type { User } from '@/services/api/types'
 import type { PostCardData } from '@/utils/postMapper'
 
 import BaseButton from '@/components/atoms/BaseButton.vue'
@@ -23,6 +23,9 @@ import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import PostCard from '@/components/organisms/PostCard.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
+import FollowButton from '@/components/molecules/FollowButton.vue'
+import ClickableFollowStats from '@/components/molecules/ClickableFollowStats.vue'
+import FollowerListModal from '@/components/organisms/FollowerListModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,6 +46,10 @@ const followers = ref<number>(0)
 const following = ref<number>(0)
 const isFollowing = ref(false)
 const followLoading = ref(false)
+
+// Follower modal state
+const showFollowerModal = ref(false)
+const followerModalTab = ref<'followers' | 'following'>('followers')
 
 // Posts
 const posts = ref<PostCardData[]>([])
@@ -142,6 +149,24 @@ async function handleFollow() {
     toastStore.showError(getErrorMessage(err), isFollowing.value ? 'Unfollow' : 'Follow')
   } finally {
     followLoading.value = false
+  }
+}
+
+// Follower modal handlers
+function openFollowersModal() {
+  followerModalTab.value = 'followers'
+  showFollowerModal.value = true
+}
+
+function openFollowingModal() {
+  followerModalTab.value = 'following'
+  showFollowerModal.value = true
+}
+
+function handleFollowStatusChanged(changedUserId: string, nowFollowing: boolean) {
+  // If this is the profile being viewed, update our local state
+  if (changedUserId === userId.value) {
+    isFollowing.value = nowFollowing
   }
 }
 
@@ -275,30 +300,26 @@ onMounted(() => {
                 </span>
               </div>
 
-              <!-- Stats row: followers / following -->
-              <div class="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm">
-                <div class="flex items-baseline gap-1">
-                  <span :class="followers === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ followers }}</span>
-                  <span class="text-slate-400">Followers</span>
-                </div>
-                <div class="w-px h-3.5 bg-slate-200"></div>
-                <div class="flex items-baseline gap-1">
-                  <span :class="following === 0 ? 'font-medium text-slate-400' : 'font-semibold text-slate-900'">{{ following }}</span>
-                  <span class="text-slate-400">Following</span>
-                </div>
+              <!-- Stats row: followers / following (clickable) -->
+              <div class="mt-3">
+                <ClickableFollowStats
+                  :followers="followers"
+                  :following="following"
+                  @open-followers="openFollowersModal"
+                  @open-following="openFollowingModal"
+                />
               </div>
             </div>
 
             <!-- Right: Follow Button -->
             <div class="flex-shrink-0 flex justify-center sm:justify-end">
-              <BaseButton
-                :variant="isFollowing ? 'outline' : 'primary'"
-                size="sm"
-                :disabled="followLoading"
-                @click="handleFollow"
-              >
-                {{ isFollowing ? 'Following' : 'Follow' }}
-              </BaseButton>
+              <FollowButton
+                :is-following="isFollowing"
+                :loading="followLoading"
+                size="md"
+                show-label
+                @toggle="handleFollow"
+              />
             </div>
           </div>
         </BaseCard>
@@ -352,6 +373,17 @@ onMounted(() => {
         <p class="text-sm text-slate-500">User not found</p>
       </div>
     </div>
+
+    <!-- Follower/Following Modal -->
+    <FollowerListModal
+      v-if="user"
+      v-model="showFollowerModal"
+      :user-id="userId"
+      :initial-tab="followerModalTab"
+      :followers-count="followers"
+      :following-count="following"
+      @follow-status-changed="handleFollowStatusChanged"
+    />
   </div>
 </template>
 

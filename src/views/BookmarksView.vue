@@ -17,7 +17,6 @@ import { useBookmarkStore } from '@/stores/bookmarkStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { useDebounce } from '@/composables/useDebounce'
-import BaseButton from '@/components/atoms/BaseButton.vue'
 import BookmarkListItem from '@/components/molecules/BookmarkListItem.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
 import CreateCollectionModal from '@/components/molecules/CreateCollectionModal.vue'
@@ -184,11 +183,6 @@ function selectAll() {
   const newSelected = new Set(selectedIds.value)
   searchFiltered.value.forEach(b => newSelected.add(b.post.id))
   selectedIds.value = newSelected
-}
-
-// Deselect all
-function deselectAll() {
-  selectedIds.value.clear()
 }
 
 // Open bulk remove confirmation

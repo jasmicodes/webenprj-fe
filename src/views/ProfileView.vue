@@ -8,7 +8,7 @@ import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useToastStore } from '@/stores/toastStore'
 import { getErrorMessage } from '@/services/api/client'
-import { followApi, postsApi, bookmarksApi } from '@/services/api'
+import { followApi, bookmarksApi } from '@/services/api'
 import { usersApi } from '@/services/api/users'
 import { COUNTRIES_DACH_FIRST } from '@/data/countries'
 import { useMediaQuery } from '@/composables/useMediaQuery'
@@ -20,6 +20,8 @@ import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import EditProfileModal from '@/components/molecules/EditProfileModal.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
+import ClickableFollowStats from '@/components/molecules/ClickableFollowStats.vue'
+import FollowerListModal from '@/components/organisms/FollowerListModal.vue'
 
 // -------------------- STORES & STATES --------------------
 const userStore = useUserStore()
@@ -56,6 +58,29 @@ const showEditModal = ref(false)
 
 function openEditModal() {
   showEditModal.value = true
+}
+
+// -------------------- FOLLOWER MODAL --------------------
+const showFollowerModal = ref(false)
+const followerModalTab = ref<'followers' | 'following'>('followers')
+
+function openFollowersModal() {
+  followerModalTab.value = 'followers'
+  showFollowerModal.value = true
+}
+
+function openFollowingModal() {
+  followerModalTab.value = 'following'
+  showFollowerModal.value = true
+}
+
+function handleFollowStatusChanged(_userId: string, nowFollowing: boolean) {
+  // Update our following count when we follow/unfollow someone in the modal
+  if (nowFollowing) {
+    following.value += 1
+  } else {
+    following.value = Math.max(0, following.value - 1)
+  }
 }
 
 async function onProfileSaved(updatedUser: User) {
@@ -230,31 +255,14 @@ function goToPost(post: Post) {
                 </span>
               </div>
 
-              <!-- Stats row: followers / following (always show, mute zeros) -->
-              <div class="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm">
-                <div class="flex items-baseline gap-1">
-                  <span
-                    :class="
-                      followers === 0
-                        ? 'font-medium text-slate-400'
-                        : 'font-semibold text-slate-900'
-                    "
-                    >{{ followers }}</span
-                  >
-                  <span class="text-slate-400">Followers</span>
-                </div>
-                <div class="w-px h-3.5 bg-slate-200"></div>
-                <div class="flex items-baseline gap-1">
-                  <span
-                    :class="
-                      following === 0
-                        ? 'font-medium text-slate-400'
-                        : 'font-semibold text-slate-900'
-                    "
-                    >{{ following }}</span
-                  >
-                  <span class="text-slate-400">Following</span>
-                </div>
+              <!-- Stats row: followers / following (clickable) -->
+              <div class="mt-3">
+                <ClickableFollowStats
+                  :followers="followers"
+                  :following="following"
+                  @open-followers="openFollowersModal"
+                  @open-following="openFollowingModal"
+                />
               </div>
             </div>
 
@@ -389,6 +397,17 @@ function goToPost(post: Post) {
 
     <!-- Edit Profile Modal -->
     <EditProfileModal v-model="showEditModal" :user="user" @saved="onProfileSaved" />
+
+    <!-- Follower/Following Modal -->
+    <FollowerListModal
+      v-if="user"
+      v-model="showFollowerModal"
+      :user-id="user.id"
+      :initial-tab="followerModalTab"
+      :followers-count="followers"
+      :following-count="following"
+      @follow-status-changed="handleFollowStatusChanged"
+    />
   </div>
 </template>
 
