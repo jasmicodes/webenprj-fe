@@ -1,3 +1,13 @@
+<!--
+  HomeView - Main feed showing study reflections from followed users.
+
+  Features:
+  - ComposerCard for creating new posts (with media upload)
+  - Post list with pagination (load more button)
+  - Optimistic updates for like/bookmark actions
+  - Edit/delete modals for own posts
+  - Daily posting status indicator (gentle, non-gamified)
+-->
 <script setup lang="ts">
 defineOptions({ name: 'HomeView' })
 

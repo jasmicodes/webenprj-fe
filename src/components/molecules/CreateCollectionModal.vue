@@ -1,4 +1,8 @@
-<!-- Modal for creating bookmark collections -->
+<!--
+  CreateCollectionModal - Form modal for creating bookmark collections.
+  Includes name (required), description (optional), and color picker.
+  Validates name length (min 2 chars) before allowing submit.
+-->
 <template>
   <BaseModal v-model="showModal">
     <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 space-y-4">

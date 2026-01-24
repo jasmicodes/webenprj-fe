@@ -1,3 +1,7 @@
+<!--
+  TagChip - Displays a study tag with optional remove button.
+  Formats tag label using formatTagDisplay for consistent "#tag" display.
+-->
 <template>
   <span
     :class="[

@@ -1,4 +1,7 @@
-<!-- Delete confirmation modal - calm and safe -->
+<!--
+  PostDeleteModal - Confirmation dialog for post deletion.
+  Emits 'confirm' when user confirms, 'close' when cancelled.
+-->
 <template>
   <BaseModal v-model="showModal">
     <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 space-y-4">

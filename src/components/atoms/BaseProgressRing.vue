@@ -1,4 +1,7 @@
-<!--Für Prozentanzeigen (z. B. Lernfortschritt, Study Streaks)-->
+<!--
+  BaseProgressRing - SVG circular progress indicator.
+  Pass progress as 0-100 percentage.
+-->
 <template>
   <svg :width="size" :height="size" class="transform -rotate-90">
     <circle

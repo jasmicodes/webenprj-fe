@@ -1,4 +1,7 @@
-<!-- Post header: Author info + tag -->
+<!--
+  PostHeader - Author avatar, name, timestamp, and optional tag.
+  Avatar and username link to user profile when userId is provided.
+-->
 <template>
   <div class="flex items-center gap-3">
     <!-- Avatar (clickable to profile) -->

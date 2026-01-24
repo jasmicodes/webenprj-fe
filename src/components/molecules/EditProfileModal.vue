@@ -1,4 +1,9 @@
-<!-- src/components/molecules/EditProfileModal.vue -->
+<!--
+  EditProfileModal - Profile editor with avatar upload and identity fields.
+  Handles both self-edit and admin-edit-other-user scenarios.
+  Admin fields (role, active) only shown when admin edits another user.
+  Uses change detection to enable/disable save button.
+-->
 <script setup lang="ts">
 defineOptions({ name: 'EditProfileModal' })
 

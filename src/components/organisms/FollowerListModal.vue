@@ -1,4 +1,15 @@
-<!-- Modal showing followers/following list with tabs, infinite scroll, and search -->
+<!--
+  FollowerListModal - Tabbed modal for viewing followers/following.
+
+  Features:
+  - Tabs for switching between followers and following lists
+  - Search with debounced API calls
+  - Infinite scroll with IntersectionObserver
+  - Follow/unfollow buttons with optimistic updates
+  - Click user to navigate to their profile
+
+  Emits 'followStatusChanged' when follow state changes so parent can update counts.
+-->
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'

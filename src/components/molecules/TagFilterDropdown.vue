@@ -1,4 +1,8 @@
-<!-- Searchable dropdown for filtering by tag -->
+<!--
+  TagFilterDropdown - Searchable dropdown for filtering posts by tag.
+  Supports v-model for selected tag. Empty string means "All tags".
+  Filters tag list as user types in search box.
+-->
 <script setup lang="ts">
 defineOptions({ name: 'TagFilterDropdown' })
 

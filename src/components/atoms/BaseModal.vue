@@ -1,4 +1,7 @@
-<!-- BaseModal.vue -->
+<!--
+  BaseModal - Teleports content to body with backdrop overlay.
+  Supports ESC close and backdrop click (both configurable).
+-->
 <template>
   <Teleport to="body">
     <div

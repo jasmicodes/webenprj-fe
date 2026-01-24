@@ -1,3 +1,8 @@
+<!--
+  LoginView - Authentication page with username/email + password.
+  Validates input with Yup schema before API call.
+  Shows user count as social proof.
+-->
 <script setup lang="ts">
 defineOptions({ name: 'LoginView' })
 

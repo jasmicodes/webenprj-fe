@@ -1,4 +1,8 @@
-<!-- Avatar component with optional auto-fetch from user store -->
+<!--
+  BaseAvatar - User avatar with auto-fetch capability.
+  Set useCurrentUser=true to load the logged-in user's avatar from store.
+  Falls back to placeholder on error or missing image.
+-->
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'

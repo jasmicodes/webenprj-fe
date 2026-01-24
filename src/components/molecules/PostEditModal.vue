@@ -1,4 +1,8 @@
-<!-- Edit post modal with composer-style UI -->
+<!--
+  PostEditModal - Modal for editing existing posts.
+  Content must be 10-500 chars. Subject is validated as a tag.
+  Resets to original values each time modal opens.
+-->
 <template>
   <BaseModal v-model="showModal">
     <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 p-6 space-y-4">

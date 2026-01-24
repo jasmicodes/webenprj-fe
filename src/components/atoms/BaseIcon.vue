@@ -1,4 +1,8 @@
-<!--„Wrapper" (Atom) für deine Icons aus der Heroicons-Bibliothek-->
+<!--
+  BaseIcon - Heroicons wrapper with size/color props.
+  Use "NameIcon" for solid, "NameOutlineIcon" for outline variants.
+  Example: name="HeartIcon" (solid) or name="HeartOutlineIcon"
+-->
 <template>
   <!-- nimmt Größe IMMER, Farbe NUR wenn gesetzt -->
   <component :is="iconComponent" :class="[size, color]" aria-hidden="true" />

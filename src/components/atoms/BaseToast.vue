@@ -1,4 +1,7 @@
-<!--Kurze Erfolg-/Fehlernachrichten-->
+<!--
+  BaseToast - Colored notification banner for success/warning/error.
+  Content passed via default slot.
+-->
 <template>
   <div :class="['card p-3 text-white', colorClass]">
     <slot />

@@ -1,4 +1,7 @@
-<!-- Clickable follower/following statistics -->
+<!--
+  ClickableFollowStats - Interactive follower/following count display.
+  Emits events to open follower/following list modals.
+-->
 <script setup lang="ts">
 defineOptions({ name: 'ClickableFollowStats' })
 

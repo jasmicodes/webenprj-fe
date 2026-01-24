@@ -1,4 +1,7 @@
-<!--Input + Button-->
+<!--
+  SearchBar - Simple input with search button.
+  Emits 'search' with current term when clicked.
+-->
 <template>
   <div class="flex items-center gap-2">
     <BaseInput v-model="term" placeholder="Search" />

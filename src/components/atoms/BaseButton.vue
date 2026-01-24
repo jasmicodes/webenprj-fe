@@ -1,3 +1,7 @@
+<!--
+  BaseButton - Polymorphic button/link with variant styles.
+  Use `as="a"` for link styling without navigation behavior.
+-->
 <template>
   <component
     :is="as"

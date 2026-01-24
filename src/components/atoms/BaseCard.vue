@@ -1,4 +1,7 @@
-<!-- Card container for posts, profiles, etc. -->
+<!--
+  BaseCard - Container with header/body/actions slots.
+  Used for posts, profile cards, and content sections.
+-->
 <template>
   <article class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-visible">
     <header v-if="$slots.header" class="px-5 pt-4 pb-3">

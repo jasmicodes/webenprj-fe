@@ -1,3 +1,7 @@
+<!--
+  Pagination - Simple prev/next page navigation.
+  Emits 'update:currentPage' for v-model binding.
+-->
 <template>
   <nav class="flex items-center justify-center gap-3" aria-label="Pagination">
     <BaseButton

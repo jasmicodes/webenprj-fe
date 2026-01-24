@@ -1,4 +1,7 @@
-<!--Eingabe + Senden-Icon-->
+<!--
+  CommentBox - Input field with send button for adding comments.
+  Emits 'send' when button clicked, parent handles actual submission.
+-->
 <template>
   <div class="flex items-stretch gap-2">
     <div class="flex-1 relative">

@@ -1,3 +1,7 @@
+<!--
+  BaseInput - Text input with v-model support and validation styling.
+  Passes through all native input attrs via v-bind="$attrs".
+-->
 <template>
   <input
     v-bind="$attrs"

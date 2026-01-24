@@ -1,4 +1,8 @@
-<!-- Icon-based follow/unfollow button (Instagram-style) -->
+<!--
+  FollowButton - Icon-based follow/unfollow toggle (Instagram-style).
+  Shows UserPlus when not following, Check when following, UserMinus on hover.
+  Emits 'toggle' - parent handles the API call and state.
+-->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'

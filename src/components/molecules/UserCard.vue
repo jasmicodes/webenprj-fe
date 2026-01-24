@@ -1,4 +1,8 @@
-<!-- User card for search results and user lists -->
+<!--
+  UserCard - Compact user display for search results and lists.
+  Shows avatar, username, salutation/country, and follow button.
+  Hides follow button and shows "You" badge on own profile.
+-->
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { User } from '@/services/api/types'

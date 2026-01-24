@@ -6,7 +6,11 @@ import { getErrorMessage } from '@/services/api/client'
 import { useToastStore } from '@/stores/toastStore'
 
 /**
- * Lightweight form validation helper: runs a Yup schema and exposes errors in a reactive map.
+ * Lightweight form validation helper.
+ * Runs a Yup schema and exposes field errors in a reactive map.
+ *
+ * @param schema - Yup object schema to validate against
+ * @returns errors (reactive map), validate (async), clearErrors
  */
 export function useFormValidation(schema: AnyObjectSchema) {
   const errors = ref<Record<string, string>>({})
@@ -42,7 +46,12 @@ export interface UseApiErrorOptions {
 }
 
 /**
- * API error handling helper: captures errors, displays toast, and provides reactive state.
+ * API error handling helper.
+ * Captures errors, optionally displays toast, and provides reactive error state.
+ *
+ * @param options.showToast - Show error toast automatically
+ * @param options.onError - Custom callback when error occurs
+ * @returns error (ref), hasError (computed), handleError, clearError
  */
 export function useApiError(options: UseApiErrorOptions = {}) {
   const error = ref<string | null>(null)

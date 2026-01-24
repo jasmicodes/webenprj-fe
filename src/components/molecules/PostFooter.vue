@@ -1,4 +1,8 @@
-<!--Post actions – calm and supportive-->
+<!--
+  PostFooter - Post action bar with like, comment, bookmark, share, and owner menu.
+  Shows edit/delete menu only for post owner or admin.
+  Handles click-outside to close dropdown automatically.
+-->
 <template>
   <div class="card-actions">
     <!-- Main action row -->

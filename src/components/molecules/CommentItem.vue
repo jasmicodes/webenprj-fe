@@ -1,3 +1,7 @@
+<!--
+  CommentItem - Single comment display with avatar, author link, and like action.
+  Reuses PostCardData type since comments have same structure as posts.
+-->
 <template>
   <div class="bg-slate-50 rounded-lg p-3 space-y-2">
     <!-- Comment header -->

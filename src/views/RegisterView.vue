@@ -1,3 +1,8 @@
+<!--
+  RegisterView - New account registration form.
+  Validates all fields with Yup schema before API submission.
+  Supports custom salutation via "other" option.
+-->
 <script setup lang="ts">
 defineOptions({ name: 'RegisterView' })
 

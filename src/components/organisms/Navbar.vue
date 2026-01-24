@@ -1,4 +1,13 @@
-<!-- src/components/organisms/Navbar.vue -->
+<!--
+  Navbar - Main application navigation.
+
+  Layout:
+  - Desktop: Collapsible sidebar with three zones (primary nav, admin, system)
+  - Mobile: Bottom tab bar with "More" sheet for secondary items
+
+  State managed via navbarStore (collapse) and appearanceStore (ambient mode styling).
+  Admin link only shown for ADMIN role users.
+-->
 <script setup lang="ts">
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'

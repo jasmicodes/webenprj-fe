@@ -23,8 +23,12 @@ export type PostCardData = {
 }
 
 /**
- * Map a backend Post into the PostCardData shape.
- * Use overrides to inject UI-only fields (e.g., streak).
+ * Map a backend Post into the PostCardData shape for UI components.
+ * Resolves media URLs and formats timestamps. Use overrides to inject
+ * UI-only fields (e.g., streak) or replace computed values.
+ *
+ * @param post - Raw API post response
+ * @param overrides - Optional partial to override computed fields
  */
 export function mapApiPostToCard(
   post: ApiPost,
