@@ -1,14 +1,4 @@
-<!--
-  ProfileView - Current user's profile with stats and recent activity.
-
-  Features:
-  - Profile header with avatar, identity, and edit button
-  - Stats strip (posts, bookmarks, member since, last active)
-  - Clickable follower/following counts open list modal
-  - Recent activity section with navigation to posts
-
-  Loads follower counts, posts, and bookmarks in parallel on mount.
--->
+<!-- ProfileView - Current user's profile -->
 <script setup lang="ts">
 defineOptions({ name: 'ProfileView' })
 

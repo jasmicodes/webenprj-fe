@@ -1,13 +1,4 @@
-<!--
-  PostDetailView - Full post with comments section.
-
-  Features:
-  - Post content with like/bookmark/share actions
-  - Comment list with pagination
-  - Edit/delete modals for post owner
-  - Share copies URL to clipboard
-  - Back button with history-aware navigation
--->
+<!-- PostDetailView - Full post with comments -->
 <script setup lang="ts">
 defineOptions({ name: 'PostDetailView' })
 

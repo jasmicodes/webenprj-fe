@@ -1,15 +1,4 @@
-<!--
-  PostCard - Full post display with expandable comment section.
-
-  Features:
-  - Header with author info and tag
-  - Image and text content (clickable to detail view)
-  - Action bar (like, comment, bookmark, share, edit/delete)
-  - Inline comment list with pagination and reply support
-
-  Comments are lazily loaded when section is expanded.
-  All actions emit events - parent handles API calls and state updates.
--->
+<!-- PostCard - Post display with comments -->
 <template>
   <BaseCard size="lg">
     <!-- HEADER-SLOT (identical for all posts) -->

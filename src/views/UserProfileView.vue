@@ -1,12 +1,4 @@
-<!--
-  UserProfileView - Public profile page for viewing other users.
-
-  Features:
-  - Profile header with follow button (optimistic updates)
-  - Clickable follower/following stats
-  - User's posts with pagination
-  - Redirects to ProfileView if viewing own profile
--->
+<!-- UserProfileView - Public profile for other users -->
 <script setup lang="ts">
 defineOptions({ name: 'UserProfileView' })
 

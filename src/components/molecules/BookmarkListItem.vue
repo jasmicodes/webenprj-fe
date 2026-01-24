@@ -1,14 +1,4 @@
-<!--
-  BookmarkListItem - Compact list row for bookmarks
-
-  Features:
-  - Author avatar + username
-  - Post title / first line preview
-  - Tag chips (max 2 visible + "+N")
-  - Saved timestamp
-  - Quick actions: open, remove bookmark
-  - Responsive: hides tags on small screens
--->
+<!-- BookmarkListItem - Compact list row for bookmarks -->
 <template>
   <div
     class="group bg-white rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer"
