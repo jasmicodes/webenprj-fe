@@ -48,12 +48,7 @@
       </div>
       <!-- Tag on second line for cleaner alignment -->
       <div v-if="tag" class="mt-0.5">
-        <span
-          class="inline-block text-xs text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full"
-          :title="`Subject: ${formatTagDisplay(tag)}`"
-        >
-          {{ formatTagDisplay(tag) }}
-        </span>
+        <TagChip :label="tag" variant="muted" />
       </div>
     </div>
   </div>
@@ -64,7 +59,7 @@ defineOptions({ name: 'PostHeader' })
 
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { formatTagDisplay } from '@/utils/tagUtils'
+import TagChip from '@/components/atoms/TagChip.vue'
 import { formatTimeAgo } from '@/utils/timeUtils'
 
 const props = defineProps<{

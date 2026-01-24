@@ -105,7 +105,7 @@ function loadMore() {
   if (page.value + 1 >= totalPages.value) return
   page.value += 1
   loadPosts().catch(() => {
-    // Error already handled in loadPosts, but explicit catch avoids unhandled rejection
+    // Error already handled in loadPosts
   })
 }
 
