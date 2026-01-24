@@ -91,6 +91,8 @@ onUnmounted(() => {
             ? 'border-blue-200 bg-blue-50 text-blue-700'
             : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
       ]"
+      :aria-expanded="isOpen"
+      aria-haspopup="listbox"
       @click="toggle"
     >
       <BaseIcon name="TagIcon" class="w-4 h-4 flex-shrink-0" />

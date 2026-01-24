@@ -233,7 +233,7 @@ function formatMemberSince(dateStr: string): string {
 }
 
 function goToOwnProfile() {
-  router.push({ name: 'profile' })
+  router.replace({ name: 'profile' })
 }
 
 // Watch for route changes (when navigating between profiles)

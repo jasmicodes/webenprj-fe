@@ -38,6 +38,10 @@ defineOptions({ name: 'UploadDropZone' })
 import { ref, computed, onUnmounted } from 'vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
+import { FILE_UPLOAD } from '@/data/constants'
+import { useToastStore } from '@/stores/toastStore'
+
+const toastStore = useToastStore()
 
 withDefaults(
   defineProps<{
@@ -69,6 +73,12 @@ onUnmounted(() => {
 })
 
 function onSelected(file: File) {
+  // Validate file size
+  if (file.size > FILE_UPLOAD.MAX_SIZE_BYTES) {
+    toastStore.showError(`File too large. Maximum size is ${FILE_UPLOAD.MAX_SIZE_MB}MB.`)
+    return
+  }
+
   emit('selected', file)
   // Revoke old blob URL before creating new one
   revokeCurrentBlobUrl()

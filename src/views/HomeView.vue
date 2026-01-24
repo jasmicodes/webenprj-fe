@@ -12,7 +12,6 @@
 defineOptions({ name: 'HomeView' })
 
 import { ref, onMounted, computed } from 'vue'
-import { isAxiosError } from 'axios'
 import PostCard from '@/components/organisms/PostCard.vue'
 import ComposerCard from '@/components/organisms/ComposerCard.vue'
 import PostEditModal from '@/components/molecules/PostEditModal.vue'
@@ -99,12 +98,8 @@ async function loadPosts(reset = false) {
     posts.value = reset ? mapped : [...posts.value, ...mapped]
     totalPages.value = result.totalPages
   } catch (err: unknown) {
-    if (isAxiosError(err) && err.response?.data?.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = getErrorMessage(err)
-    }
-    toastStore.showError(error.value ?? 'Failed to load posts', 'Feed')
+    error.value = getErrorMessage(err)
+    toastStore.showError(error.value, 'Feed')
   } finally {
     loading.value = false
     loadingMore.value = false

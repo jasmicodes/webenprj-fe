@@ -484,7 +484,7 @@ function closeModal() {
           <!-- Loading more indicator -->
           <div v-if="loading && users.length > 0" class="py-3 text-center">
             <div class="inline-flex items-center gap-2 text-sm text-slate-500">
-              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle
                   class="opacity-25"
                   cx="12"

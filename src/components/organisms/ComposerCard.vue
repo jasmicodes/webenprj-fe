@@ -16,9 +16,12 @@ import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import TagInput from '@/components/molecules/TagInput.vue'
 import { useUserStore } from '@/stores/userStore'
+import { useToastStore } from '@/stores/toastStore'
 import { isValidTag, prepareTagForBackend } from '@/utils/tagUtils'
+import { FILE_UPLOAD } from '@/data/constants'
 
 const userStore = useUserStore()
+const toastStore = useToastStore()
 
 // ============ State ============
 const content = ref('')
@@ -255,9 +258,17 @@ function handleFileSelect() {
 
 function onFileChange(event: Event) {
   const target = event.target as HTMLInputElement
-  if (target.files && target.files[0]) {
-    selectedFile.value = target.files[0]
+  const file = target.files?.[0]
+  if (!file) return
+
+  // Validate file size
+  if (file.size > FILE_UPLOAD.MAX_SIZE_BYTES) {
+    toastStore.showError(`File too large. Maximum size is ${FILE_UPLOAD.MAX_SIZE_MB}MB.`)
+    target.value = '' // Clear the input
+    return
   }
+
+  selectedFile.value = file
 }
 
 function removeFile() {

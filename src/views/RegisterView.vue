@@ -8,9 +8,8 @@ defineOptions({ name: 'RegisterView' })
 
 import { ref, computed } from 'vue'
 import * as yup from 'yup'
-import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
-import { api } from '@/services/api/client'
+import { api, getErrorMessage } from '@/services/api/client'
 import { useToastStore } from '@/stores/toastStore'
 import type { RegisterRequest, User } from '@/services/api/types'
 
@@ -110,16 +109,7 @@ async function submit() {
 
     router.push({ name: 'login' })
   } catch (err: unknown) {
-    // Backend-/Axios-Fehler
-    let message = 'Registration failed'
-    if (isAxiosError<{ message?: string }>(err) && err.response?.data?.message) {
-      // aus Backend: { message: "Email is already in use." }
-      message = err.response.data.message
-    } else if (err instanceof Error && err.message) {
-      message = err.message
-    }
-
-    toastStore.showError(message)
+    toastStore.showError(getErrorMessage(err))
   } finally {
     loading.value = false
   }

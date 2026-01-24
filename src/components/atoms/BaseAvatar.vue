@@ -6,6 +6,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { logger } from '@/services/logger'
 import avatarPlaceholder from '@/assets/avatar-placeholder.svg'
 
 defineOptions({
@@ -77,7 +78,8 @@ async function loadImage() {
       } else {
         imageUrl.value = avatarPlaceholder
       }
-    } catch {
+    } catch (err) {
+      logger.warn('Failed to load user avatar from store:', err)
       revokeCurrentBlobUrl()
       imageUrl.value = avatarPlaceholder
     }
@@ -90,6 +92,7 @@ async function loadImage() {
 }
 
 function handleImageError() {
+  logger.warn('Avatar image failed to load, using placeholder')
   imageUrl.value = avatarPlaceholder
 }
 
