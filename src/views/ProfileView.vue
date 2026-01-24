@@ -12,7 +12,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ProfileView' })
 
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/uiStore'
@@ -49,6 +49,21 @@ const postsCount = ref<number>(0)
 const bookmarksCount = ref<number>(0)
 const recentPosts = ref<Post[]>([])
 const profileImageSrc = ref<string | null>(null)
+
+// Track blob URL for cleanup to prevent memory leaks
+let currentBlobUrl: string | null = null
+
+function revokeCurrentBlobUrl() {
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+}
+
+// Clean up blob URL on unmount
+onUnmounted(() => {
+  revokeCurrentBlobUrl()
+})
 
 // Computed
 const user = computed(() => userStore.user)
@@ -95,8 +110,11 @@ function handleFollowStatusChanged(_userId: string, nowFollowing: boolean) {
 
 async function onProfileSaved(updatedUser: User) {
   userStore.user = updatedUser
+  revokeCurrentBlobUrl()
   if (updatedUser.profileImageUrl) {
-    profileImageSrc.value = await userStore.downloadProfileImage()
+    const blobUrl = await userStore.downloadProfileImage()
+    currentBlobUrl = blobUrl
+    profileImageSrc.value = blobUrl
   } else {
     profileImageSrc.value = null
   }
@@ -161,8 +179,11 @@ async function loadBookmarksData() {
 }
 
 async function loadProfileImage() {
+  revokeCurrentBlobUrl()
   if (userStore.user?.profileImageUrl) {
-    profileImageSrc.value = await userStore.downloadProfileImage()
+    const blobUrl = await userStore.downloadProfileImage()
+    currentBlobUrl = blobUrl
+    profileImageSrc.value = blobUrl
   }
 }
 

@@ -2,9 +2,11 @@
 <script setup lang="ts">
 defineOptions({ name: 'AppBackground' })
 
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useAppearanceStore } from '@/stores/uiStore'
+import { logger } from '@/services/logger'
 import { useMediaQuery } from '@/composables/useMediaQuery'
+import { UI_CONFIG } from '@/data/constants'
 
 const appearanceStore = useAppearanceStore()
 
@@ -39,6 +41,17 @@ const layerA_loaded = ref(false)
 const layerB_loaded = ref(false)
 const imageError = ref(false)
 const isTransitioning = ref(false)
+
+// Track transition timeout for cleanup to prevent memory leaks
+let transitionTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Clean up timeout on unmount
+onUnmounted(() => {
+  if (transitionTimeout) {
+    clearTimeout(transitionTimeout)
+    transitionTimeout = null
+  }
+})
 
 // Current active URL
 const currentUrl = computed(() => {
@@ -86,12 +99,17 @@ async function switchBackground(newUrl: string) {
 
     // Wait for transition to complete before cleanup
     if (!prefersReducedMotion.value) {
-      setTimeout(() => {
+      // Clear any pending transition timeout
+      if (transitionTimeout) {
+        clearTimeout(transitionTimeout)
+      }
+      transitionTimeout = setTimeout(() => {
         isTransitioning.value = false
-      }, 400) // Match transition duration
+        transitionTimeout = null
+      }, UI_CONFIG.TRANSITION_MS) // Match transition duration
     }
   } catch (error) {
-    console.error('Failed to load background image:', error)
+    logger.error('Failed to load background image:', error)
     imageError.value = true
   }
 }

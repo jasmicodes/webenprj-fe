@@ -28,3 +28,16 @@ export const API_CONFIG = {
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
 } as const
+
+// Pagination defaults
+export const PAGE_CONFIG = {
+  DEFAULT_SIZE: 20,
+  COMMENTS_SIZE: 10,
+  FOLLOWERS_SIZE: 50,
+} as const
+
+// UI timing
+export const UI_CONFIG = {
+  DEBOUNCE_MS: 300,
+  TRANSITION_MS: 400,
+} as const

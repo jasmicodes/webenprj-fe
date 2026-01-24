@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { api } from '@/services/api/client'
 import { usersApi } from '@/services/api/users'
 import { mediaApi } from '@/services/api/media'
+import { logger } from '@/services/logger'
 import type { LoginResponse, User } from '@/services/api/types'
 import router from '@/router'
 import { clearToken, getToken, isTokenExpired, setToken } from '@/services/api/token'
@@ -51,7 +52,7 @@ export const useUserStore = defineStore('user', {
         this.user = await usersApi.getMyProfile()
       } catch (error) {
         // Token is invalid/expired, clear session
-        console.error('Failed to fetch current user:', error)
+        logger.error('Failed to fetch current user:', error)
         this.logout()
       }
     },
@@ -69,6 +70,11 @@ export const useUserStore = defineStore('user', {
       this.token = newToken
       setToken(newToken)
     },
+    /**
+     * Download profile image and return a blob URL.
+     * IMPORTANT: Caller is responsible for revoking the returned URL
+     * via URL.revokeObjectURL() to prevent memory leaks.
+     */
     async downloadProfileImage() {
       if (!this.user?.profileImageUrl) {
         return null
@@ -79,7 +85,7 @@ export const useUserStore = defineStore('user', {
         const url = this.user.profileImageUrl
         const match = url.match(/\/medias\/([a-f0-9-]+)/i)
         if (!match?.[1]) {
-          console.error('Invalid profile image URL format:', url)
+          // Invalid URL format - log for debugging
           return null
         }
         const id = match[1]
@@ -87,8 +93,8 @@ export const useUserStore = defineStore('user', {
         const blob = await mediaApi.retrieve(id)
         const objectUrl = URL.createObjectURL(blob)
         return objectUrl
-      } catch (err) {
-        console.error('Failed to load profile image:', err)
+      } catch {
+        // Failed to load profile image - return null to use fallback
         return null
       }
     },

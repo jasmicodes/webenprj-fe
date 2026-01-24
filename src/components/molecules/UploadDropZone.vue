@@ -35,7 +35,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UploadDropZone' })
 
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import FilePicker from '@/components/atoms/FilePicker.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 
@@ -53,10 +53,28 @@ const file = ref<File | null>(null)
 const isImage = computed(() => !!file.value && file.value.type.startsWith('image/'))
 const previewUrl = ref<string | null>(null)
 
+// Track blob URL for cleanup to prevent memory leaks
+let currentBlobUrl: string | null = null
+
+function revokeCurrentBlobUrl() {
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+}
+
+// Clean up blob URL on unmount
+onUnmounted(() => {
+  revokeCurrentBlobUrl()
+})
+
 function onSelected(file: File) {
   emit('selected', file)
+  // Revoke old blob URL before creating new one
+  revokeCurrentBlobUrl()
   if (file.type.startsWith('image/')) {
-    previewUrl.value = URL.createObjectURL(file)
+    currentBlobUrl = URL.createObjectURL(file)
+    previewUrl.value = currentBlobUrl
   } else {
     previewUrl.value = null
   }

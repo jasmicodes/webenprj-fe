@@ -20,6 +20,7 @@ import { usersApi, followApi } from '@/services/api/users'
 import { postsApi } from '@/services/api/posts'
 import { bookmarksApi } from '@/services/api/bookmarks'
 import { COUNTRIES_DACH_FIRST } from '@/data/countries'
+import { PAGE_CONFIG } from '@/data/constants'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import type { User } from '@/services/api/types'
@@ -118,7 +119,7 @@ async function loadPosts(reset = false) {
   postsLoading.value = true
 
   try {
-    const result = await postsApi.getPostsByAuthor(userId.value, postsPage.value, 10)
+    const result = await postsApi.getPostsByAuthor(userId.value, postsPage.value, PAGE_CONFIG.COMMENTS_SIZE)
     const mapped = result.content.map((post) => mapApiPostToCard(post))
     posts.value = reset ? mapped : [...posts.value, ...mapped]
     postsTotalPages.value = result.totalPages

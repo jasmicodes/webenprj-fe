@@ -7,7 +7,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'EditProfileModal' })
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import * as yup from 'yup'
 import { usersApi, adminUsersApi } from '@/services/api/users'
 import { mediaApi } from '@/services/api'
@@ -54,6 +54,21 @@ const uploadingAvatar = ref(false)
 const avatarPreview = ref<string | null>(null)
 const avatarMarkedForRemoval = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+// Track blob URL for cleanup to prevent memory leaks
+let currentBlobUrl: string | null = null
+
+function revokeCurrentBlobUrl() {
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+}
+
+// Clean up blob URL on unmount
+onUnmounted(() => {
+  revokeCurrentBlobUrl()
+})
 
 // Original values for change detection
 const originalValues = ref({
@@ -148,7 +163,10 @@ async function loadAvatarPreview(url: string) {
   try {
     const mediaId = url.replace('/medias/', '')
     const blob = await mediaApi.retrieve(mediaId)
-    avatarPreview.value = URL.createObjectURL(blob)
+    // Revoke old blob URL before creating new one
+    revokeCurrentBlobUrl()
+    currentBlobUrl = URL.createObjectURL(blob)
+    avatarPreview.value = currentBlobUrl
   } catch {
     // Silently fail - avatar just won't show preview
   }
@@ -172,7 +190,10 @@ async function onFileSelected(event: Event) {
     const media = await mediaApi.upload(file)
     form.value.profileImageUrl = `/medias/${media.id}`
     const blob = await mediaApi.retrieve(media.id)
-    avatarPreview.value = URL.createObjectURL(blob)
+    // Revoke old blob URL before creating new one
+    revokeCurrentBlobUrl()
+    currentBlobUrl = URL.createObjectURL(blob)
+    avatarPreview.value = currentBlobUrl
     avatarMarkedForRemoval.value = false
   } catch (err) {
     toast.showError(getErrorMessage(err))
@@ -182,6 +203,7 @@ async function onFileSelected(event: Event) {
 }
 
 function removeAvatar() {
+  revokeCurrentBlobUrl()
   avatarPreview.value = null
   form.value.profileImageUrl = ''
   avatarMarkedForRemoval.value = true

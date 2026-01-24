@@ -11,11 +11,13 @@ import type { User } from '@/services/api/types'
 import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { useToastStore } from '@/stores/toastStore'
+import { logger } from '@/services/logger'
 import { useUserStore } from '@/stores/userStore'
 import { useAppearanceStore } from '@/stores/uiStore'
 import { useMediaQuery } from '@/composables/useMediaQuery'
 import { useDebounce } from '@/composables/useDebounce'
 import { getErrorMessage } from '@/services/api/client'
+import { PAGE_CONFIG, UI_CONFIG } from '@/data/constants'
 import PostCard from '@/components/organisms/PostCard.vue'
 import UserCard from '@/components/molecules/UserCard.vue'
 import TagFilterDropdown from '@/components/molecules/TagFilterDropdown.vue'
@@ -33,7 +35,7 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 
 // Search state
 const searchInput = ref('')
-const searchQuery = useDebounce(searchInput, 300)
+const searchQuery = useDebounce(searchInput, UI_CONFIG.DEBOUNCE_MS)
 
 // Tab state: posts or users
 const searchMode = ref<'posts' | 'users'>('posts')
@@ -81,7 +83,7 @@ async function loadPosts(reset = false) {
     const result = await postsApi.getAllPosts(
       searchQuery.value || undefined,
       postsPage.value,
-      20,
+      PAGE_CONFIG.DEFAULT_SIZE,
       'all',
       selectedSubject.value || undefined
     )
@@ -125,7 +127,7 @@ async function loadUsers(reset = false) {
   error.value = null
 
   try {
-    const result = await usersApi.searchUsers(searchQuery.value, usersPage.value, 20)
+    const result = await usersApi.searchUsers(searchQuery.value, usersPage.value, PAGE_CONFIG.DEFAULT_SIZE)
     users.value = reset ? result.content : [...users.value, ...result.content]
     usersTotalPages.value = result.totalPages
   } catch (err) {
@@ -173,7 +175,7 @@ async function loadTags() {
   try {
     availableTags.value = await postsApi.getSubjects()
   } catch (err) {
-    console.error('Failed to load tags:', err)
+    logger.error('Failed to load tags:', err)
   } finally {
     tagsLoading.value = false
   }

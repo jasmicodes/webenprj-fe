@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { bookmarksApi } from '@/services/api/bookmarks'
+import { logger } from '@/services/logger'
 import type {
   Bookmark,
   BookmarkCollection,
@@ -23,7 +24,7 @@ function loadViewState(): ViewState {
       return JSON.parse(stored)
     }
   } catch (error) {
-    console.error('Failed to load bookmark view state from localStorage:', error)
+    logger.error('Failed to load bookmark view state from localStorage:', error)
   }
 
   // Default view state
@@ -39,7 +40,7 @@ function saveViewState(state: ViewState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch (error) {
-    console.error('Failed to save bookmark view state to localStorage:', error)
+    logger.error('Failed to save bookmark view state to localStorage:', error)
   }
 }
 
@@ -106,7 +107,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         this.collections = await bookmarksApi.getUserCollections()
       } catch (err) {
         this.error = 'Failed to fetch collections'
-        console.error('Error fetching collections:', err)
+        logger.error('Error fetching collections:', err)
         throw err
       } finally {
         this.loading = false
@@ -122,7 +123,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return newCollection
       } catch (err) {
         this.error = 'Failed to create collection'
-        console.error('Error creating collection:', err)
+        logger.error('Error creating collection:', err)
         throw err
       } finally {
         this.loading = false
@@ -141,7 +142,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return updated
       } catch (err) {
         this.error = 'Failed to update collection'
-        console.error('Error updating collection:', err)
+        logger.error('Error updating collection:', err)
         throw err
       } finally {
         this.loading = false
@@ -161,7 +162,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         }
       } catch (err) {
         this.error = 'Failed to delete collection'
-        console.error('Error deleting collection:', err)
+        logger.error('Error deleting collection:', err)
         throw err
       } finally {
         this.loading = false
@@ -188,7 +189,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return result
       } catch (err) {
         this.error = 'Failed to fetch bookmarks'
-        console.error('Error fetching bookmarks:', err)
+        logger.error('Error fetching bookmarks:', err)
         throw err
       } finally {
         this.loading = false
@@ -217,7 +218,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return bookmark
       } catch (err) {
         this.error = 'Failed to add bookmark'
-        console.error('Error adding bookmark:', err)
+        logger.error('Error adding bookmark:', err)
         throw err
       } finally {
         this.loading = false
@@ -246,7 +247,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         }
       } catch (err) {
         this.error = 'Failed to remove bookmark'
-        console.error('Error removing bookmark:', err)
+        logger.error('Error removing bookmark:', err)
         throw err
       } finally {
         this.loading = false
@@ -269,7 +270,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return updated
       } catch (err) {
         this.error = 'Failed to move bookmark'
-        console.error('Error moving bookmark:', err)
+        logger.error('Error moving bookmark:', err)
         throw err
       } finally {
         this.loading = false
@@ -300,7 +301,7 @@ export const useBookmarkStore = defineStore('bookmarks', {
         return updated
       } catch (err) {
         this.error = 'Failed to update bookmark notes'
-        console.error('Error updating bookmark notes:', err)
+        logger.error('Error updating bookmark notes:', err)
         throw err
       } finally {
         this.loading = false

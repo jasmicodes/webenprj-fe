@@ -1,5 +1,6 @@
 import { ref, watch, onUnmounted, toValue, type MaybeRefOrGetter } from 'vue'
 import { mediaApi } from '@/services/api/media'
+import { logger } from '@/services/logger'
 
 /**
  * Composable for loading media images via authenticated API and converting to blob URLs.
@@ -55,7 +56,7 @@ export function useMediaImage(
     } catch (err) {
       error.value = err as Error
       imageUrl.value = fallback || ''
-      console.error(`Failed to load media image: ${url}`, err)
+      logger.error(`Failed to load media image: ${url}`, err)
     } finally {
       loading.value = false
     }

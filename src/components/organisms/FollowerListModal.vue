@@ -23,10 +23,11 @@ import BaseModal from '@/components/atoms/BaseModal.vue'
 import BaseIcon from '@/components/atoms/BaseIcon.vue'
 import BaseAvatar from '@/components/atoms/BaseAvatar.vue'
 import FollowButton from '@/components/molecules/FollowButton.vue'
+import { PAGE_CONFIG, UI_CONFIG } from '@/data/constants'
 
 defineOptions({ name: 'FollowerListModal' })
 
-const PAGE_SIZE = 50
+const PAGE_SIZE = PAGE_CONFIG.FOLLOWERS_SIZE
 
 const props = withDefaults(
   defineProps<{
@@ -66,6 +67,8 @@ const hasMore = computed(() => page.value + 1 < totalPages.value)
 const searchQuery = ref('')
 const isSearching = ref(false)
 let searchTimeout: ReturnType<typeof setTimeout> | null = null
+// Track request ID to prevent stale results from overwriting newer ones
+let searchRequestId = 0
 
 // Infinite scroll state
 const scrollSentinel = ref<HTMLElement | null>(null)
@@ -122,10 +125,14 @@ function handleSearchInput() {
   searchTimeout = setTimeout(async () => {
     const query = searchQuery.value.trim()
     if (query) {
+      // Increment request ID to track this specific request
+      const currentRequestId = ++searchRequestId
       isSearching.value = true
       loading.value = true
       try {
         const result = await usersApi.searchUsers(query, 0, PAGE_SIZE)
+        // Only update if this is still the latest request (prevents stale results)
+        if (currentRequestId !== searchRequestId) return
         users.value = result.content
         totalPages.value = result.totalPages
         page.value = result.number
@@ -133,15 +140,20 @@ function handleSearchInput() {
         // Check following status for search results
         await checkFollowingStatus(users.value)
       } catch (err) {
+        // Only show error if this is still the latest request
+        if (currentRequestId !== searchRequestId) return
         toastStore.showError(getErrorMessage(err), 'Search')
       } finally {
-        loading.value = false
+        // Only update loading state if this is still the latest request
+        if (currentRequestId === searchRequestId) {
+          loading.value = false
+        }
       }
     } else {
       isSearching.value = false
       await resetAndLoad(false)
     }
-  }, 300)
+  }, UI_CONFIG.DEBOUNCE_MS)
 }
 
 function clearSearch() {

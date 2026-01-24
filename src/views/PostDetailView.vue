@@ -29,8 +29,10 @@ import { postsApi } from '@/services/api/posts'
 import { bookmarksApi } from '@/services/api/bookmarks'
 import { useMediaImage } from '@/composables/useMediaImage'
 import { useToastStore } from '@/stores/toastStore'
+import { logger } from '@/services/logger'
 import { useUserStore } from '@/stores/userStore'
 import { prepareTagForBackend } from '@/utils/tagUtils'
+import { PAGE_CONFIG } from '@/data/constants'
 import fallbackAvatar from '@/assets/user1.avif'
 
 const route = useRoute()
@@ -84,7 +86,7 @@ async function loadPost() {
     // Load comments after post loads
     await loadComments()
   } catch (err) {
-    console.error('Failed to load post:', err)
+    logger.error('Failed to load post:', err)
     error.value = 'Failed to load post'
   } finally {
     loading.value = false
@@ -102,12 +104,12 @@ async function loadComments(reset = false) {
 
   commentsLoading.value = true
   try {
-    const result = await postsApi.getComments(String(post.value.id), commentPage.value, 10)
+    const result = await postsApi.getComments(String(post.value.id), commentPage.value, PAGE_CONFIG.COMMENTS_SIZE)
     const mapped = result.content.map((p) => mapApiPostToCard(p))
     comments.value = reset ? mapped : [...comments.value, ...mapped]
     hasMoreComments.value = commentPage.value + 1 < result.totalPages
   } catch (err) {
-    console.error('Failed to load comments:', err)
+    logger.error('Failed to load comments:', err)
   } finally {
     commentsLoading.value = false
   }
@@ -133,7 +135,7 @@ async function submitComment() {
     newCommentText.value = ''
     post.value.comments++
   } catch (err) {
-    console.error('Failed to create comment:', err)
+    logger.error('Failed to create comment:', err)
     toastStore.showError('Failed to post comment', 'Comment')
   }
 }
@@ -151,7 +153,7 @@ async function handleCommentLike(comment: PostCardData) {
       comment.likes++
     }
   } catch (err) {
-    console.error('Failed to toggle comment like:', err)
+    logger.error('Failed to toggle comment like:', err)
   }
 }
 

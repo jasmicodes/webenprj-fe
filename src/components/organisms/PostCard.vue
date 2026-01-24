@@ -142,8 +142,10 @@ import type { PostCardData } from '@/utils/postMapper'
 import { mapApiPostToCard } from '@/utils/postMapper'
 import { useMediaImage } from '@/composables/useMediaImage'
 import { postsApi } from '@/services/api/posts'
+import { PAGE_CONFIG } from '@/data/constants'
 import { useUserStore } from '@/stores/userStore'
 import { useToastStore } from '@/stores/toastStore'
+import { logger } from '@/services/logger'
 import { getErrorMessage } from '@/services/api/client'
 
 const props = defineProps<{
@@ -205,13 +207,13 @@ async function toggleComments() {
 async function loadComments() {
   loading.value = true
   try {
-    const result = await postsApi.getComments(String(props.post.id), commentPage.value, 10)
+    const result = await postsApi.getComments(String(props.post.id), commentPage.value, PAGE_CONFIG.COMMENTS_SIZE)
     const mapped = result.content.map((p) => mapApiPostToCard(p))
     comments.value = [...comments.value, ...mapped]
     hasMoreComments.value = commentPage.value + 1 < result.totalPages
     totalComments.value = result.totalElements
   } catch (error) {
-    console.error('Failed to load comments:', error)
+    logger.error('Failed to load comments:', error)
     toastStore.showError(getErrorMessage(error), 'Comments')
   } finally {
     loading.value = false
@@ -239,7 +241,7 @@ async function submitComment() {
     totalComments.value++
     emit('commentAdded')
   } catch (error) {
-    console.error('Failed to create comment:', error)
+    logger.error('Failed to create comment:', error)
     toastStore.showError(getErrorMessage(error), 'Comment')
   }
 }
@@ -276,7 +278,7 @@ async function submitReply(parentComment: PostCardData) {
     replyingTo.value = null
     replyText.value = ''
   } catch (error) {
-    console.error('Failed to create reply:', error)
+    logger.error('Failed to create reply:', error)
     toastStore.showError(getErrorMessage(error), 'Reply')
   }
 }
@@ -304,7 +306,7 @@ async function handleCommentLike(comment: PostCardData) {
       }
     }
   } catch (error) {
-    console.error('Failed to toggle comment like:', error)
+    logger.error('Failed to toggle comment like:', error)
     toastStore.showError(getErrorMessage(error), 'Like')
   }
 }

@@ -1,3 +1,5 @@
+import { logger } from '@/services/logger'
+
 const TOKEN_KEY = 'token'
 let inMemoryToken: string | null = null
 
@@ -26,11 +28,15 @@ type JwtPayload = {
 function decodeJwt(token: string): JwtPayload | null {
   const parts = token.split('.')
   const payloadPart = parts[1]
-  if (parts.length !== 3 || !payloadPart) return null
+  if (parts.length !== 3 || !payloadPart) {
+    logger.debug('Invalid JWT format: expected 3 parts')
+    return null
+  }
   try {
     const payload = JSON.parse(atob(payloadPart))
     return payload
-  } catch {
+  } catch (err) {
+    logger.debug('Failed to decode JWT payload:', err)
     return null
   }
 }

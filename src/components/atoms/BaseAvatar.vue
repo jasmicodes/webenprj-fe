@@ -4,7 +4,7 @@
   Falls back to placeholder on error or missing image.
 -->
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import avatarPlaceholder from '@/assets/avatar-placeholder.svg'
 
@@ -29,6 +29,21 @@ const props = withDefaults(defineProps<Props>(), {
 const userStore = useUserStore()
 const imageUrl = ref<string>(avatarPlaceholder)
 
+// Track blob URL for cleanup to prevent memory leaks
+let currentBlobUrl: string | null = null
+
+function revokeCurrentBlobUrl() {
+  if (currentBlobUrl) {
+    URL.revokeObjectURL(currentBlobUrl)
+    currentBlobUrl = null
+  }
+}
+
+// Clean up blob URL on unmount
+onUnmounted(() => {
+  revokeCurrentBlobUrl()
+})
+
 const sizeClass = {
   xs: 'avatar-xs',
   sm: 'avatar-sm',
@@ -37,8 +52,9 @@ const sizeClass = {
 }
 
 async function loadImage() {
-  // If explicit src provided, use it
+  // If explicit src provided, use it (not a blob URL, no cleanup needed)
   if (props.src) {
+    revokeCurrentBlobUrl()
     imageUrl.value = props.src
     return
   }
@@ -46,20 +62,30 @@ async function loadImage() {
   // If useCurrentUser, try to load from store
   if (props.useCurrentUser) {
     if (!userStore.user?.profileImageUrl) {
+      revokeCurrentBlobUrl()
       imageUrl.value = avatarPlaceholder
       return
     }
 
     try {
       const objectUrl = await userStore.downloadProfileImage()
-      imageUrl.value = objectUrl || avatarPlaceholder
+      // Revoke old blob URL before assigning new one
+      revokeCurrentBlobUrl()
+      if (objectUrl) {
+        currentBlobUrl = objectUrl
+        imageUrl.value = objectUrl
+      } else {
+        imageUrl.value = avatarPlaceholder
+      }
     } catch {
+      revokeCurrentBlobUrl()
       imageUrl.value = avatarPlaceholder
     }
     return
   }
 
   // Default: placeholder
+  revokeCurrentBlobUrl()
   imageUrl.value = avatarPlaceholder
 }
 
