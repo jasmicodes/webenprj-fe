@@ -1,5 +1,5 @@
 import { api } from './client'
-import type { Page, Post, PostCreateRequest, PostUpdateRequest } from './types'
+import type { AdminPost, AdminPostStats, Page, Post, PostCreateRequest, PostUpdateRequest } from './types'
 
 export const postsApi = {
   /**
@@ -100,5 +100,66 @@ export const postsApi = {
   async getSubjects(): Promise<string[]> {
     const res = await api.get<string[]>('/posts/subjects')
     return res.data
+  },
+}
+
+/**
+ * Admin posts API for moderation features.
+ * All endpoints require ADMIN role.
+ */
+export const adminPostsApi = {
+  /**
+   * Get all posts for admin moderation.
+   * @param search Search keyword
+   * @param active Filter by active status (undefined = all)
+   * @param isComment Filter by type (undefined = all, true = comments, false = posts)
+   * @param page Zero-based page index
+   * @param size Page size
+   */
+  async getAllPosts(
+    search?: string,
+    active?: boolean,
+    isComment?: boolean,
+    page = 0,
+    size = 20,
+  ): Promise<Page<AdminPost>> {
+    const res = await api.get<Page<AdminPost>>('/posts/admin', {
+      params: {
+        page,
+        size,
+        ...(search ? { search } : {}),
+        ...(active !== undefined ? { active } : {}),
+        ...(isComment !== undefined ? { isComment } : {}),
+      },
+    })
+    return res.data
+  },
+
+  /**
+   * Get post statistics for admin dashboard.
+   */
+  async getStats(): Promise<AdminPostStats> {
+    const res = await api.get<AdminPostStats>('/posts/admin/stats')
+    return res.data
+  },
+
+  /**
+   * Toggle post active status (soft delete/restore).
+   * @param postId Post ID
+   * @param active New active status
+   */
+  async toggleActive(postId: string, active: boolean): Promise<AdminPost> {
+    const res = await api.patch<AdminPost>(`/posts/admin/${postId}/active`, null, {
+      params: { active },
+    })
+    return res.data
+  },
+
+  /**
+   * Permanently delete a post (hard delete).
+   * @param postId Post ID
+   */
+  async hardDelete(postId: string): Promise<void> {
+    await api.delete(`/posts/admin/${postId}`)
   },
 }

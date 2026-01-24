@@ -142,3 +142,20 @@ export interface CollectionCreateRequest {
   color?: string | null
   iconName?: string | null
 }
+
+// Admin Post types
+
+export interface AdminPost extends Post {
+  active: boolean
+  isComment: boolean
+  userEmail: string
+}
+
+export interface AdminPostStats {
+  totalPosts: number
+  activePosts: number
+  deletedPosts: number
+  totalComments: number
+  activeComments: number
+  deletedComments: number
+}
