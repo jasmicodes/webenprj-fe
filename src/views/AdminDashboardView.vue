@@ -15,6 +15,7 @@ import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import PageHeader from '@/components/atoms/PageHeader.vue'
 import AdminPostsTab from '@/components/organisms/AdminPostsTab.vue'
+import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import {
   TrashIcon,
   NoSymbolIcon,
@@ -61,6 +62,11 @@ const activeCount = computed(() => users.value.filter((u) => u.active).length)
 
 // Role update state
 const updatingRoleUserId = ref<string | null>(null)
+
+// Delete modal state
+const showDeleteModal = ref(false)
+const userToDelete = ref<AdminUser | null>(null)
+const deletingUser = ref(false)
 
 async function updateRole(user: AdminUser, newRole: UserRole) {
   if (newRole === user.role) return
@@ -148,17 +154,32 @@ async function toggleActive(user: AdminUser) {
   }
 }
 
-async function deleteUser(user: AdminUser) {
-  if (!confirm(`Are you sure you want to delete "${user.username}"? This action cannot be undone.`))
-    return
+function openDeleteModal(user: AdminUser) {
+  userToDelete.value = user
+  showDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  userToDelete.value = null
+}
+
+async function confirmDeleteUser() {
+  const user = userToDelete.value
+  if (!user) return
+
+  deletingUser.value = true
 
   try {
     await adminUsersApi.deleteUser(user.id)
     users.value = users.value.filter((u) => u.id !== user.id)
     toast.showSuccess(`User ${user.username} deleted successfully`, 'User Management')
+    closeDeleteModal()
   } catch (err) {
     const errorMsg = getErrorMessage(err)
     toast.showError(`Failed to delete user: ${errorMsg}`, 'Error')
+  } finally {
+    deletingUser.value = false
   }
 }
 </script>
@@ -449,7 +470,7 @@ async function deleteUser(user: AdminUser) {
                         :aria-label="
                           isCurrentUser(u.id) ? 'Cannot delete your own account' : 'Delete user'
                         "
-                        @click="deleteUser(u)"
+                        @click="openDeleteModal(u)"
                       >
                         <TrashIcon class="w-4 h-4" />
                       </button>
@@ -472,6 +493,18 @@ async function deleteUser(user: AdminUser) {
           </BaseButton>
         </div>
       </template>
+
+      <!-- Delete User Confirmation Modal -->
+      <ConfirmModal
+        :show="showDeleteModal"
+        title="Delete user?"
+        :message="`Are you sure you want to delete &quot;${userToDelete?.username}&quot;? This action cannot be undone.`"
+        confirm-text="Delete user"
+        variant="danger"
+        :is-loading="deletingUser"
+        @close="closeDeleteModal"
+        @confirm="confirmDeleteUser"
+      />
     </div>
   </div>
 </template>

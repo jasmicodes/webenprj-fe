@@ -10,6 +10,7 @@ import { useToastStore } from '@/stores/toastStore'
 import { useDebounce } from '@/composables/useDebounce'
 import BaseCard from '@/components/atoms/BaseCard.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
+import ConfirmModal from '@/components/molecules/ConfirmModal.vue'
 import {
   TrashIcon,
   NoSymbolIcon,
@@ -26,6 +27,10 @@ const error = ref<string | null>(null)
 const togglingPostId = ref<string | null>(null)
 const deletingPostId = ref<string | null>(null)
 const toast = useToastStore()
+
+// Delete modal state
+const showDeleteModal = ref(false)
+const postToDelete = ref<AdminPost | null>(null)
 
 // Pagination state
 const page = ref(0)
@@ -63,7 +68,7 @@ async function loadStats() {
   try {
     stats.value = await adminPostsApi.getStats()
   } catch (err) {
-    console.error('Failed to load stats:', err)
+    toast.showError('Failed to load statistics', 'Error')
   } finally {
     loadingStats.value = false
   }
@@ -141,14 +146,19 @@ async function toggleActive(post: AdminPost) {
   }
 }
 
-async function hardDelete(post: AdminPost) {
-  const typeLabel = post.isComment ? 'comment' : 'post'
-  if (
-    !confirm(
-      `Are you sure you want to PERMANENTLY delete this ${typeLabel}? This action cannot be undone.`,
-    )
-  )
-    return
+function openDeleteModal(post: AdminPost) {
+  postToDelete.value = post
+  showDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  postToDelete.value = null
+}
+
+async function confirmHardDelete() {
+  const post = postToDelete.value
+  if (!post) return
 
   deletingPostId.value = post.id
 
@@ -156,6 +166,7 @@ async function hardDelete(post: AdminPost) {
     await adminPostsApi.hardDelete(post.id)
     posts.value = posts.value.filter((p) => p.id !== post.id)
     toast.showSuccess(`${post.isComment ? 'Comment' : 'Post'} permanently deleted`, 'Deleted')
+    closeDeleteModal()
     // Refresh stats
     loadStats()
   } catch (err) {
@@ -468,7 +479,7 @@ function truncate(text: string, maxLen = 60): string {
                     :disabled="deletingPostId === post.id"
                     aria-label="Permanently delete"
                     title="Permanently delete"
-                    @click="hardDelete(post)"
+                    @click="openDeleteModal(post)"
                   >
                     <TrashIcon
                       class="w-4 h-4"
@@ -493,5 +504,17 @@ function truncate(text: string, maxLen = 60): string {
         <span v-else>Load more</span>
       </BaseButton>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      :show="showDeleteModal"
+      :title="`Permanently delete ${postToDelete?.isComment ? 'comment' : 'post'}?`"
+      :message="`This will permanently remove this ${postToDelete?.isComment ? 'comment' : 'post'}. This action cannot be undone.`"
+      confirm-text="Delete permanently"
+      variant="danger"
+      :is-loading="deletingPostId !== null"
+      @close="closeDeleteModal"
+      @confirm="confirmHardDelete"
+    />
   </div>
 </template>
