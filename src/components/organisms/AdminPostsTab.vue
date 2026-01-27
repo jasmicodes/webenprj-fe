@@ -452,10 +452,10 @@ function truncate(text: string, maxLen = 60): string {
                 {{ formatDate(post.createdAt) }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center justify-end gap-1">
+                <div class="flex items-center justify-end gap-2">
                   <!-- Toggle Active Button -->
                   <button
-                    class="p-1.5 rounded-md transition-colors"
+                    class="p-2 rounded-md transition-colors"
                     :class="
                       post.active
                         ? 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
@@ -468,21 +468,21 @@ function truncate(text: string, maxLen = 60): string {
                   >
                     <component
                       :is="post.active ? NoSymbolIcon : CheckCircleIcon"
-                      class="w-4 h-4"
+                      class="w-5 h-5"
                       :class="{ 'animate-pulse': togglingPostId === post.id }"
                     />
                   </button>
 
                   <!-- Hard Delete Button -->
                   <button
-                    class="p-1.5 rounded-md text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    class="p-2 rounded-md text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                     :disabled="deletingPostId === post.id"
                     aria-label="Permanently delete"
                     title="Permanently delete"
                     @click="openDeleteModal(post)"
                   >
                     <TrashIcon
-                      class="w-4 h-4"
+                      class="w-5 h-5"
                       :class="{ 'animate-pulse': deletingPostId === post.id }"
                     />
                   </button>
