@@ -58,7 +58,6 @@ const isAmbientMode = computed(() => appearanceStore.bgEnabled && !isMobile.valu
 
 // User count for header badge
 const userCount = computed(() => users.value.length)
-const activeCount = computed(() => users.value.filter((u) => u.active).length)
 
 // Role update state
 const updatingRoleUserId = ref<string | null>(null)
