@@ -399,7 +399,7 @@ function truncate(text: string, maxLen = 60): string {
                 Created
               </th>
               <th
-                class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider"
+                class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider w-28"
               >
                 Actions
               </th>
@@ -451,7 +451,7 @@ function truncate(text: string, maxLen = 60): string {
               <td class="px-4 py-3 text-slate-600">
                 {{ formatDate(post.createdAt) }}
               </td>
-              <td class="px-4 py-3">
+              <td class="px-4 py-3 whitespace-nowrap">
                 <div class="flex items-center justify-end gap-2">
                   <!-- Toggle Active Button -->
                   <button

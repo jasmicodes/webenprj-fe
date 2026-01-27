@@ -288,8 +288,7 @@ async function confirmDeleteUser() {
             >
               <template v-if="searchQuery"> {{ userCount }} of {{ totalElements }} </template>
               <template v-else>
-                {{ totalElements }} {{ totalElements === 1 ? 'user' : 'users' }} ·
-                {{ activeCount }} active
+                {{ totalElements }} {{ totalElements === 1 ? 'user' : 'users' }}
               </template>
             </div>
           </div>
